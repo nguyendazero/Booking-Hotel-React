@@ -61,8 +61,15 @@ const Hotels = () => {
         {currentItems.map((hotel) => (
           <div
             key={hotel.id}
-            className="border rounded-lg overflow-hidden shadow-md"
+            className="border rounded-lg overflow-hidden shadow-md relative"
           >
+            {/* Hiển thị discount nếu có */}
+            {hotel.discount && (
+              <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                -{hotel.discount.rate}% Limited
+              </div>
+            )}
+
             <img
               src={hotel.highLightImageUrl}
               alt={hotel.name}
