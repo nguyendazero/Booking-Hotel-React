@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import newYorkImage from "../../assets/image/new-york.png";
-import singaporeImage from "../../assets/image/singapore.jpg";
-import parisImage from "../../assets/image/paris.jpg";
-import londonImage from "../../assets/image/london.webp";
-import tokyoImage from "../../assets/image/tokyo.webp";
-import maldivesImage from "../../assets/image/maldives.webp";
+import newYorkImage from "../assets/image/new-york.png";
+import singaporeImage from "../assets/image/singapore.jpg";
+import parisImage from "../assets/image/paris.jpg";
+import londonImage from "../assets/image/london.webp";
+import tokyoImage from "../assets/image/tokyo.webp";
+import maldivesImage from "../assets/image/maldives.webp";
 
 const HomePage2 = () => {
   const locations = [

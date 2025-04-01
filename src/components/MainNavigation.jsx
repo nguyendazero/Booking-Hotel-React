@@ -1,6 +1,7 @@
 import { Bell } from "lucide-react";
 import userImage from "../assets/image/avatar-header.png";
 import logoImage from "../assets/image/logo.png";
+import { NavLink } from "react-router-dom";
 
 function MainNavigation() {
   return (
@@ -12,15 +13,52 @@ function MainNavigation() {
 
       {/* Search Bar */}
       <div className="flex items-center border rounded-full px-4 py-2 shadow-sm border-gray-300">
-        <span className="px-2">Location</span>
-        <span className="px-2 border-l">Check In</span>
-        <span className="px-2 border-l">Add guests</span>
-        <button className="bg-purple-600 text-white rounded-full p-2 ml-2">🔍</button>
+        <NavLink
+          to="/"
+          className={
+            ({ isActive }) =>
+              `px-4 py-2 rounded-full ${
+                isActive
+                  ? "font-bold text-cyan-50 bg-purple-700"
+                  : "text-gray-700"
+              }`
+          }
+        >
+          Home
+        </NavLink>
+        <NavLink
+          to="/checkin"
+          className={
+            ({ isActive }) =>
+              `px-4 py-2 border-l rounded-full ${
+                isActive
+                  ? "font-bold text-cyan-50 bg-purple-700"
+                  : "text-gray-700"
+              }`
+          }
+        >
+          Checkin
+        </NavLink>
+        <NavLink
+          to="/hotels"
+          className={
+            ({ isActive }) =>
+              `px-4 py-2 border-l rounded-full ${
+                isActive
+                  ? "font-bold text-cyan-50 bg-purple-700"
+                  : "text-gray-700"
+              }`
+          }
+        >
+          Hotels
+        </NavLink>
       </div>
 
       {/* Actions */}
       <div className="flex items-center space-x-4">
-        <button className="border border-gray-300 rounded-full px-4 py-2 hover:bg-gray-100">List your property</button>
+        <button className="border border-gray-300 rounded-full px-4 py-2 hover:bg-gray-100">
+          List your property
+        </button>
         <div className="relative">
           <Bell className="w-5 h-5 cursor-pointer" />
           <span className="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-full"></span>
