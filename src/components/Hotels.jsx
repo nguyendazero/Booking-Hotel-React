@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { Pagination } from "antd";
+import LoadingSpinner from "../components/Common/LoadingSpinner";
 
 const Hotels = () => {
-  const { data: hotels, loading, error } = useFetch("http://localhost:8080/api/v1/public/hotels");
+  const {
+    data: hotels,
+    loading,
+    error,
+  } = useFetch("http://localhost:8080/api/v1/public/hotels");
   const [currentPage, setCurrentPage] = useState(1);
-//   const itemsPerPage = 4;
+  //   const itemsPerPage = 4;
   const itemsPerPage = 4;
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return <LoadingSpinner tip="Fetching hotels..." />;
   }
 
   if (error) {
@@ -22,7 +27,7 @@ const Hotels = () => {
   const currentItems = hotels.slice(indexOfFirstItem, indexOfLastItem);
 
   console.log(hotels.length);
-  
+
   // Tính tổng số trang
   const totalItems = hotels.length;
 
@@ -34,8 +39,14 @@ const Hotels = () => {
     <div className="px-40 pt-5">
       {/* Phần giới thiệu */}
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold">Hotels</h1>
-        <p className="text-gray-600">Search hotels according to your preferences</p>
+        <h1 className="text-4xl font-bold text-purple-700">
+          Discover Your <span className="text-purple-500">Perfect Stay</span>
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Find the best hotels tailored to your{" "}
+          <span className="font-semibold text-gray-800">budget</span> and{" "}
+          <span className="font-semibold text-gray-800">preferences</span>.
+        </p>
       </div>
 
       {/* Phần bộ lọc */}
@@ -48,7 +59,10 @@ const Hotels = () => {
       {/* Hiển thị danh sách khách sạn */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {currentItems.map((hotel) => (
-          <div key={hotel.id} className="border rounded-lg overflow-hidden shadow-md">
+          <div
+            key={hotel.id}
+            className="border rounded-lg overflow-hidden shadow-md"
+          >
             <img
               src={hotel.highLightImageUrl}
               alt={hotel.name}
@@ -56,8 +70,12 @@ const Hotels = () => {
             />
             <div className="p-4">
               <h2 className="font-bold text-lg">{hotel.name}</h2>
-              <p className="text-purple-700 font-semibold">${hotel.pricePerDay.toFixed(2)} / night</p>
-              <p className="text-yellow-500">⭐ {hotel.rating !== null ? hotel.rating.toFixed(1) : "N/A"}</p>
+              <p className="text-purple-700 font-semibold">
+                ${hotel.pricePerDay.toFixed(2)} / night
+              </p>
+              <p className="text-yellow-500">
+                ⭐ {hotel.rating !== null ? hotel.rating.toFixed(1) : "N/A"}
+              </p>
               <p className="text-gray-500">{hotel.streetAddress}</p>
             </div>
           </div>
