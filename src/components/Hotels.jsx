@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { Pagination } from "antd";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const Hotels = () => {
   const {
@@ -10,93 +11,118 @@ const Hotels = () => {
     error,
   } = useFetch("http://localhost:8080/api/v1/public/hotels");
   const [currentPage, setCurrentPage] = useState(1);
-  //   const itemsPerPage = 4;
+  const [imageIndexes, setImageIndexes] = useState({});
   const itemsPerPage = 4;
 
-  if (loading) {
-    return <LoadingSpinner tip="Fetching hotels..." />;
-  }
+  if (loading) return <LoadingSpinner tip="Fetching hotels..." />;
+  if (error) return <div>Error fetching locations</div>;
 
-  if (error) {
-    return <div>Error fetching hotels: {error.message}</div>;
-  }
-
-  // Tính toán các mục hiện tại để hiển thị
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = hotels.slice(indexOfFirstItem, indexOfLastItem);
 
-  console.log(hotels.length);
+  const handlePageChange = (page) => setCurrentPage(page);
 
-  // Tính tổng số trang
-  const totalItems = hotels.length;
+  const goToPrevImage = (hotelId, images) => {
+    setImageIndexes((prev) => ({
+      ...prev,
+      [hotelId]: prev[hotelId] > 0 ? prev[hotelId] - 1 : images.length - 1,
+    }));
+  };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const goToNextImage = (hotelId, images) => {
+    setImageIndexes((prev) => ({
+      ...prev,
+      [hotelId]: prev[hotelId] < images.length - 1 ? prev[hotelId] + 1 : 0,
+    }));
   };
 
   return (
     <div className="px-40 pt-5">
-      {/* Phần giới thiệu */}
       <div className="mb-6 text-center">
         <h1 className="text-4xl font-bold text-purple-700">
           Discover Your <span className="text-purple-500">Perfect Stay</span>
         </h1>
         <p className="text-gray-600 mt-2">
           Find the best hotels tailored to your{" "}
-          <span className="font-semibold text-gray-800">budget</span> and{" "}
-          <span className="font-semibold text-gray-800">preferences</span>.
+          <span className="font-semibold text-gray-800">budget</span> and
+          <span className="font-semibold text-gray-800"> preferences</span>.
         </p>
       </div>
 
-      {/* Phần bộ lọc */}
       <div className="flex justify-between mb-4">
         <button className="px-4 py-2 border rounded-full bg-purple-600 text-white">
           Filters (3)
         </button>
       </div>
 
-      {/* Hiển thị danh sách khách sạn */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {currentItems.map((hotel) => (
-          <div
-            key={hotel.id}
-            className="border rounded-lg overflow-hidden shadow-md relative"
-          >
-            {/* Hiển thị discount nếu có */}
-            {hotel.discount && (
-              <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-                -{hotel.discount.rate}% Limited
-              </div>
-            )}
+        {currentItems.map((hotel) => {
+          const currentImageIndex = imageIndexes[hotel.id] || 0;
 
-            <img
-              src={hotel.highLightImageUrl}
-              alt={hotel.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="font-bold text-lg">{hotel.name}</h2>
-              <p className="text-purple-700 font-semibold">
-                ${hotel.pricePerDay.toFixed(2)} / night
-              </p>
-              <p className="text-yellow-500">
-                ⭐ {hotel.rating !== null ? hotel.rating.toFixed(1) : "N/A"}
-              </p>
-              <p className="text-gray-500">{hotel.streetAddress}</p>
+          return (
+            <div
+              key={hotel.id}
+              className="border rounded-lg overflow-hidden shadow-md relative"
+            >
+              {hotel.discount && (
+                <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-10">
+                  -{hotel.discount.rate}% Limited
+                </div>
+              )}
+
+              <div className="relative">
+                {hotel.images.length > 0 ? (
+                  <img
+                    src={hotel.images[currentImageIndex]?.imageUrl}
+                    alt={hotel.name}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <img
+                    src={hotel.highLightImageUrl}
+                    alt={hotel.name}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+
+                <button
+                  onClick={() => goToPrevImage(hotel.id, hotel.images)}
+                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
+                >
+                  <LeftOutlined />
+                </button>
+
+                <button
+                  onClick={() => goToNextImage(hotel.id, hotel.images)}
+                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
+                >
+                  <RightOutlined />
+                </button>
+              </div>
+
+              <div className="p-4">
+                <h2 className="font-bold text-lg">{hotel.name}</h2>
+                <p className="text-purple-700 font-semibold">
+                  ${hotel.pricePerDay.toFixed(2)} / night
+                </p>
+                <p className="text-yellow-500">
+                  ⭐ {hotel.rating !== null ? hotel.rating.toFixed(1) : "N/A"}
+                </p>
+                <p className="text-gray-500">{hotel.streetAddress}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Phần phân trang */}
       <div className="flex justify-center p-5">
         <Pagination
           current={currentPage}
           pageSize={itemsPerPage}
-          total={totalItems}
+          total={hotels.length}
           onChange={handlePageChange}
-          showSizeChanger={false} // Ẩn tùy chọn thay đổi số lượng mục mỗi trang
+          showSizeChanger={false}
         />
       </div>
     </div>
