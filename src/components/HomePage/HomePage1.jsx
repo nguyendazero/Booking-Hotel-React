@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import heroImage from "../../assets/image/hero-right.webp";
-import DatePicker from "react-datepicker"; // Cần cài thư viện này
-import "react-datepicker/dist/react-datepicker.css"; // Để áp dụng kiểu dành cho DatePicker
+import DatePicker from "react-datepicker"; 
+import "react-datepicker/dist/react-datepicker.css"; 
 
 const HomePage1 = () => {
   const [startDate, setStartDate] = useState(null);
@@ -91,7 +91,7 @@ const HomePage1 = () => {
             className="border border-gray-300 py-2 px-4 w-35 placeholder-gray-400 rounded"
           />
 
-          <button className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:shadow-xl transition-shadow duration-300 ml-2 w-16">
+          <button className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:shadow-xl transition-shadow duration-300 ml-2 w-16 cursor-pointer">
             🔍
           </button>
         </div>
