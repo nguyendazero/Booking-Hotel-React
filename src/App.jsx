@@ -15,7 +15,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       {
         path: "hotels",
-        // element: <EventsRootLayout />,
+        // element: <HotelsRootLayout />,
         children: [
           {
             index: true,
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
           {
             path: ":hotelId",
             id: "hotel-detail",
-            // loader: eventDetailLoader,
+            // loader: hotelDetailLoader,
             children: [
               {
                 index: true,
