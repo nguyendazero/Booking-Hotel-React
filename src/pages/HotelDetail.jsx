@@ -4,6 +4,8 @@ import HotelDetailImages from "../components/HotelDetailImages";
 import HotelDetailInfo from "../components/HotelDetailInfo";
 import HotelDetailReserve from "../components/HotelDetailReserve";
 import HotelDetailAmenities from "../components/HotelDetailAmenities";
+import HotelDetailReviews from "../components/HotelDetailReviews";
+import LoadingSpinner from "../components/Common/LoadingSpinner";
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
@@ -33,9 +35,18 @@ function HotelDetailPage() {
     `http://localhost:8080/api/v1/public/hotel/${hotelId}/amenities`
   );
 
-  if (hotelLoading || discountLoading || amenitiyLoading)
-    return <p>Loading...</p>;
-  if (hotelError || discountError || amenityError)
+  // Fetch danh sách review của khách sạn
+  const {
+    data: reviews,
+    loading: reviewLoading,
+    error: reviewError,
+  } = useFetch(
+    `http://localhost:8080/api/v1/public/hotel/${hotelId}/ratings`
+  );
+
+  if (hotelLoading || discountLoading || amenitiyLoading || reviewLoading)
+    return <LoadingSpinner />;
+  if (hotelError || discountError || amenityError || reviewError)
     return <p>Error loading hotel details</p>;
   if (!hotel) return <p>Hotel not found</p>;
 
@@ -48,16 +59,18 @@ function HotelDetailPage() {
 
       <div className="flex justify-center items-center gap-4 ml-[170px]">
         <div className="w-full md:w-[55%] lg:w-[50%]">
-          <HotelDetailInfo hotel={hotel} discounts={discounts}/>
+          <HotelDetailInfo hotel={hotel} discounts={discounts} />
         </div>
 
         <div className="w-full md:w-[40%] lg:w-[45%]">
-          <HotelDetailReserve hotel={hotel}/>
+          <HotelDetailReserve hotel={hotel} />
         </div>
       </div>
 
-      <HotelDetailAmenities amenities={Array.isArray(amenities) ? amenities : []} />
-
+      <HotelDetailAmenities
+        amenities={Array.isArray(amenities) ? amenities : []}
+      />
+      <HotelDetailReviews reviews={Array.isArray(reviews) ? reviews : []} />
     </div>
   );
 }
