@@ -14,7 +14,7 @@ import {
 } from "@ant-design/icons";
 
 const HotelDetailInfo = ({ hotel, discounts }) => {
-  const { name, streetAddress, rating, reviews, owner, description, discount } =
+  const { name, streetAddress, rating, reviews, owner, description } =
     hotel;
 
   const formattedRating = rating ? rating.toFixed(1) : "N/A";
@@ -50,6 +50,8 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
         />
         <h4 className="font-semibold">Hosted by {owner.fullName}</h4>
       </div>
+      <p className="text-gray-600 text-sm mb-2 mt-2">📞 {owner.phone || "0"}</p>
+      <p className="text-gray-600 text-sm">📧 {owner.email}</p>
 
       <div className="mt-4 flex justify-between">
         <div className="flex items-center">
@@ -80,7 +82,7 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
 
       {discounts && discounts.length > 0 ? (
         <div className="mt-4">
-          <h3 className="font-semibold text-lg text-green-600 flex items-center justify-center p-2 border border-green-500 rounded-lg bg-green-100">
+          <h3 className="font-semibold text-lg text-green-600 flex items-center justify-center p-2 border border-green-500 rounded-lg bg-green-100 mb-4">
             <TagOutlined className="mr-2 text-green-600" />
             Discounts Available:
           </h3>

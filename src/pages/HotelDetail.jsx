@@ -3,22 +3,40 @@ import useFetch from "../hooks/useFetch";
 import HotelDetailImages from "../components/HotelDetailImages";
 import HotelDetailInfo from "../components/HotelDetailInfo";
 import HotelDetailReserve from "../components/HotelDetailReserve";
+import HotelDetailAmenities from "../components/HotelDetailAmenities";
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
-  
+
   // Fetch thông tin chi tiết của khách sạn
-  const { data: hotel, loading: hotelLoading, error: hotelError } = useFetch(
-    `http://localhost:8080/api/v1/public/hotel/${hotelId}`
-  );
+  const {
+    data: hotel,
+    loading: hotelLoading,
+    error: hotelError,
+  } = useFetch(`http://localhost:8080/api/v1/public/hotel/${hotelId}`);
 
   // Fetch danh sách giảm giá của khách sạn
-  const { data: discounts, loading: discountLoading, error: discountError } = useFetch(
+  const {
+    data: discounts,
+    loading: discountLoading,
+    error: discountError,
+  } = useFetch(
     `http://localhost:8080/api/v1/public/hotel/${hotelId}/discounts`
   );
 
-  if (hotelLoading || discountLoading) return <p>Loading...</p>;
-  if (hotelError || discountError) return <p>Error loading hotel details</p>;
+  // Fetch danh sách amenity của khách sạn
+  const {
+    data: amenities,
+    loading: amenitiyLoading,
+    error: amenityError,
+  } = useFetch(
+    `http://localhost:8080/api/v1/public/hotel/${hotelId}/amenities`
+  );
+
+  if (hotelLoading || discountLoading || amenitiyLoading)
+    return <p>Loading...</p>;
+  if (hotelError || discountError || amenityError)
+    return <p>Error loading hotel details</p>;
   if (!hotel) return <p>Hotel not found</p>;
 
   return (
@@ -34,9 +52,12 @@ function HotelDetailPage() {
         </div>
 
         <div className="w-full md:w-[40%] lg:w-[45%]">
-          <HotelDetailReserve hotel={hotel} />
+          <HotelDetailReserve hotel={hotel}/>
         </div>
       </div>
+
+      <HotelDetailAmenities amenities={Array.isArray(amenities) ? amenities : []} />
+
     </div>
   );
 }
