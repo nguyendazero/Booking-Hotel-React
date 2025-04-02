@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
-import { Pagination } from "antd";
+import { Pagination, Carousel } from "antd";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
@@ -79,19 +80,22 @@ const Hotels = () => {
 
               <div className="relative">
                 {hotel.images.length > 0 ? (
-                  <img
-                    src={hotel.images[currentImageIndex]?.imageUrl}
-                    alt={hotel.name}
-                    className="w-full h-48 object-cover"
-                  />
+                  <Link to={`/hotels/${hotel.id}`}>
+                    <img
+                      src={hotel.images[currentImageIndex]?.imageUrl}
+                      alt={hotel.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  </Link>
                 ) : (
-                  <img
-                    src={hotel.highLightImageUrl}
-                    alt={hotel.name}
-                    className="w-full h-48 object-cover"
-                  />
+                  <Link to={`/hotels/${hotel.id}`}>
+                    <img
+                      src={hotel.highLightImageUrl}
+                      alt={hotel.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  </Link>
                 )}
-
                 <button
                   onClick={() => goToPrevImage(hotel.id, hotel.images)}
                   className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
@@ -108,7 +112,9 @@ const Hotels = () => {
               </div>
 
               <div className="p-4">
-                <h2 className="font-bold text-lg">{hotel.name}</h2>
+                <Link to={`/hotels/${hotel.id}`}>
+                  <h2 className="font-bold text-lg">{hotel.name}</h2>
+                </Link>
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-purple-700 font-semibold">
                     ${hotel.pricePerDay} / night
