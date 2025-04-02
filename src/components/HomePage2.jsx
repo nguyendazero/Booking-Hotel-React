@@ -9,11 +9,19 @@ import maldivesImage from "../assets/image/maldives.webp";
 const HomePage2 = () => {
   const locations = [
     { name: "New York", properties: "188,288 properties", image: newYorkImage },
-    { name: "Singapore", properties: "188,288 properties", image: singaporeImage },
+    {
+      name: "Singapore",
+      properties: "188,288 properties",
+      image: singaporeImage,
+    },
     { name: "Paris", properties: "188,288 properties", image: parisImage },
     { name: "London", properties: "188,288 properties", image: londonImage },
     { name: "Tokyo", properties: "188,288 properties", image: tokyoImage },
-    { name: "Maldives", properties: "188,288 properties", image: maldivesImage },
+    {
+      name: "Maldives",
+      properties: "188,288 properties",
+      image: maldivesImage,
+    },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,32 +43,45 @@ const HomePage2 = () => {
 
   return (
     <div className="p-8 bg-gray-50 relative flex flex-col items-center">
-      <h2 className="text-3xl font-bold mb-2 text-center">Suggestions for discovery</h2>
-      <p className="mb-6 text-gray-600 text-center">Popular places to recommend for you</p>
-      
+      <h2 className="text-3xl font-bold mb-2 text-center">
+        Suggestions for discovery
+      </h2>
+      <p className="mb-6 text-gray-600 text-center">
+        Popular places to recommend for you
+      </p>
+
       <div className="flex items-center justify-between mb-4 w-full max-w-lg">
-        <button 
-          onClick={prevItems} 
-          disabled={currentIndex === 0} 
+        <button
+          onClick={prevItems}
+          disabled={currentIndex === 0}
           className="bg-gray-300 rounded-full p-2 cursor-pointer disabled:opacity-50"
         >
           ◀️
         </button>
-        <button 
-          onClick={nextItems} 
-          disabled={currentIndex + 5 >= locations.length} 
+        <button
+          onClick={nextItems}
+          disabled={currentIndex + 5 >= locations.length}
           className="bg-gray-300 rounded-full p-2 cursor-pointer disabled:opacity-50"
         >
           ▶️
         </button>
       </div>
-      
+
       <div className="flex space-x-4 overflow-x-auto mb-6">
         {visibleItems.map((location, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 w-64">
-            <img src={location.image} alt={location.name} className="w-full h-80 object-cover cursor-pointer" />
+          <div
+            key={index}
+            className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 w-64"
+          >
+            <img
+              src={location.image}
+              alt={location.name}
+              className="w-full h-80 object-cover cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:brightness-90"
+            />
             <div className="p-4 text-center">
-              <h3 className="font-semibold text-xl cursor-pointer">{location.name}</h3>
+              <h3 className="font-semibold text-xl cursor-pointer">
+                {location.name}
+              </h3>
               <p className="text-gray-500">{location.properties}</p>
             </div>
           </div>
