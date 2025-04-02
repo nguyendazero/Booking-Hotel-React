@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import HotelDetailImages from "../components/HotelDetailImages";
+import HotelDetailInfo from "../components/HotelDetailInfo";
+import HotelDetailReserve from "../components/HotelDetailReserve";
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
@@ -15,11 +17,22 @@ function HotelDetailPage() {
   if (!hotel) return <p>Hotel not found</p>;
 
   return (
-    <div>
+    <div className="container mx-auto px-4">
       <HotelDetailImages
         highLightImageUrl={hotel.highLightImageUrl}
         images={hotel.images}
       />
+
+      <div className="flex justify-center items-center gap-4 ml-[170px]">
+
+        <div className="w-full md:w-[55%] lg:w-[50%]">
+          <HotelDetailInfo hotel={hotel} />
+        </div>
+
+        <div className="w-full md:w-[40%] lg:w-[45%]">
+          <HotelDetailReserve />
+        </div>
+      </div>
     </div>
   );
 }
