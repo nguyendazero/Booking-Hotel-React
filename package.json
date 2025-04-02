@@ -16,6 +16,7 @@
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
     "lucide-react": "^0.486.0",
+    "ol": "^10.5.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",

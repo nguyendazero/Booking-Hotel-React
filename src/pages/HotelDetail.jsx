@@ -6,6 +6,7 @@ import HotelDetailReserve from "../components/HotelDetailReserve";
 import HotelDetailAmenities from "../components/HotelDetailAmenities";
 import HotelDetailReviews from "../components/HotelDetailReviews";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import OpenLayersMap from "../components/OpenLayersMap";
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
@@ -71,6 +72,7 @@ function HotelDetailPage() {
         amenities={Array.isArray(amenities) ? amenities : []}
       />
       <HotelDetailReviews reviews={Array.isArray(reviews) ? reviews : []} />
+      <OpenLayersMap hotel={hotel}/>
     </div>
   );
 }
