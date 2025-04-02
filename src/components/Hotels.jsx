@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
-import { Pagination, Carousel } from "antd";
+import { Pagination } from "antd";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
@@ -84,7 +84,7 @@ const Hotels = () => {
                     <img
                       src={hotel.images[currentImageIndex]?.imageUrl}
                       alt={hotel.name}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105 hover:brightness-110"
                     />
                   </Link>
                 ) : (
@@ -92,7 +92,7 @@ const Hotels = () => {
                     <img
                       src={hotel.highLightImageUrl}
                       alt={hotel.name}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105 hover:brightness-110"
                     />
                   </Link>
                 )}

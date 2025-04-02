@@ -24,7 +24,7 @@ const HotelDetailImages = ({ highLightImageUrl, images }) => {
           <img
             src={highLightImageUrl}
             alt="Hotel Highlight"
-            className="w-full h-full object-cover rounded-2xl"
+            className="w-full h-full object-cover rounded-2xl transform transition-all hover:scale-105 hover:brightness-110" // Thêm hiệu ứng hover
           />
         </div>
 
@@ -35,14 +35,17 @@ const HotelDetailImages = ({ highLightImageUrl, images }) => {
               <img
                 src={img.imageUrl}
                 alt={`Hotel Image ${index + 1}`}
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-cover rounded-2xl transform transition-all hover:scale-105 hover:brightness-110" // Thêm hiệu ứng hover
                 style={{
                   opacity: index === 3 && remainingImages > 0 ? 0.5 : 1,
                 }} // Làm mờ ảnh thứ 4
               />
               {/* Overlay nếu có nhiều hơn 4 ảnh */}
               {index === 3 && remainingImages > 0 && (
-                <div className="absolute inset-0 flex items-center justify-center text-white text-lg font-semibold rounded-2xl cursor-pointer" onClick={openModal}>
+                <div
+                  className="absolute inset-0 flex items-center justify-center text-purple-800 text-lg font-semibold rounded-2xl cursor-pointer"
+                  onClick={openModal}
+                >
                   +{remainingImages} more
                 </div>
               )}
