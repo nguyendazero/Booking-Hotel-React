@@ -24,17 +24,23 @@ const Hotels = () => {
   const handlePageChange = (page) => setCurrentPage(page);
 
   const goToPrevImage = (hotelId, images) => {
-    setImageIndexes((prev) => ({
-      ...prev,
-      [hotelId]: prev[hotelId] > 0 ? prev[hotelId] - 1 : images.length - 1,
-    }));
+    setImageIndexes((prev) => {
+      const currentIndex = prev[hotelId] ?? 0;
+      return {
+        ...prev,
+        [hotelId]: currentIndex > 0 ? currentIndex - 1 : images.length - 1,
+      };
+    });
   };
 
   const goToNextImage = (hotelId, images) => {
-    setImageIndexes((prev) => ({
-      ...prev,
-      [hotelId]: prev[hotelId] < images.length - 1 ? prev[hotelId] + 1 : 0,
-    }));
+    setImageIndexes((prev) => {
+      const currentIndex = prev[hotelId] ?? 0;
+      return {
+        ...prev,
+        [hotelId]: currentIndex < images.length - 1 ? currentIndex + 1 : 0,
+      };
+    });
   };
 
   return (
@@ -103,12 +109,14 @@ const Hotels = () => {
 
               <div className="p-4">
                 <h2 className="font-bold text-lg">{hotel.name}</h2>
-                <p className="text-purple-700 font-semibold">
-                  ${hotel.pricePerDay.toFixed(2)} / night
-                </p>
-                <p className="text-yellow-500">
-                  ⭐ {hotel.rating !== null ? hotel.rating.toFixed(1) : "N/A"}
-                </p>
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-purple-700 font-semibold">
+                    ${hotel.pricePerDay} / night
+                  </p>
+                  <p className="text-yellow-500">
+                    ⭐ {hotel.rating !== null ? hotel.rating.toFixed(1) : "N/A"}
+                  </p>
+                </div>
                 <p className="text-gray-500">{hotel.streetAddress}</p>
               </div>
             </div>
