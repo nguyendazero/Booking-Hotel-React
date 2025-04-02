@@ -43,8 +43,8 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
       <h2 className="text-2xl font-bold">{name}</h2>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <EnvironmentOutlined style={{ fontSize: "18px", color: "#555" }} />
-          <p className="text-gray-600 ml-2">{streetAddress}</p>
+          <EnvironmentOutlined style={{ fontSize: "18px", color: "#006400" }} />
+          <p className="text-green-800 ml-1">{streetAddress}</p>
         </div>
         <span className="text-yellow-500">
           {formattedRating} ({totalGuests} reviews)

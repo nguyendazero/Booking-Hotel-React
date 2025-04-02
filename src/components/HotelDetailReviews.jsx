@@ -70,7 +70,7 @@ const HotelDetailReviews = ({ reviews }) => {
                     key={image.id}
                     src={image.imageUrl}
                     alt={`Review Image ${index + 1}`}
-                    className="w-20 h-20 object-cover rounded-md"
+                    className="w-auto h-40 object-cover rounded-md"
                   />
                 ))}
               </div>

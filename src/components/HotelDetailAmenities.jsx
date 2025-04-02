@@ -31,7 +31,7 @@ const HotelDetailAmenities = ({ amenities }) => {
       {amenities.length > 12 && (
         <div className="mt-4 text-center">
           <button
-            className="text-purple-700 font-semibold cursor-pointer"
+            className="text-purple-700 font-semibold cursor-pointer hover:underline"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "Show less" : `View more ${amenities.length} amenities`}
