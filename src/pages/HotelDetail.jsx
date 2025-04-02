@@ -6,14 +6,19 @@ import HotelDetailReserve from "../components/HotelDetailReserve";
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
-  const {
-    data: hotel,
-    loading,
-    error,
-  } = useFetch(`http://localhost:8080/api/v1/public/hotel/${hotelId}`);
+  
+  // Fetch thông tin chi tiết của khách sạn
+  const { data: hotel, loading: hotelLoading, error: hotelError } = useFetch(
+    `http://localhost:8080/api/v1/public/hotel/${hotelId}`
+  );
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading hotel details</p>;
+  // Fetch danh sách giảm giá của khách sạn
+  const { data: discounts, loading: discountLoading, error: discountError } = useFetch(
+    `http://localhost:8080/api/v1/public/hotel/${hotelId}/discounts`
+  );
+
+  if (hotelLoading || discountLoading) return <p>Loading...</p>;
+  if (hotelError || discountError) return <p>Error loading hotel details</p>;
   if (!hotel) return <p>Hotel not found</p>;
 
   return (
@@ -24,13 +29,12 @@ function HotelDetailPage() {
       />
 
       <div className="flex justify-center items-center gap-4 ml-[170px]">
-
         <div className="w-full md:w-[55%] lg:w-[50%]">
-          <HotelDetailInfo hotel={hotel} />
+          <HotelDetailInfo hotel={hotel} discounts={discounts}/>
         </div>
 
         <div className="w-full md:w-[40%] lg:w-[45%]">
-          <HotelDetailReserve />
+          <HotelDetailReserve hotel={hotel} />
         </div>
       </div>
     </div>

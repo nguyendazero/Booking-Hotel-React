@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import useFetch from "../hooks/useFetch";
-import { DatePicker, Space } from "antd";
+import { DatePicker } from "antd";
 
 const { RangePicker } = DatePicker;
 
 const SearchBar = () => {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [location, setLocation] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
