@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom"; // Thêm useLocation để lấy URL params
+import { useSelector } from "react-redux"; // Import useSelector để truy cập Redux store
 import HomePage1 from "../components/HomePage1";
 import Hotels from "../components/Hotels";
 import useFetch from "../hooks/useFetch";
@@ -17,6 +18,9 @@ function HotelsPage() {
   const startDate = query.get("startDate");
   const endDate = query.get("endDate");
 
+  // Truy cập amenities từ Redux
+  const amenityNames = useSelector((state) => state.search.query.amenityNames) || []; // Lấy amenityNames từ state
+
   const fetchHotels = () => {
     let params = new URLSearchParams();
     
@@ -26,6 +30,9 @@ function HotelsPage() {
     if (maxPrice) params.append("maxPrice", maxPrice);
     if (startDate) params.append("startDate", startDate);
     if (endDate) params.append("endDate", endDate);
+
+    // Thêm các amenityNames vào params
+    amenityNames.forEach((amenity) => params.append("amenityNames", amenity));
 
     return `http://localhost:8080/api/v1/public/hotels${
       params.toString() ? "?" + params.toString() : ""

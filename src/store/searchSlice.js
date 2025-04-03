@@ -11,6 +11,17 @@ export const fetchDistricts = createAsyncThunk(
   }
 );
 
+// Thunk để fetch danh sách amenities
+export const fetchAmenities = createAsyncThunk(
+  "search/fetchAmenities",
+  async () => {
+    const response = await fetch(
+      "http://localhost:8080/api/v1/public/amenities"
+    );
+    return await response.json();
+  }
+);
+
 const initialState = {
   query: {
     districtId: "",
@@ -19,8 +30,10 @@ const initialState = {
     maxPrice: "",
     startDate: "",
     endDate: "",
+    amenityNames: [],  // Thêm vào đây
   },
   districts: [],
+  amenities: [], // Thêm trạng thái để lưu amenities
   loading: false,
   error: null,
 };
@@ -48,6 +61,17 @@ const searchSlice = createSlice({
       .addCase(fetchDistricts.rejected, (state) => {
         state.loading = false;
         state.error = "Failed to fetch districts";
+      })
+      .addCase(fetchAmenities.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAmenities.fulfilled, (state, action) => {
+        state.loading = false;
+        state.amenities = action.payload; // Lưu danh sách amenities vào state
+      })
+      .addCase(fetchAmenities.rejected, (state) => {
+        state.loading = false;
+        state.error = "Failed to fetch amenities";
       });
   },
 });

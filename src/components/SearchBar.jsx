@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DatePicker } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchDistricts, setQuery, clearQuery } from "../store/searchSlice";
+import { fetchDistricts, setQuery, clearQuery  } from "../store/searchSlice";
 import { useNavigate } from "react-router-dom";
 import { ClearOutlined } from "@ant-design/icons";
 

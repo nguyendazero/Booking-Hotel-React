@@ -1,14 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
 import { Pagination } from "antd";
+import { useDispatch, useSelector  } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import { fetchAmenities } from "../store/searchSlice";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import AmenitiesModal from "./AmenitiesModal";
 
 const Hotels = ({ hotels }) => {
+  const dispatch = useDispatch();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [imageIndexes, setImageIndexes] = useState({});
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const itemsPerPage = 4;
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  useEffect(() => {
+    dispatch(fetchAmenities());
+  }, [dispatch]);
+
+  const selectedAmenities = useSelector((state) => state.search.query.amenityNames || []);
 
   if (!hotels) return <LoadingSpinner tip="Fetching hotels..." />;
   if (hotels.length === 0) return <LoadingSpinner tip="Fetching hotels..." />;
@@ -53,10 +72,16 @@ const Hotels = ({ hotels }) => {
       </div>
 
       <div className="flex justify-between mb-4">
-        <button className="px-4 py-2 border rounded-full bg-purple-600 text-white">
-          Filters (3)
+        <button
+          onClick={showModal}
+          className="px-4 py-2 border rounded-full bg-purple-600 text-white"
+        >
+          Filters by amenities ({selectedAmenities.length})
         </button>
       </div>
+
+      {/* Hiển thị modal amenities */}
+      <AmenitiesModal open={isModalVisible} onClose={handleModalClose} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {currentItems.map((hotel) => {
