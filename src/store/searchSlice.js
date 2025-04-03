@@ -13,12 +13,12 @@ export const fetchDistricts = createAsyncThunk(
 
 const initialState = {
   query: {
-    districtId: "", // Đặt giá trị mặc định là chuỗi rỗng
+    districtId: "",
     name: "",
     minPrice: "",
     maxPrice: "",
-    startDate: "", // Đặt giá trị mặc định là chuỗi rỗng
-    endDate: "", // Đặt giá trị mặc định là chuỗi rỗng
+    startDate: "",
+    endDate: "",
   },
   districts: [],
   loading: false,
