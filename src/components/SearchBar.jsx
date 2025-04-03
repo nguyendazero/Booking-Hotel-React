@@ -115,7 +115,7 @@ const SearchBar = () => {
           🔍
         </button>
         <button
-          className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:shadow-xl ml-2 w-16 cursor-pointer"
+          className="bg-red-500 text-white py-2 px-4 rounded-lg hover:shadow-xl ml-2 w-16 cursor-pointer"
           onClick={handleClearFilters} // Khi nhấn nút, chuyển đến HotelsPage
         >
           <ClearOutlined />
