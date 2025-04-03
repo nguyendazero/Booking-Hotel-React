@@ -22,6 +22,19 @@ export const fetchAmenities = createAsyncThunk(
   }
 );
 
+// Tạo thunk để fetch danh sách hotels
+export const fetchHotels = createAsyncThunk(
+  "search/fetchHotels",
+  async (params) => {
+    const response = await fetch(params);
+    if (!response.ok) {
+      const errorDetail = await response.text(); // Lấy chi tiết lỗi
+      throw new Error(`Failed to fetch hotels: ${errorDetail}`);
+    }
+    return await response.json();
+  }
+);
+
 const initialState = {
   query: {
     districtId: "",
@@ -30,10 +43,13 @@ const initialState = {
     maxPrice: "",
     startDate: "",
     endDate: "",
-    amenityNames: [],  // Thêm vào đây
+    amenityNames: [],
+    sortBy: "id",
+    sortOrder: "asc",
   },
   districts: [],
   amenities: [], // Thêm trạng thái để lưu amenities
+  hotels: [],
   loading: false,
   error: null,
 };
@@ -72,6 +88,18 @@ const searchSlice = createSlice({
       .addCase(fetchAmenities.rejected, (state) => {
         state.loading = false;
         state.error = "Failed to fetch amenities";
+      })
+      .addCase(fetchHotels.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchHotels.fulfilled, (state, action) => {
+        state.loading = false;
+        state.hotels = action.payload;
+        // Cập nhật danh sách hotels ở đây nếu cần
+      })
+      .addCase(fetchHotels.rejected, (state) => {
+        state.loading = false;
+        state.error = "Failed to fetch hotels";
       });
   },
 });

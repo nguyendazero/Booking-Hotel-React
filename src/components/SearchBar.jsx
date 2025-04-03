@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DatePicker } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchDistricts, setQuery, clearQuery  } from "../store/searchSlice";
+import { fetchDistricts, setQuery, clearQuery } from "../store/searchSlice";
 import { useNavigate } from "react-router-dom";
 import { ClearOutlined } from "@ant-design/icons";
 
@@ -19,8 +19,17 @@ const SearchBar = () => {
 
   // Hàm xử lý khi nhấn Search
   const handleSearch = () => {
-    dispatch(setQuery(query));
-    const searchParams = new URLSearchParams(query).toString(); // Chuyển query thành query string
+    const updatedQuery = {
+      districtId: query.districtId,
+      name: query.name,
+      minPrice: query.minPrice,
+      maxPrice: query.maxPrice,
+      startDate: query.startDate,
+      endDate: query.endDate,
+      amenityNames: query.amenityNames,
+    };
+    dispatch(setQuery(updatedQuery));
+    const searchParams = new URLSearchParams(updatedQuery).toString(); // Chuyển query thành query string
     navigate(`/hotels?${searchParams}`); // Chuyển hướng đến HotelsPage với query parameters
   };
 

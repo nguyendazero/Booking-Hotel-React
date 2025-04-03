@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Pagination } from "antd";
-import { useDispatch, useSelector  } from "react-redux";
-import LoadingSpinner from "../components/Common/LoadingSpinner";
-import { fetchAmenities } from "../store/searchSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAmenities, fetchHotels } from "../store/searchSlice"; // Import fetchHotels
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import AmenitiesModal from "./AmenitiesModal";
+import SortOptions from "./SortOptions";
+import LoadingSpinner from "./Common/LoadingSpinner";
 
-const Hotels = ({ hotels }) => {
+const Hotels = () => {
   const dispatch = useDispatch();
-
   const [currentPage, setCurrentPage] = useState(1);
   const [imageIndexes, setImageIndexes] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -27,10 +27,59 @@ const Hotels = ({ hotels }) => {
     dispatch(fetchAmenities());
   }, [dispatch]);
 
-  const selectedAmenities = useSelector((state) => state.search.query.amenityNames || []);
+  const selectedAmenities = useSelector(
+    (state) => state.search.query.amenityNames || []
+  );
+  const sortBy = useSelector((state) => state.search.query.sortBy);
+  const sortOrder = useSelector((state) => state.search.query.sortOrder);
 
-  if (!hotels) return <LoadingSpinner tip="Fetching hotels..." />;
-  if (hotels.length === 0) return <LoadingSpinner tip="Fetching hotels..." />;
+  // Lấy query từ Redux store
+  const query = useSelector((state) => state.search.query);
+
+  const fetchHotelsData = () => {
+    const baseUrl = "http://localhost:8080/api/v1/public/hotels";
+    const params = new URLSearchParams();
+
+    // Thêm các thông tin về sắp xếp vào params
+    params.append("sortBy", sortBy);
+    params.append("sortOrder", sortOrder);
+
+    selectedAmenities.forEach((amenity) =>
+      params.append("amenityNames", amenity)
+    );
+
+    // Thêm các thông tin khác từ query vào params
+    if (query.districtId) {
+      params.append("districtId", query.districtId);
+    }
+    if (query.name) {
+      params.append("name", query.name);
+    }
+    if (query.minPrice) {
+      params.append("minPrice", query.minPrice);
+    }
+    if (query.maxPrice) {
+      params.append("maxPrice", query.maxPrice);
+    }
+    if (query.startDate) {
+      params.append("startDate", query.startDate);
+    }
+    if (query.endDate) {
+      params.append("endDate", query.endDate);
+    }
+
+    const finalUrl = `${baseUrl}?${params.toString()}`;
+    return dispatch(fetchHotels(finalUrl)); // Gọi fetchHotels với URL đã chuẩn bị
+  };
+
+  useEffect(() => {
+    fetchHotelsData(); // Gọi API mỗi khi có thay đổi trong amenities, order hoặc criteria
+  }, [selectedAmenities, sortBy, sortOrder, query, dispatch]);
+
+  const hotels = useSelector((state) => state.search.hotels || []); // Thêm để lấy danh sách hotels từ Redux
+
+  if (!hotels.length)
+    return <LoadingSpinner />;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -78,6 +127,7 @@ const Hotels = ({ hotels }) => {
         >
           Filters by amenities ({selectedAmenities.length})
         </button>
+        <SortOptions /> {/* Sử dụng component SortOptions */}
       </div>
 
       {/* Hiển thị modal amenities */}

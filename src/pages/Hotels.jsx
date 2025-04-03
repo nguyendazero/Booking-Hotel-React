@@ -19,7 +19,9 @@ function HotelsPage() {
   const endDate = query.get("endDate");
 
   // Truy cập amenities từ Redux
-  const amenityNames = useSelector((state) => state.search.query.amenityNames) || []; // Lấy amenityNames từ state
+  const amenityNames = useSelector((state) => state.search.query.amenityNames) || [];
+  const sortBy = useSelector((state) => state.search.query.sortBy); // Lấy tiêu chí sắp xếp từ Redux
+  const sortOrder = useSelector((state) => state.search.query.sortOrder); // Lấy thứ tự sắp xếp từ Redux
 
   const fetchHotels = () => {
     let params = new URLSearchParams();
@@ -34,6 +36,10 @@ function HotelsPage() {
     // Thêm các amenityNames vào params
     amenityNames.forEach((amenity) => params.append("amenityNames", amenity));
 
+    // Thêm các tiêu chí sắp xếp vào params
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+
     return `http://localhost:8080/api/v1/public/hotels${
       params.toString() ? "?" + params.toString() : ""
     }`;
@@ -41,6 +47,8 @@ function HotelsPage() {
 
   // Sử dụng hook useFetch với URL đã xây dựng
   const { data: hotels, loading, error } = useFetch(fetchHotels());
+
+  console.log(`Fetching hotels from URL: ${fetchHotels()}`);
 
   return (
     <>
