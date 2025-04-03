@@ -1,22 +1,56 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+// Thunk để fetch danh sách districts
+export const fetchDistricts = createAsyncThunk(
+  "search/fetchDistricts",
+  async () => {
+    const response = await fetch(
+      "http://localhost:8080/api/v1/public/districts"
+    );
+    return await response.json();
+  }
+);
 
 const initialState = {
-  query: '', // Trạng thái mặc định cho truy vấn tìm kiếm
+  query: {
+    districtId: "", // Đặt giá trị mặc định là chuỗi rỗng
+    name: "",
+    minPrice: "",
+    maxPrice: "",
+    startDate: "", // Đặt giá trị mặc định là chuỗi rỗng
+    endDate: "", // Đặt giá trị mặc định là chuỗi rỗng
+  },
+  districts: [],
+  loading: false,
+  error: null,
 };
 
 const searchSlice = createSlice({
-  name: 'search', // Tên của slice
+  name: "search",
   initialState,
   reducers: {
     setQuery: (state, action) => {
-      state.query = action.payload; // Cập nhật truy vấn
+      state.query = { ...state.query, ...action.payload };
     },
     clearQuery: (state) => {
-      state.query = ''; // Xóa truy vấn
+      state.query = initialState.query;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchDistricts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchDistricts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.districts = action.payload;
+      })
+      .addCase(fetchDistricts.rejected, (state) => {
+        state.loading = false;
+        state.error = "Failed to fetch districts";
+      });
   },
 });
 
 export const { setQuery, clearQuery } = searchSlice.actions;
-
 export default searchSlice.reducer;

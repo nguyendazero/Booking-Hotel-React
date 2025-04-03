@@ -5,18 +5,13 @@ import { Pagination } from "antd";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-const Hotels = () => {
-  const {
-    data: hotels,
-    loading,
-    error,
-  } = useFetch("http://localhost:8080/api/v1/public/hotels");
+const Hotels = ({ hotels }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [imageIndexes, setImageIndexes] = useState({});
   const itemsPerPage = 4;
 
-  if (loading) return <LoadingSpinner tip="Fetching hotels..." />;
-  if (error) return <div>Error fetching locations</div>;
+  if (!hotels) return <LoadingSpinner tip="Fetching hotels..." />;
+  if (hotels.length === 0) return <LoadingSpinner tip="Fetching hotels..." />;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
