@@ -9,10 +9,11 @@ const usePost = (url) => {
     setLoading(true);
     try {
       const response = await axios.post(url, data);
-      return response.data; // Trả về response để xử lý trong component
+      return response.data; // Trả về response.data
     } catch (err) {
       setError(err);
-      return null;
+      console.error("Error during postData", err);
+      return null; // Trả về null khi có lỗi
     } finally {
       setLoading(false);
     }
