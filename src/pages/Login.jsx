@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
-import { GoogleOutlined, FacebookOutlined, GithubOutlined } from "@ant-design/icons";
-import loginImage from "../assets/image/tokyo.webp";
+import {
+  GoogleOutlined,
+  FacebookOutlined,
+  GithubOutlined,
+} from "@ant-design/icons";
+import loginImage from "../assets/image/login.jpg";
 
 const LoginForm = () => {
-  const [formData, setFormData] = useState({ usernameOrEmail: "", password: "" });
+  const [formData, setFormData] = useState({
+    usernameOrEmail: "",
+    password: "",
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
@@ -25,21 +32,32 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-100 to-gray-200">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-300 via-fuchsia-300 to-fuchsia-300">
       <div className="flex w-4/5 max-w-4xl bg-white shadow-2xl rounded-lg overflow-hidden">
         {/* Hình ảnh bên trái */}
         <div className="w-1/2 hidden md:block">
-          <img src={loginImage} alt="Login Illustration" className="object-cover h-full w-full" />
+          <img
+            src={loginImage}
+            alt="Login Illustration"
+            className="object-cover h-full w-full"
+          />
         </div>
 
         {/* Form đăng nhập */}
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">Welcome Back!</h2>
-          <p className="text-gray-600 text-center mb-6">Log in to your account</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">
+            Welcome Back!
+          </h2>
+          <p className="text-gray-600 text-center mb-6">
+            Log in to your account
+          </p>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="usernameOrEmail" className="block text-sm font-medium text-gray-600">
+              <label
+                htmlFor="usernameOrEmail"
+                className="block text-sm font-medium text-gray-600"
+              >
                 Username or Email
               </label>
               <input
@@ -55,7 +73,10 @@ const LoginForm = () => {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-600"
+              >
                 Password
               </label>
               <input
@@ -74,7 +95,7 @@ const LoginForm = () => {
 
             <button
               type="submit"
-              className="w-full py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition duration-300"
+              className="w-full py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition duration-300 cursor-pointer"
               disabled={loading}
             >
               {loading ? "Logging in..." : "Log in"}
@@ -94,7 +115,8 @@ const LoginForm = () => {
               <GoogleOutlined className="mr-2 text-xl" /> Google
             </button>
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
-              <FacebookOutlined className="mr-2 text-xl text-blue-600" /> Facebook
+              <FacebookOutlined className="mr-2 text-xl text-blue-600" />{" "}
+              Facebook
             </button>
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
               <GithubOutlined className="mr-2 text-xl" /> GitHub
