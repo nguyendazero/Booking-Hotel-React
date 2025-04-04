@@ -16,42 +16,13 @@ export const loginUser = createAsyncThunk(
 
       const data = response.data;
 
-      if (!response.status === 200) {
-        throw new Error(data.errors.errorMessage || "Login failed");
-      }
-
-      // Lưu token vào Redux và cookies
-      Cookies.set("token", data.accessToken, { expires: 7, path: "/" });
       return { token: data.accessToken };
     } catch (error) {
-      console.error("🔴 API Error:", error.message);
-      return rejectWithValue(error.message);
-    }
-  }
-);
+      // Lấy thông báo lỗi từ mảng errors
+      const errorMessage =
+        error.response?.data?.errors?.[0]?.errorMessage || "Login failed";
 
-// ✅ Thunk xử lý lấy thông tin người dùng
-export const fetchUser = createAsyncThunk(
-  "auth/fetchUser",
-  async (_, { rejectWithValue, getState }) => {
-    const { token } = getState().auth; // Lấy token từ Redux
-
-    if (!token) {
-      throw new Error("Token is not available");
-    }
-
-    try {
-      const response = await axios.get("http://localhost:8080/api/v1/user/me", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Đính token vào header
-        },
-        withCredentials: true, // Đảm bảo cookie được gửi
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error("🔴 API Error:", error.message);
-      return rejectWithValue(null); // Trả về null nếu không có thông tin user
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -109,17 +80,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchUser.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload; // Lưu thông tin user từ API nếu cần
-      })
-      .addCase(fetchUser.rejected, (state) => {
-        state.loading = false;
-        state.user = null;
-      });
   },
 });
 
