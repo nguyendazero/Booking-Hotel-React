@@ -5,6 +5,7 @@ import HomePage from "./pages/Home";
 import HotelDetailPage from "./pages/HotelDetail";
 import HotelsPage from "./pages/Hotels";
 import RootLayout from "./pages/Root";
+import LoginPage from "./pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -15,28 +16,28 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       {
         path: "hotels",
-        // element: <HotelsRootLayout />,
         children: [
           {
             index: true,
             element: <HotelsPage />,
-            // loader: eventsLoader,
           },
           {
             path: ":hotelId",
             id: "hotel-detail",
-            // loader: hotelDetailLoader,
             children: [
               {
                 index: true,
                 element: <HotelDetailPage />,
-                // action: deleteEventAction,
               },
             ],
           },
         ],
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <LoginPage />, // Trang login sẽ không có MainNavigation và Footer
   },
 ]);
 
