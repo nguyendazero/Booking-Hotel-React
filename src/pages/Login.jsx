@@ -112,14 +112,14 @@ const LoginForm = () => {
           {/* Các nút mạng xã hội */}
           <div className="flex justify-around mt-6">
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
-              <GoogleOutlined className="mr-2 text-xl" /> Google
+              <GoogleOutlined className="mr-2 text-3xl" style={{backgroundColor: "white", color: "red"}} /> Google
             </button>
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
-              <FacebookOutlined className="mr-2 text-xl text-blue-600" />{" "}
+              <FacebookOutlined className="mr-2 text-3xl" style={{backgroundColor: "blue", color: "white"}} />
               Facebook
             </button>
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
-              <GithubOutlined className="mr-2 text-xl" /> GitHub
+              <GithubOutlined className="mr-2 text-3xl" /> GitHub
             </button>
           </div>
         </div>
