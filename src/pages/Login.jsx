@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
 import usePost from "../hooks/usePost";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import {
   GoogleOutlined,
   FacebookOutlined,
@@ -11,6 +11,10 @@ import {
 import loginImage from "../assets/image/login.jpg";
 
 const LoginForm = () => {
+
+  const location = useLocation(); // Lấy đối tượng location
+  const message = location.state?.message; // Lấy message từ location.state
+
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
@@ -75,7 +79,11 @@ const LoginForm = () => {
 
         const response = await verifyEmail(queryParams);
         console.log("Verification successful", response);
-        navigate("/"); // Redirect to homepage after verification
+
+        setIsVerify(false); // Đặt lại trạng thái verify thành false
+        navigate("/login", {
+          state: { message: "Successfully verified your account"},
+        });
       } catch (error) {
         console.error("Verification error", error);
       }
@@ -235,6 +243,7 @@ const LoginForm = () => {
             ) : (
               <>
                 {/* Login form fields */}
+                {message && <p className="text-green-700 font-bold">{message}</p>} {/* Hiển thị thông báo nếu có */}
                 <div className="mb-4">
                   <label
                     htmlFor="usernameOrEmail"
@@ -274,12 +283,19 @@ const LoginForm = () => {
               </>
             )}
 
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            {/* Display errors for login, register, or verify */}
+            {error && <p className="text-red-600 text-sm mb-4 font-bold">{error}</p>}
+            {postError && (
+              <p className="text-red-500 text-sm mb-4">{postError}</p>
+            )}
+            {verifyError && (
+              <p className="text-red-500 text-sm mb-4">{verifyError}</p>
+            )}
 
             <button
               type="submit"
               className="w-full py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition duration-300 cursor-pointer"
-              disabled={loading || postLoading}
+              disabled={loading || postLoading || verifyLoading}
             >
               {loading || postLoading || verifyLoading
                 ? isRegister
