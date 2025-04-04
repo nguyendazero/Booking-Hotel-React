@@ -16,9 +16,11 @@ const LoginForm = () => {
     fullName: "",
     username: "",
     email: "",
-    rePassword: ""
+    rePassword: "",
+    verificationCode: "", // Thêm field cho mã xác thực
   });
   const [isRegister, setIsRegister] = useState(false); // Quản lý trạng thái login hay register
+  const [isVerify, setIsVerify] = useState(false); // Quản lý trạng thái xác thực
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
@@ -30,8 +32,16 @@ const LoginForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isRegister) {
-      // Xử lý đăng ký ở đây (chưa có logic đăng ký)
+      // Xử lý đăng ký (sẽ thực hiện gọi API đăng ký)
       console.log("Register data", formData);
+      // Sau khi đăng ký xong, chuyển sang màn xác thực
+      setIsRegister(false); // Đổi trạng thái về login để hiển thị form đăng nhập
+      setIsVerify(true); // Chuyển sang trạng thái xác thực
+    } else if (isVerify) {
+      // Xử lý mã xác thực ở đây
+      console.log("Verification code", formData.verificationCode);
+      // Sau khi xác thực, điều hướng đến trang chính
+      navigate("/"); // Hoặc bất kỳ trang nào bạn muốn
     } else {
       // Xử lý đăng nhập
       dispatch(loginUser(formData)).then((result) => {
@@ -57,15 +67,38 @@ const LoginForm = () => {
         {/* Form đăng nhập hoặc đăng ký */}
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">
-            {isRegister ? "Create an Account" : "Welcome Back!"}
+            {isVerify ? "Verify Your Account" : isRegister ? "Create an Account" : "Welcome Back!"}
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            {isRegister ? "Create a new account" : "Log in to your account"}
+            {isVerify
+              ? "Enter the verification code sent to your email"
+              : isRegister
+              ? "Create a new account"
+              : "Log in to your account"}
           </p>
 
           <form onSubmit={handleSubmit}>
-            {/* Form fields for both login and register */}
-            {isRegister ? (
+            {/* Form fields cho register hoặc verify */}
+            {isVerify ? (
+              <div className="mb-6">
+                <label
+                  htmlFor="verificationCode"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Verification Code
+                </label>
+                <input
+                  type="text"
+                  name="verificationCode"
+                  id="verificationCode"
+                  placeholder="Enter the verification code"
+                  value={formData.verificationCode}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                />
+              </div>
+            ) : isRegister ? (
               <>
                 <div className="mb-4">
                   <label
@@ -206,7 +239,17 @@ const LoginForm = () => {
               className="w-full py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition duration-300 cursor-pointer"
               disabled={loading}
             >
-              {loading ? (isRegister ? "Registering..." : "Logging in...") : isRegister ? "Register" : "Log in"}
+              {loading
+                ? isRegister
+                  ? "Registering..."
+                  : isVerify
+                  ? "Verifying..."
+                  : "Logging in..."
+                : isRegister
+                ? "Register"
+                : isVerify
+                ? "Verify"
+                : "Log in"}
             </button>
           </form>
 
@@ -215,9 +258,14 @@ const LoginForm = () => {
             <NavLink
               to="#"
               className="text-sm text-blue-500 hover:text-blue-700"
-              onClick={() => setIsRegister(!isRegister)}
+              onClick={() => {
+                setIsRegister(!isRegister);
+                setIsVerify(false); // Đảm bảo không có chế độ xác thực khi chuyển đổi
+              }}
             >
-              {isRegister ? "Already have an account? Log in" : "Don't have an account? Register"}
+              {isRegister
+                ? "Already have an account? Log in"
+                : "Don't have an account? Register"}
             </NavLink>
           </div>
 
