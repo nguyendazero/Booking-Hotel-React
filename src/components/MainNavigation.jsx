@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import { logout } from "../store/authSlice"; // Giả sử bạn có action logout
 import { UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import UserProfileUpdate from "./UpdateInfo";
 
 function MainNavigation() {
   // Lấy user từ Redux state
@@ -13,6 +14,9 @@ function MainNavigation() {
 
   // Trạng thái để quản lý dropdown menu
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  //Trạng thái của modal update info
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   // Hàm để xử lý logout
   const handleLogout = () => {
@@ -104,6 +108,14 @@ function MainNavigation() {
           </div>
         )}
 
+        {isUpdateModalOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg relative">
+              <UserProfileUpdate onClose={() => setIsUpdateModalOpen(false)} />
+            </div>
+          </div>
+        )}
+
         {/* Dropdown Menu */}
         {user && isDropdownOpen && (
           <div className="absolute top-12 right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
@@ -113,7 +125,10 @@ function MainNavigation() {
             >
               Logout
             </button>
-            <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition">
+            <button
+              onClick={() => setIsUpdateModalOpen(true)}
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition"
+            >
               Update information
             </button>
             <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition">
