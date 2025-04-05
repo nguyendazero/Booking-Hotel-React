@@ -7,13 +7,18 @@ const usePost = (url) => {
 
   const postData = async (data) => {
     setLoading(true);
+    setError(null);
+
     try {
       const response = await axios.post(url, data);
-      return response.data; // Trả về response.data
+      return response.data;
     } catch (err) {
-      setError(err);
       console.error("Error during postData", err);
-      return null; // Trả về null khi có lỗi
+      const errorMessage =
+        err.response?.data?.errors?.[0]?.errorMessage ||
+        "An unknown error occurred.";
+      setError(errorMessage);
+      return null;
     } finally {
       setLoading(false);
     }

@@ -68,18 +68,22 @@ function MainNavigation() {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center space-x-4">
+      <div className="relative flex items-center space-x-4">
         <button className="border border-gray-300 rounded-full px-4 py-2 hover:bg-gray-100">
           List your property
         </button>
 
         {/* Hiển thị avatar hoặc icon login */}
         {user ? (
-          <img
-            src={user.avatar} // Lấy avatar từ user hoặc ảnh mặc định nếu không có
-            alt="User"
-            className="w-10 h-10 rounded-full"
-          />
+          user.avatar ? (
+            <img
+              src={user.avatar}
+              alt="User"
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <UserOutlined style={{ fontSize: "2.0rem" }} />
+          )
         ) : (
           <Link
             to="/login"
@@ -88,7 +92,6 @@ function MainNavigation() {
             <UserOutlined style={{ fontSize: "1.5rem" }} />
             <span className="text-sm mt-1">Login</span>
           </Link>
-          // Biểu tượng Login với kích thước lớn hơn và dẫn đến trang đăng nhập
         )}
 
         {/* Biểu tượng menu ☰ */}
@@ -103,12 +106,18 @@ function MainNavigation() {
 
         {/* Dropdown Menu */}
         {user && isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg p-2 space-y-2">
+          <div className="absolute top-12 right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
             <button
               onClick={handleLogout}
-              className="w-full text-left text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md transition-colors duration-300"
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition"
             >
               Logout
+            </button>
+            <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition">
+              Update information
+            </button>
+            <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition">
+              History booking
             </button>
           </div>
         )}

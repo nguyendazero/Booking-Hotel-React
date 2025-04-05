@@ -11,7 +11,6 @@ import {
 import loginImage from "../assets/image/login.jpg";
 
 const LoginForm = () => {
-
   const location = useLocation(); // Lấy đối tượng location
   const message = location.state?.message; // Lấy message từ location.state
 
@@ -59,38 +58,40 @@ const LoginForm = () => {
     if (isRegister) {
       try {
         const response = await postData(formData);
-        console.log("formData", formData);
-        console.log("Registration successful", response);
-        setIsRegister(false);
-        setIsVerify(true);
+        if (response) {
+          setIsRegister(false);
+          setIsVerify(true);
+        } else {
+          setIsRegister(true);
+        }
       } catch (error) {
         console.error("Registration error", error);
       }
     } else if (isVerify) {
       const { email, verificationCode } = formData;
-      console.log("email: " + email + " " + verificationCode);
 
       try {
-        // Truyền email và mã xác thực qua query parameters trong URL
         const queryParams = new URLSearchParams({
           email: email,
           code: verificationCode,
         }).toString();
 
         const response = await verifyEmail(queryParams);
-        console.log("Verification successful", response);
-
-        setIsVerify(false); // Đặt lại trạng thái verify thành false
-        navigate("/login", {
-          state: { message: "Successfully verified your account"},
-        });
+        if (response) {
+          setIsVerify(false);
+          navigate("/login", {
+            state: { message: "Email verified, you can now log in!" },
+          });
+        } else {
+          setIsVerify(true);
+        }
       } catch (error) {
         console.error("Verification error", error);
       }
     } else {
       dispatch(loginUser(formData)).then((result) => {
         if (result.meta.requestStatus === "fulfilled") {
-          navigate("/"); // Redirect to homepage after login
+          navigate("/");
         }
       });
     }
@@ -243,7 +244,10 @@ const LoginForm = () => {
             ) : (
               <>
                 {/* Login form fields */}
-                {message && <p className="text-green-700 font-bold">{message}</p>} {/* Hiển thị thông báo nếu có */}
+                {message && (
+                  <p className="text-green-700 font-bold">{message}</p>
+                )}{" "}
+                {/* Hiển thị thông báo nếu có */}
                 <div className="mb-4">
                   <label
                     htmlFor="usernameOrEmail"
@@ -284,12 +288,16 @@ const LoginForm = () => {
             )}
 
             {/* Display errors for login, register, or verify */}
-            {error && <p className="text-red-600 text-sm mb-4 font-bold">{error}</p>}
+            {error && (
+              <p className="text-red-600 text-sm mb-4 font-bold">{error}</p>
+            )}
             {postError && (
-              <p className="text-red-500 text-sm mb-4">{postError}</p>
+              <p className="text-red-600 text-sm mb-4 font-bold">{postError}</p>
             )}
             {verifyError && (
-              <p className="text-red-500 text-sm mb-4">{verifyError}</p>
+              <p className="text-red-600 text-sm mb-4 font-bold">
+                {verifyError}
+              </p>
             )}
 
             <button
