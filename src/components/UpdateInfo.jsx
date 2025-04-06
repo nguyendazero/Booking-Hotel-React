@@ -68,12 +68,12 @@ const UserProfileUpdate = ({ onClose }) => {
       if (response) {
         dispatch(updateUser(response));
 
-        const newTokenResponse = await postData({
+        const data = await postData({
           refreshToken: refreshToken,
         });
 
-        if (newTokenResponse) {
-          const newToken = newTokenResponse;
+        if (data) {
+          const newToken = data.accessToken;
 
           if (newToken) {
             Cookies.set("token", newToken, { expires: 7 });
@@ -126,14 +126,13 @@ const UserProfileUpdate = ({ onClose }) => {
 
       if (response) {
         alert("Password updated successfully!");
-        // Bạn có thể reset các trường input sau khi đổi mật khẩu thành công
+        // reset các trường input sau khi đổi mật khẩu thành công
         setCurrentPassword("");
         setNewPassword("");
         setRePassword("");
       }
     } catch (err) {
       console.error("Error changing password:", err);
-      // Không đóng modal, thay vào đó hiển thị lỗi từ backend
     }
   };
 
