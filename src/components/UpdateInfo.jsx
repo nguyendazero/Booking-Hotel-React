@@ -15,7 +15,7 @@ const UserProfileUpdate = ({ onClose }) => {
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phone || "");
   const [avatar, setAvatar] = useState(null);
-  
+
   // State to toggle between update info form and change password form
   const [isChangePassword, setIsChangePassword] = useState(false);
 
@@ -29,9 +29,11 @@ const UserProfileUpdate = ({ onClose }) => {
   } = usePost("http://localhost:8080/api/v1/public/refresh-token");
 
   // usePut for change password API
-  const { putData: changePasswordData, loading: changePasswordLoading, error: changePasswordError } = usePut(
-    "http://localhost:8080/api/v1/user/change-password"
-  );
+  const {
+    putData: changePasswordData,
+    loading: changePasswordLoading,
+    error: changePasswordError,
+  } = usePut("http://localhost:8080/api/v1/user/change-password");
 
   useEffect(() => {
     if (user) {
@@ -102,15 +104,12 @@ const UserProfileUpdate = ({ onClose }) => {
   };
 
   // Handle change password
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [rePassword, setRePassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
 
-  const handleChangePassword = async () => {
-    if (newPassword !== rePassword) {
-      alert("New password and confirmation password do not match.");
-      return;
-    }
+  const handleChangePassword = async (e) => {
+    e.preventDefault(); // Ngăn form tự động reload trang
 
     const passwordData = {
       oldPassword: currentPassword,
@@ -127,10 +126,14 @@ const UserProfileUpdate = ({ onClose }) => {
 
       if (response) {
         alert("Password updated successfully!");
+        // Bạn có thể reset các trường input sau khi đổi mật khẩu thành công
+        setCurrentPassword("");
+        setNewPassword("");
+        setRePassword("");
       }
     } catch (err) {
       console.error("Error changing password:", err);
-      alert("Error updating password. Please try again.");
+      // Không đóng modal, thay vào đó hiển thị lỗi từ backend
     }
   };
 
@@ -166,7 +169,10 @@ const UserProfileUpdate = ({ onClose }) => {
       {!isChangePassword ? (
         <>
           <form onSubmit={handleSubmit} className="w-full pointer-events-auto">
-            <fieldset disabled={loading} className={loading ? "opacity-50" : ""}>
+            <fieldset
+              disabled={loading}
+              className={loading ? "opacity-50" : ""}
+            >
               {/* Full Name */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -220,7 +226,7 @@ const UserProfileUpdate = ({ onClose }) => {
               </button>
             </fieldset>
           </form>
-          
+
           {/* Change Password Button */}
           <button
             onClick={handleChangePasswordClick}
@@ -280,7 +286,9 @@ const UserProfileUpdate = ({ onClose }) => {
               className="w-full bg-violet-700 text-white p-2 rounded-md hover:bg-green-600"
               disabled={changePasswordLoading}
             >
-              {changePasswordLoading ? "Changing Password..." : "Change Password"}
+              {changePasswordLoading
+                ? "Changing Password..."
+                : "Change Password"}
             </button>
           </form>
 
@@ -294,8 +302,12 @@ const UserProfileUpdate = ({ onClose }) => {
         </>
       )}
 
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-      {changePasswordError && <p className="text-red-500 mt-2">{changePasswordError}</p>}
+      {error && <p className="text-red-600 mt-2 font-bold">{error}</p>}
+      {changePasswordError && (
+        <p className="text-red-600 mt-2 max-w-[300px] break-words font-bold">
+          {changePasswordError}
+        </p>
+      )}
     </div>
   );
 };

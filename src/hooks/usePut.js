@@ -10,21 +10,21 @@ const usePut = (url) => {
     setError(null);
 
     try {
-      const response = await axios.put(url, data, config); // Truyền config vào axios.put
+      const response = await axios.put(url, data, config);
       return response.data;
     } catch (err) {
       console.error("Error during putData", err);
       const errorMessage =
-        err.response?.data?.errors?.[0]?.errorMessage ||
-        "An unknown error occurred.";
-      setError(errorMessage);
+        err.response?.data?.errors?.[0]?.errorMessage || // Lấy lỗi từ BE
+        "An unknown error occurred."; // Lỗi mặc định nếu không có response từ BE
+      setError(errorMessage); // Lưu lỗi vào state
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  return { putData, loading, error };
+  return { putData, loading, error }; // Trả về error để sử dụng
 };
 
 export default usePut;
