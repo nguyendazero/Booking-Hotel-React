@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import usePut from "../hooks/usePut";
-import usePost from "../hooks/usePost";
-import { updateUser, login } from "../store/authSlice";
-import Cookies from "js-cookie";
+import { updateUser, refreshTokenUser } from "../store/authSlice";
 
 const UserProfileUpdate = ({ onClose }) => {
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
-  const refreshToken = user?.refreshToken;
+  const refreshToken = useSelector((state) => state.auth.refreshToken);
 
   const dispatch = useDispatch();
 
@@ -22,11 +20,6 @@ const UserProfileUpdate = ({ onClose }) => {
   const { putData, loading, error } = usePut(
     "http://localhost:8080/api/v1/user/update-info"
   );
-  const {
-    postData,
-    loading: refreshLoading,
-    error: refreshError,
-  } = usePost("http://localhost:8080/api/v1/public/refresh-token");
 
   // usePut for change password API
   const {
@@ -67,19 +60,7 @@ const UserProfileUpdate = ({ onClose }) => {
 
       if (response) {
         dispatch(updateUser(response));
-
-        const data = await postData({
-          refreshToken: refreshToken,
-        });
-
-        if (data) {
-          const newToken = data.accessToken;
-
-          if (newToken) {
-            Cookies.set("token", newToken, { expires: 7 });
-            dispatch(login({ token: newToken }));
-          }
-        }
+        dispatch(refreshTokenUser(refreshToken));
       }
     } catch (err) {
       console.error("Error updating user:", err);
