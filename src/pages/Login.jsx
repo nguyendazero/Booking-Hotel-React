@@ -22,9 +22,12 @@ const LoginForm = () => {
     email: "",
     rePassword: "",
     verificationCode: "",
+    newPassword: "",
   });
   const [isRegister, setIsRegister] = useState(false);
   const [isVerify, setIsVerify] = useState(false);
+  const [isVerifyForgot, setIsVerifyForgot] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false); // Added state for forgot password
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
@@ -42,6 +45,20 @@ const LoginForm = () => {
     loading: verifyLoading,
     error: verifyError,
   } = usePost("http://localhost:8080/api/v1/public/verify-email");
+
+  // Call the custom hook for forgot password
+  const {
+    postData: forgotPassword,
+    loading: forgotLoading,
+    error: forgotError,
+  } = usePost("http://localhost:8080/api/v1/public/forgot-password");
+
+  // Call the custom hook for password reset
+  const {
+    postData: resetPassword,
+    loading: resetLoading,
+    error: resetError,
+  } = usePost("http://localhost:8080/api/v1/public/reset-password");
 
   // Handle form data changes
   const handleChange = (e) => {
@@ -88,6 +105,41 @@ const LoginForm = () => {
       } catch (error) {
         console.error("Verification error", error);
       }
+    } else if (isForgotPassword) {
+      const { email } = formData;
+
+      try {
+        const response = await forgotPassword({ emailOrUsername: email });
+        if (response) {
+          setIsForgotPassword(false);
+          setIsVerifyForgot(true); // Move to verification step
+        }
+      } catch (error) {
+        console.error("Forgot password error", error);
+      }
+    } else if (isVerifyForgot) {
+      const { email, verificationCode, newPassword, rePassword } = formData;
+      try {
+        const response = await resetPassword({
+          email: email,
+          code: verificationCode,
+          newPassword: newPassword,
+          rePassword: rePassword,
+        });
+        console.log("formdata: ", formData);
+        console.log("response: ", response);
+
+        if (response) {
+          setIsVerifyForgot(false);
+          navigate("/login", {
+            state: { message: "Email verified, you can now log in!" },
+          });
+        } else {
+          setIsVerifyForgot(true);
+        }
+      } catch (error) {
+        console.error("Registration error", error);
+      }
     } else {
       dispatch(loginUser(formData)).then((result) => {
         if (result.meta.requestStatus === "fulfilled") {
@@ -116,6 +168,10 @@ const LoginForm = () => {
               ? "Verify Your Account"
               : isRegister
               ? "Create an Account"
+              : isForgotPassword
+              ? "Forgot Password"
+              : isVerifyForgot
+              ? "Reset password"
               : "Welcome Back!"}
           </h2>
           <p className="text-gray-600 text-center mb-6">
@@ -123,13 +179,36 @@ const LoginForm = () => {
               ? "Enter the verification code sent to your email"
               : isRegister
               ? "Create a new account"
+              : isForgotPassword
+              ? "Enter your email to reset your password"
+              : isVerifyForgot
+              ? "Enter the verification code and password"
               : "Log in to your account"}
           </p>
 
           <form onSubmit={handleSubmit}>
-            {/* Form fields for register or verify */}
-            {isVerify ? (
+            {/* Forgot password email field */}
+            {isForgotPassword ? (
               <div className="mb-6">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                />
+              </div>
+            ) : isVerify ? (
+              <div>
                 <label
                   htmlFor="verificationCode"
                   className="block text-sm font-medium text-gray-600"
@@ -146,6 +225,63 @@ const LoginForm = () => {
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                 />
+              </div>
+            ) : isVerifyForgot ? (
+              <div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="verificationCode"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Verification Code
+                  </label>
+                  <input
+                    type="text"
+                    name="verificationCode"
+                    id="verificationCode"
+                    placeholder="Enter the verification code"
+                    value={formData.verificationCode}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    id="newPassword"
+                    placeholder="Enter your new password"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="rePassword"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Re-type Password
+                  </label>
+                  <input
+                    type="password"
+                    name="rePassword"
+                    id="rePassword"
+                    placeholder="Re-enter your password"
+                    value={formData.rePassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                  />
+                </div>
               </div>
             ) : isRegister ? (
               <>
@@ -246,8 +382,7 @@ const LoginForm = () => {
                 {/* Login form fields */}
                 {message && (
                   <p className="text-green-700 font-bold">{message}</p>
-                )}{" "}
-                {/* Hiển thị thông báo nếu có */}
+                )}
                 <div className="mb-4">
                   <label
                     htmlFor="usernameOrEmail"
@@ -299,42 +434,82 @@ const LoginForm = () => {
                 {verifyError}
               </p>
             )}
+            {forgotError && (
+              <p className="text-red-600 text-sm mb-4 font-bold">
+                {forgotError}
+              </p>
+            )}
+            {resetError && (
+              <p className="text-red-600 text-sm mb-4 font-bold">
+                {resetError}
+              </p>
+            )}
 
+            {/* Submit button */}
             <button
               type="submit"
-              className="w-full py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition duration-300 cursor-pointer"
-              disabled={loading || postLoading || verifyLoading}
+              disabled={
+                loading ||
+                postLoading ||
+                verifyLoading ||
+                forgotLoading ||
+                resetLoading
+              }
+              className="w-full py-3 mt-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             >
-              {loading || postLoading || verifyLoading
-                ? isRegister
-                  ? "Registering..."
+              {loading ||
+              postLoading ||
+              verifyLoading ||
+              forgotLoading ||
+              resetLoading
+                ? isForgotPassword
+                  ? "Resetting Password..."
                   : isVerify
                   ? "Verifying..."
-                  : "Logging in..."
-                : isRegister
-                ? "Register"
+                  : isRegister
+                  ? "Signing Up..."
+                  : "Logging In..."
+                : isForgotPassword
+                ? "Reset Password"
                 : isVerify
                 ? "Verify"
-                : "Log in"}
+                : isRegister
+                ? "Sign Up"
+                : isVerifyForgot
+                ? "Reset password"
+                : "Log In"}
             </button>
+
+            {/* Switch between login and register */}
+            <div className="flex items-center justify-between mt-6">
+              {!isForgotPassword &&
+                !isVerifyForgot &&
+                !isVerify && (
+                  <button
+                    type="button"
+                    onClick={() => setIsRegister(!isRegister)}
+                    className="text-sm text-indigo-500 hover:underline"
+                  >
+                    {isRegister
+                      ? "Already have an account? Log In"
+                      : "Don't have an account? Sign Up"}
+                  </button>
+                )}
+
+              {!isForgotPassword &&
+                !isVerifyForgot &&
+                !isRegister &&
+                !isVerify && (
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPassword(true)}
+                    className="text-sm text-indigo-500 hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                )}
+            </div>
           </form>
-
-          {/* Toggle between login and register */}
-          <div className="flex justify-center mt-4">
-            <NavLink
-              to="#"
-              className="text-sm text-blue-500 hover:text-blue-700"
-              onClick={() => {
-                setIsRegister(!isRegister);
-                setIsVerify(false);
-              }}
-            >
-              {isRegister
-                ? "Already have an account? Log in"
-                : "Don't have an account? Register"}
-            </NavLink>
-          </div>
-
           {/* Social login buttons */}
           <div className="flex justify-around mt-6">
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
