@@ -455,7 +455,7 @@ const LoginForm = () => {
                 forgotLoading ||
                 resetLoading
               }
-              className="w-full py-3 mt-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              className="w-full py-3 mt-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition cursor-pointer"
             >
               {loading ||
               postLoading ||
@@ -488,7 +488,7 @@ const LoginForm = () => {
                   <button
                     type="button"
                     onClick={() => setIsRegister(!isRegister)}
-                    className="text-sm text-indigo-500 hover:underline"
+                    className="text-sm text-indigo-500 hover:underline cursor-pointer"
                   >
                     {isRegister
                       ? "Already have an account? Log In"
@@ -503,7 +503,7 @@ const LoginForm = () => {
                   <button
                     type="button"
                     onClick={() => setIsForgotPassword(true)}
-                    className="text-sm text-indigo-500 hover:underline"
+                    className="text-sm text-indigo-500 hover:underline cursor-pointer"
                   >
                     Forgot Password?
                   </button>
