@@ -1,23 +1,28 @@
 import React, { useState } from "react";
-import { Button, Card, DatePicker } from "antd";
+import { Button, Card, DatePicker, message } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import useFetch from "../hooks/useFetch";
+import usePost from "../hooks/usePost"; // Nhập usePost hook
 import isBetween from "dayjs/plugin/isBetween";
+import { useNavigate } from "react-router-dom"; // Nhập useNavigate
+import { useSelector } from "react-redux";
 dayjs.extend(isBetween); // Kích hoạt plugin
 
 const { RangePicker } = DatePicker;
 
 const HotelDetailReserve = ({ hotel }) => {
+  // Lấy token từ redux
+  const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate(); // Khởi tạo useNavigate hook
   const { pricePerDay } = hotel;
 
-  // State để lưu trữ ngày chọn, số đêm, tổng giá, có giảm giá hay không và discount hiện tại
   const [dates, setDates] = useState(null);
   const [nights, setNights] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountApplied, setDiscountApplied] = useState(false);
-  const [applicableDiscount, setApplicableDiscount] = useState(null); // Thêm state để lưu discount đang áp dụng
-  const [discountedNights, setDiscountedNights] = useState(0); // Thêm trạng thái cho discountedNights
+  const [applicableDiscount, setApplicableDiscount] = useState(null);
+  const [discountedNights, setDiscountedNights] = useState(0);
 
   const {
     data: discounts,
@@ -27,21 +32,24 @@ const HotelDetailReserve = ({ hotel }) => {
     `http://localhost:8080/api/v1/public/hotel/${hotel.id}/discounts`
   );
 
-  // Hàm xử lý thay đổi ngày chọn
+  const {
+    postData,
+    loading: bookingLoading,
+    error: bookingError,
+  } = usePost("http://localhost:8080/api/v1/user/booking"); // Sử dụng usePost hook
+
   const handleDateChange = (dates) => {
     setDates(dates);
     if (dates && dates[0] && dates[1]) {
-      // Chuyển đổi ngày thành đối tượng dayjs
       const startDate = dayjs(dates[0]);
       const endDate = dayjs(dates[1]);
 
       const diff = endDate.diff(startDate, "days");
       setNights(diff);
-      calculateTotal(diff, [dayjs(startDate), dayjs(endDate)]);
+      calculateTotal(diff, [startDate, endDate]);
     }
   };
 
-  // Tính toán tổng giá (có áp dụng giảm giá nếu có)
   const calculateTotal = (nights, dates) => {
     let totalDiscountedPrice = 0;
     let totalRegularPrice = 0;
@@ -69,14 +77,12 @@ const HotelDetailReserve = ({ hotel }) => {
       });
 
       if (foundDiscount) {
-        // Calculate nights with discount
         const discountStartDate = dayjs(foundDiscount.startDate);
         const discountEndDate = dayjs(foundDiscount.endDate);
 
         const stayStartDate = dayjs(dates[0]);
         const stayEndDate = dayjs(dates[1]);
 
-        // Days eligible for discount
         const discountedNightsStart = stayStartDate.isBefore(discountStartDate)
           ? discountStartDate.diff(stayStartDate, "day")
           : 0;
@@ -86,12 +92,10 @@ const HotelDetailReserve = ({ hotel }) => {
           : stayEndDate.diff(stayStartDate, "day");
 
         const discountedNightsCount =
-          discountedNightsStart + discountedNightsEnd; // Tính tổng số đêm giảm giá
+          discountedNightsStart + discountedNightsEnd;
 
-        // Lưu discountedNights vào trạng thái
         setDiscountedNights(discountedNightsCount);
 
-        // Total price calculation
         totalDiscountedPrice =
           discountedNightsCount *
           pricePerDay *
@@ -116,6 +120,39 @@ const HotelDetailReserve = ({ hotel }) => {
 
   const serviceCharge = 0;
   const total = totalPrice + serviceCharge;
+
+  const handleReserve = async () => {
+    // Kiểm tra nếu không có ngày ở trạng thái đã chọn
+    if (!dates || nights <= 0) {
+      message.error("Please select check-in and check-out dates.");
+      return;
+    }
+
+    // Định dạng ngày thành định dạng ISO 8601
+    const bookingData = {
+      hotelId: hotel.id,
+      startDate: dates[0].toISOString(), // Định dạng ngày bắt đầu
+      endDate: dates[1].toISOString(), // Định dạng ngày kết thúc
+      totalPrice: total,
+    };
+
+    try {
+      const response = await postData(bookingData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Đảm bảo bạn gửi token hợp lệ
+        },
+      });
+
+      if (response) {
+        window.location.href = response.sessionUrl;
+      } else {
+        message.error("Failed to reserve the booking. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
+      message.error("Error during booking.");
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -179,9 +216,19 @@ const HotelDetailReserve = ({ hotel }) => {
         <p>${total.toFixed(2)}</p>
       </div>
 
-      <Button type="primary" className="w-full mt-6">
+      <Button
+        type="primary"
+        className="w-full mt-6"
+        onClick={handleReserve}
+        loading={bookingLoading}
+      >
         Reserve
       </Button>
+
+      {/* Hiển thị thông báo lỗi nếu có từ booking */}
+      {bookingError && (
+        <p className="text-red-600 font-bold text-center">{bookingError}</p>
+      )}
     </Card>
   );
 };

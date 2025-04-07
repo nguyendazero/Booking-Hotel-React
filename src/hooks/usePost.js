@@ -5,12 +5,12 @@ const usePost = (url) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const postData = async (data) => {
+  const postData = async (data, config = {}) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post(url, data);
+      const response = await axios.post(url, data, config);
       return response.data;
     } catch (err) {
       console.error("Error during postData", err);
