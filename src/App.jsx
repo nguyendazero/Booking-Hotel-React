@@ -7,6 +7,7 @@ import HotelsPage from "./pages/Hotels";
 import RootLayout from "./pages/Root";
 import LoginPage from "./pages/Login";
 import BookingSuccessPage from "./pages/BookingSuccess"
+import CheckinPage from "./pages/Checkin";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        path: "checkin",
+        element: <CheckinPage />,
       },
       {
         path: "booking-success",

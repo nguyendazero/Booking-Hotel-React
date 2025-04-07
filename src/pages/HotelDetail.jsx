@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
+import { useState, useEffect } from "react";
 import HotelDetailImages from "../components/HotelDetailImages";
 import HotelDetailInfo from "../components/HotelDetailInfo";
 import HotelDetailReserve from "../components/HotelDetailReserve";
@@ -11,44 +11,64 @@ import OpenLayersMap from "../components/OpenLayersMap";
 function HotelDetailPage() {
   const { hotelId } = useParams();
 
-  // Fetch thông tin chi tiết của khách sạn
-  const {
-    data: hotel,
-    loading: hotelLoading,
-    error: hotelError,
-  } = useFetch(`http://localhost:8080/api/v1/public/hotel/${hotelId}`);
+  // State để lưu trữ dữ liệu và trạng thái loading, error
+  const [hotel, setHotel] = useState(null);
+  const [discounts, setDiscounts] = useState(null);
+  const [amenities, setAmenities] = useState(null);
+  const [reviews, setReviews] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch danh sách giảm giá của khách sạn
-  const {
-    data: discounts,
-    loading: discountLoading,
-    error: discountError,
-  } = useFetch(
-    `http://localhost:8080/api/v1/public/hotel/${hotelId}/discounts`
-  );
+  useEffect(() => {
+    // Gọi API để lấy thông tin chi tiết của khách sạn
+    const fetchHotelData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  // Fetch danh sách amenity của khách sạn
-  const {
-    data: amenities,
-    loading: amenitiyLoading,
-    error: amenityError,
-  } = useFetch(
-    `http://localhost:8080/api/v1/public/hotel/${hotelId}/amenities`
-  );
+        // Fetch dữ liệu khách sạn
+        const hotelRes = await fetch(
+          `http://localhost:8080/api/v1/public/hotel/${hotelId}`
+        );
+        if (!hotelRes.ok) throw new Error("Failed to fetch hotel");
+        const hotelData = await hotelRes.json();
+        setHotel(hotelData);
 
-  // Fetch danh sách review của khách sạn
-  const {
-    data: reviews,
-    loading: reviewLoading,
-    error: reviewError,
-  } = useFetch(
-    `http://localhost:8080/api/v1/public/hotel/${hotelId}/ratings`
-  );
+        // Fetch giảm giá
+        const discountRes = await fetch(
+          `http://localhost:8080/api/v1/public/hotel/${hotelId}/discounts`
+        );
+        if (!discountRes.ok) throw new Error("Failed to fetch discounts");
+        const discountData = await discountRes.json();
+        setDiscounts(discountData);
 
-  if (hotelLoading || discountLoading || amenitiyLoading || reviewLoading)
-    return <LoadingSpinner />;
-  if (hotelError || discountError || amenityError || reviewError)
-    return <p>Error loading hotel details</p>;
+        // Fetch amenities
+        const amenityRes = await fetch(
+          `http://localhost:8080/api/v1/public/hotel/${hotelId}/amenities`
+        );
+        if (!amenityRes.ok) throw new Error("Failed to fetch amenities");
+        const amenityData = await amenityRes.json();
+        setAmenities(amenityData);
+
+        // Fetch reviews
+        const reviewRes = await fetch(
+          `http://localhost:8080/api/v1/public/hotel/${hotelId}/ratings`
+        );
+        if (!reviewRes.ok) throw new Error("Failed to fetch reviews");
+        const reviewData = await reviewRes.json();
+        setReviews(reviewData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHotelData();
+  }, [hotelId]); // Chạy lại khi hotelId thay đổi
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <p>Error loading hotel details: {error}</p>;
   if (!hotel) return <p>Hotel not found</p>;
 
   return (
@@ -72,7 +92,7 @@ function HotelDetailPage() {
         amenities={Array.isArray(amenities) ? amenities : []}
       />
       <HotelDetailReviews reviews={Array.isArray(reviews) ? reviews : []} />
-      <OpenLayersMap hotel={hotel}/>
+      <OpenLayersMap hotel={hotel} />
     </div>
   );
 }

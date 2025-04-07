@@ -1,20 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, DatePicker, message } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import useFetch from "../hooks/useFetch";
-import usePost from "../hooks/usePost"; // Nhập usePost hook
+import usePost from "../hooks/usePost";
 import isBetween from "dayjs/plugin/isBetween";
-import { useNavigate } from "react-router-dom"; // Nhập useNavigate
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-dayjs.extend(isBetween); // Kích hoạt plugin
+dayjs.extend(isBetween);
 
 const { RangePicker } = DatePicker;
 
 const HotelDetailReserve = ({ hotel }) => {
-  // Lấy token từ redux
   const token = useSelector((state) => state.auth.token);
-  const navigate = useNavigate(); // Khởi tạo useNavigate hook
+  const navigate = useNavigate();
   const { pricePerDay } = hotel;
 
   const [dates, setDates] = useState(null);
@@ -24,11 +23,7 @@ const HotelDetailReserve = ({ hotel }) => {
   const [applicableDiscount, setApplicableDiscount] = useState(null);
   const [discountedNights, setDiscountedNights] = useState(0);
 
-  const {
-    data: discounts,
-    loading,
-    error,
-  } = useFetch(
+  const { data: discounts, loading, error, fetchData } = useFetch(
     `http://localhost:8080/api/v1/public/hotel/${hotel.id}/discounts`
   );
 
@@ -36,7 +31,13 @@ const HotelDetailReserve = ({ hotel }) => {
     postData,
     loading: bookingLoading,
     error: bookingError,
-  } = usePost("http://localhost:8080/api/v1/user/booking"); // Sử dụng usePost hook
+  } = usePost("http://localhost:8080/api/v1/user/booking");
+
+  useEffect(() => {
+    if (hotel.id) {
+      fetchData(); // Gọi fetchData để lấy dữ liệu
+    }
+  }, [hotel.id, fetchData]); // Chạy lại khi hotel.id thay đổi
 
   const handleDateChange = (dates) => {
     setDates(dates);
@@ -111,7 +112,6 @@ const HotelDetailReserve = ({ hotel }) => {
         setTotalPrice(pricePerDay * nights);
       }
     } else {
-      console.log("No discounts available.");
       setDiscountApplied(false);
       setApplicableDiscount(null);
       setTotalPrice(pricePerDay * nights);
@@ -122,12 +122,10 @@ const HotelDetailReserve = ({ hotel }) => {
   const total = totalPrice + serviceCharge;
 
   const handleReserve = async () => {
-    // Định dạng ngày thành định dạng ISO 8601
     const bookingData = {
       hotelId: hotel.id,
-      startDate: dates[0].toISOString(), // Định dạng ngày bắt đầu
-      endDate: dates[1].toISOString(), // Định dạng ngày kết thúc
-      // totalPrice: total,
+      startDate: dates[0].toISOString(),
+      endDate: dates[1].toISOString(),
     };
 
     try {
@@ -149,13 +147,11 @@ const HotelDetailReserve = ({ hotel }) => {
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <Card className="w-full md:w-[70%] rounded-lg p-6 shadow-md mx-auto md:mx-4 ml-[15px]">
       <h2 className="text-xl font-bold">${pricePerDay} /night</h2>
-
-      {/* RangePicker để chọn ngày nhận phòng và trả phòng */}
       <div className="flex items-center">
         <CalendarOutlined className="mr-2" />
         <RangePicker
@@ -165,24 +161,14 @@ const HotelDetailReserve = ({ hotel }) => {
           placeholder={["Check-in", "Check-out"]}
         />
       </div>
-
       <p className="font-semibold mt-2">
-        {nights > 0
-          ? `Stay for ${nights} nights`
-          : "Select check-in and check-out dates"}
+        {nights > 0 ? `Stay for ${nights} nights` : "Select check-in and check-out dates"}
       </p>
-
       <hr className="my-4 border-gray-300" />
-
-      {/* Tính toán giá cơ bản */}
       <div className="flex justify-between">
-        <p className="font-semibold">
-          ${pricePerDay} x {nights} night
-        </p>
+        <p className="font-semibold">${pricePerDay} x {nights} night</p>
         <p className="font-semibold">${pricePerDay * nights}</p>
       </div>
-
-      {/* Hiển thị thông báo giảm giá nếu có */}
       {discountApplied && applicableDiscount ? (
         <div className="flex justify-between">
           <p className="font-semibold text-green-500">Discount Applied</p>
@@ -201,15 +187,11 @@ const HotelDetailReserve = ({ hotel }) => {
           <p className="font-semibold">- $0.00</p>
         </div>
       ) : null}
-
       <hr className="my-4 border-gray-300" />
-
-      {/* Hiển thị tổng giá cuối cùng */}
       <div className="flex justify-between font-semibold">
         <p>Total</p>
         <p>${total.toFixed(2)}</p>
       </div>
-
       <Button
         type="primary"
         className="w-full mt-6"
@@ -218,8 +200,6 @@ const HotelDetailReserve = ({ hotel }) => {
       >
         Reserve
       </Button>
-
-      {/* Hiển thị thông báo lỗi nếu có từ booking */}
       {bookingError && (
         <p className="text-red-600 font-bold text-center">{bookingError}</p>
       )}
