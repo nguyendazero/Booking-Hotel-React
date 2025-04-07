@@ -139,7 +139,7 @@ const HotelDetailReserve = ({ hotel }) => {
     try {
       const response = await postData(bookingData, {
         headers: {
-          Authorization: `Bearer ${token}`, // Đảm bảo bạn gửi token hợp lệ
+          Authorization: `Bearer ${token}`,
         },
       });
 
