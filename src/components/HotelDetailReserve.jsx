@@ -122,18 +122,12 @@ const HotelDetailReserve = ({ hotel }) => {
   const total = totalPrice + serviceCharge;
 
   const handleReserve = async () => {
-    // Kiểm tra nếu không có ngày ở trạng thái đã chọn
-    if (!dates || nights <= 0) {
-      message.error("Please select check-in and check-out dates.");
-      return;
-    }
-
     // Định dạng ngày thành định dạng ISO 8601
     const bookingData = {
       hotelId: hotel.id,
       startDate: dates[0].toISOString(), // Định dạng ngày bắt đầu
       endDate: dates[1].toISOString(), // Định dạng ngày kết thúc
-      totalPrice: total,
+      // totalPrice: total,
     };
 
     try {
