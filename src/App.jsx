@@ -8,6 +8,7 @@ import RootLayout from "./pages/Root";
 import LoginPage from "./pages/Login";
 import BookingSuccessPage from "./pages/BookingSuccess"
 import CheckinPage from "./pages/Checkin";
+import BookingHistoryPage from "./pages/BookingHistory";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "checkin",
         element: <CheckinPage />,
+      },
+      {
+        path: "booking-history",
+        element: <BookingHistoryPage />,
       },
       {
         path: "booking-success",

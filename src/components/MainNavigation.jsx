@@ -121,19 +121,21 @@ function MainNavigation() {
           <div className="absolute top-12 right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition"
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
             >
               Logout
             </button>
             <button
               onClick={() => setIsUpdateModalOpen(true)}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition"
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
             >
               Update information
             </button>
-            <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition">
-              History booking
-            </button>
+            <Link to="/booking-history">
+              <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer">
+                History booking
+              </button>
+            </Link>
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "antd";
+import { formatDate } from "../util/dateUtils";
 
 const CheckinHotel = ({ bookings }) => {
   return (
@@ -47,13 +48,13 @@ const CheckinHotel = ({ bookings }) => {
               <p className="text-gray-500 text-xs">
                 Start Date:{" "}
                 <span className="font-medium text-gray-700">
-                  {new Date(booking.startDate).toLocaleDateString()}
+                  {formatDate(booking.startDate)}  {/* Sử dụng hàm formatDate */}
                 </span>
               </p>
               <p className="text-gray-500 text-xs">
                 End Date:{" "}
                 <span className="font-medium text-gray-700">
-                  {new Date(booking.endDate).toLocaleDateString()}
+                  {formatDate(booking.endDate)}  {/* Sử dụng hàm formatDate */}
                 </span>
               </p>
               <div className="mt-5">
