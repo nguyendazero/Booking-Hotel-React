@@ -5,12 +5,13 @@ const usePut = (url) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const putData = async (data, config = {}) => {
+  const putData = async (data, config = {}, urlOverride) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.put(url, data, config);
+      const requestUrl = urlOverride || url;
+      const response = await axios.put(requestUrl, data, config);
       return response.data;
     } catch (err) {
       console.error("Error during putData", err);

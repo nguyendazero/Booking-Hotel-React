@@ -4,7 +4,7 @@ import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Result } from "antd"; // Nhập Result và Button từ antd
+import { Button, Result } from "antd";
 
 function CheckinPage() {
   // Get token from Redux
