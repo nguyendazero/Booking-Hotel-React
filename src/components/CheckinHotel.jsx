@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, message } from "antd";
+import { Button } from "antd";
 import { Link } from "react-router-dom";
 import { formatDate } from "../util/dateUtils";
 import usePut from "../hooks/usePut";
@@ -9,27 +9,22 @@ const CheckinHotel = ({ bookings }) => {
   const [loadingBookingId, setLoadingBookingId] = useState(null);
   const token = useSelector((state) => state.auth.token);
 
-  const { putData, loading, error } = usePut();
+  const { putData } = usePut();
 
   const handleCancelBooking = async (bookingId) => {
     setLoadingBookingId(bookingId);
 
-    try {
-      const url = `http://localhost:8080/api/v1/user/booking/${bookingId}/cancel`;
-
-      const response = await putData(
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    const url = `http://localhost:8080/api/v1/user/booking/${bookingId}/cancel`;
+    const response = await putData(
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        url
-      );
-    
-    } catch (err) {
-      console.error("Error cancelling booking:", err);
-    }
+      },
+      url
+    );
+
     setLoadingBookingId(null);
   };
 
