@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+// CheckinPage.js
+import React, { useEffect, useState } from "react";
 import CheckinHotel from "../components/CheckinHotel";
 import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
@@ -7,18 +8,18 @@ import { Link } from "react-router-dom";
 import { Button, Result } from "antd";
 
 function CheckinPage() {
-  // Get token from Redux
   const token = useSelector((state) => state.auth.token);
+  const [bookings, setBookings] = useState([]);
 
   const {
-    data: bookings,
+    data: fetchedBookings,
     loading: bookingLoading,
     error: bookingError,
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/user/bookings/reservations");
 
-  // Fetch bookings when token changes
   useEffect(() => {
+    console.log('CheckinPage: useEffect - Fetching bookings. Token:', token);
     if (token) {
       fetchData({
         headers: {
@@ -28,10 +29,38 @@ function CheckinPage() {
     }
   }, [fetchData, token]);
 
-  if (bookingLoading) return <LoadingSpinner />;
-  if (bookingError)
+  useEffect(() => {
+    console.log('CheckinPage: useEffect - fetchedBookings updated:', fetchedBookings);
+    if (fetchedBookings) {
+      setBookings(fetchedBookings);
+    }
+  }, [fetchedBookings]);
+
+  const handleBookingCancelled = (cancelledBookingId) => {
+    console.log('CheckinPage: handleBookingCancelled - ID:', cancelledBookingId);
+    setBookings((prevBookings) =>
+      prevBookings.map((booking) =>
+        booking.id === cancelledBookingId ? { ...booking, status: "CANCELLED" } : booking
+      )
+    );
+  };
+
+  useEffect(() => {
+    console.log('CheckinPage: bookings state changed:', bookings);
+  }, [bookings]);
+
+  if (bookingLoading) {
+    console.log('CheckinPage: Loading...');
+    return <LoadingSpinner />;
+  }
+
+  if (bookingError) {
+    console.error('CheckinPage: Error loading bookings:', bookingError);
     return <p>Error loading check-in details: {bookingError}</p>;
-  if (!bookings || bookings.length === 0)
+  }
+
+  if (!bookings || bookings.length === 0) {
+    console.log('CheckinPage: No bookings found.');
     return (
       <div className="mt-5 mb-5">
         <Result
@@ -48,10 +77,12 @@ function CheckinPage() {
         />
       </div>
     );
+  }
 
+  console.log('CheckinPage: Rendering with bookings:', bookings);
   return (
     <>
-      <CheckinHotel bookings={bookings} />
+      <CheckinHotel bookings={bookings} onBookingCancelled={handleBookingCancelled} />
     </>
   );
 }

@@ -5,30 +5,60 @@ import { formatDate } from "../util/dateUtils";
 import usePut from "../hooks/usePut";
 import { useSelector } from "react-redux";
 
-const CheckinHotel = ({ bookings }) => {
+const CheckinHotel = ({ bookings, onBookingCancelled }) => {
   const [loadingBookingId, setLoadingBookingId] = useState(null);
   const token = useSelector((state) => state.auth.token);
-
-  const { putData } = usePut();
+  const { putData, loading: putLoading, error: putError } = usePut();
 
   const handleCancelBooking = async (bookingId) => {
     setLoadingBookingId(bookingId);
-
     const url = `http://localhost:8080/api/v1/user/booking/${bookingId}/cancel`;
-    const response = await putData(
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    console.log(
+      "CheckinHotel: handleCancelBooking - Booking ID:",
+      bookingId,
+      "URL:",
       url
     );
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await putData(url, {}, config);
+
+    if (response && response.status === 204) {
+      console.log(
+        "CheckinHotel: Booking cancelled successfully (Status 204) - ID:",
+        bookingId
+      );
+      onBookingCancelled(bookingId);
+    } else if (response) {
+      console.error(
+        "CheckinHotel: Failed to cancel booking - ID:",
+        bookingId,
+        "Status:",
+        response.status,
+        "Data:",
+        response.data
+      );
+      // Handle specific error messages from the backend if needed
+    } else if (putError) {
+      console.error(
+        "CheckinHotel: Error during cancel booking request - ID:",
+        bookingId,
+        "Error:",
+        putError
+      );
+      // Handle network errors or other issues
+    }
 
     setLoadingBookingId(null);
   };
 
   const handleButtonClick = (bookingId) => {
+    console.log("CheckinHotel: handleButtonClick - Booking ID:", bookingId);
     const confirmCancel = window.confirm(
       "Are you sure you want to cancel this booking?"
     );
@@ -101,11 +131,11 @@ const CheckinHotel = ({ bookings }) => {
                   <Button
                     color="danger"
                     variant="solid"
-                    onClick={() => handleButtonClick(booking.id)} // Call the new button click handler
-                    loading={loadingBookingId === booking.id} // Check loading state for this booking
-                    disabled={loadingBookingId === booking.id} // Disable button when loading
+                    onClick={() => handleButtonClick(booking.id)}
+                    loading={loadingBookingId === booking.id || putLoading}
+                    disabled={loadingBookingId === booking.id || putLoading}
                   >
-                    {loadingBookingId === booking.id
+                    {loadingBookingId === booking.id || putLoading
                       ? "Cancelling..."
                       : "Cancel"}
                   </Button>

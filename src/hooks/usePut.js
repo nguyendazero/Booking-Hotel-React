@@ -1,31 +1,28 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 
-const usePut = (url) => {
+const usePut = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const putData = async (data, config = {}, urlOverride) => {
+  const putData = useCallback(async (url, data = {}, config = {}) => {
     setLoading(true);
     setError(null);
 
     try {
-      const requestUrl = urlOverride || url;
-      const response = await axios.put(requestUrl, data, config);
-      return response.data;
+      const response = await axios.put(url, data, config);
+      console.log("usePut: PUT request successful - Status:", response.status);
+      return response;
     } catch (err) {
-      console.error("Error during putData", err);
-      const errorMessage =
-        err.response?.data?.errors?.[0]?.errorMessage || // Lấy lỗi từ BE
-        "An unknown error occurred."; // Lỗi mặc định nếu không có response từ BE
-      setError(errorMessage); // Lưu lỗi vào state
+      console.error("usePut: PUT error:", err);
+      setError(err?.response?.data?.errors?.[0]?.errorMessage || "An error occurred during the update.");
       return null;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  return { putData, loading, error }; // Trả về error để sử dụng
+  return { putData, loading, error };
 };
 
 export default usePut;

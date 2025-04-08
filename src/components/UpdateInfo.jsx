@@ -14,19 +14,15 @@ const UserProfileUpdate = ({ onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState(user?.phone || "");
   const [avatar, setAvatar] = useState(null);
 
-  // State to toggle between update info form and change password form
   const [isChangePassword, setIsChangePassword] = useState(false);
 
-  const { putData, loading, error } = usePut(
-    "http://localhost:8080/api/v1/user/update-info"
-  );
+  const { putData, loading, error } = usePut(); // No URL here
 
-  // usePut for change password API
   const {
     putData: changePasswordData,
     loading: changePasswordLoading,
     error: changePasswordError,
-  } = usePut("http://localhost:8080/api/v1/user/change-password");
+  } = usePut(); // No URL here
 
   useEffect(() => {
     if (user) {
@@ -39,7 +35,6 @@ const UserProfileUpdate = ({ onClose }) => {
     e.preventDefault();
 
     if (isChangePassword) {
-      // Call change password function
       await handleChangePassword();
       return;
     }
@@ -52,19 +47,26 @@ const UserProfileUpdate = ({ onClose }) => {
     }
 
     try {
-      const response = await putData(formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await putData(
+        "http://localhost:8080/api/v1/user/update-info", // URL passed here
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (response) {
-        dispatch(updateUser(response));
+      if (response && response.data) {
+        dispatch(updateUser(response.data));
         dispatch(refreshTokenUser(refreshToken));
         alert("Information updated successfully!");
+      } else if (error) {
+        console.error("Error updating user:", error);
+        // Handle error display to the user if needed
       }
     } catch (err) {
-      console.error("Error updating user:", err);
+      console.error("Error updating user (catch block):", err);
     }
   };
 
@@ -75,23 +77,20 @@ const UserProfileUpdate = ({ onClose }) => {
     }
   };
 
-  // Toggle to show the change password form
   const handleChangePasswordClick = () => {
     setIsChangePassword(true);
   };
 
-  // Go back to the update info form
   const handleBackToUpdateInfo = () => {
     setIsChangePassword(false);
   };
 
-  // Handle change password
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
 
   const handleChangePassword = async (e) => {
-    e.preventDefault(); // Ngăn form tự động reload trang
+    e.preventDefault();
 
     const passwordData = {
       oldPassword: currentPassword,
@@ -100,21 +99,27 @@ const UserProfileUpdate = ({ onClose }) => {
     };
 
     try {
-      const response = await changePasswordData(passwordData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await changePasswordData(
+        "http://localhost:8080/api/v1/user/change-password", // URL passed here
+        passwordData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (response) {
+      if (response && response.data) {
         alert("Password updated successfully!");
-        // reset các trường input sau khi đổi mật khẩu thành công
         setCurrentPassword("");
         setNewPassword("");
         setRePassword("");
+      } else if (error) {
+        console.error("Error changing password:", error);
+        // Handle error display to the user
       }
     } catch (err) {
-      console.error("Error changing password:", err);
+      console.error("Error changing password (catch block):", err);
     }
   };
 
