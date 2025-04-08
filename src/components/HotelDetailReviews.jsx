@@ -23,7 +23,7 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
   };
 
   const handleImageChange = (e) => {
-    setImages([...e.target.files]); // Store selected files in the state
+    setImages([...e.target.files]);
   };
 
   const handleAddReview = () => {
@@ -45,52 +45,65 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
       <hr className="border-t-2 border-gray-300 my-4" />
 
       {/* Form to add a new review */}
-      <div className="mb-6 p-4 border rounded-md bg-gray-50">
-        <h3 className="text-lg font-semibold mb-2">Add Your Review</h3>
-        <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Rating:
+      <div className="mb-10 p-6 border rounded-2xl bg-white shadow-lg max-w-2xl mx-auto">
+        <h3 className="text-2xl font-semibold mb-4 text-gray-800">
+          Add Your Review
+        </h3>
+
+        {/* Rating Section */}
+        <div className="mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Rating
           </label>
-          <div>
+          <div className="flex items-center space-x-1">
             {[...Array(5)].map((_, index) => (
               <span
                 key={index}
-                className="cursor-pointer"
+                className="cursor-pointer transition-transform transform hover:scale-110"
                 onClick={() => handleStarClick(index + 1)}
               >
                 {index < rating ? (
-                  <StarFilled style={{ color: "#FFD700", fontSize: "1.2em" }} />
+                  <StarFilled style={{ color: "#FACC15", fontSize: "1.5em" }} />
                 ) : (
-                  <StarOutlined style={{ fontSize: "1.2em" }} />
+                  <StarOutlined
+                    style={{ fontSize: "1.5em", color: "#D1D5DB" }}
+                  />
                 )}
               </span>
             ))}
           </div>
         </div>
-        <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Comment:
+
+        {/* Comment Section */}
+        <div className="mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Comment
           </label>
           <textarea
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            rows="3"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:ring-2 focus:ring-purple-400 focus:outline-none resize-none"
+            rows="4"
             value={comment}
             onChange={handleCommentChange}
+            placeholder="Write your thoughts about the book..."
           />
         </div>
-        <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Add Images (optional):
+
+        {/* Image Upload Section */}
+        <div className="mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Add Images (optional)
           </label>
           <input
             type="file"
             multiple
             onChange={handleImageChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
           />
         </div>
+
+        {/* Submit Button */}
         <button
-          className={`bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+          className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 ${
             isSubmitting ? "opacity-50 cursor-not-allowed" : ""
           }`}
           onClick={handleAddReview}
