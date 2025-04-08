@@ -61,6 +61,7 @@ const UserProfileUpdate = ({ onClose }) => {
       if (response) {
         dispatch(updateUser(response));
         dispatch(refreshTokenUser(refreshToken));
+        alert("Information updated successfully!");
       }
     } catch (err) {
       console.error("Error updating user:", err);

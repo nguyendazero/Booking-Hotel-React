@@ -32,7 +32,7 @@ const OpenLayersMap = ({ hotel }) => {
 
   return (
     <div className="flex justify-center items-center mb-4">
-      <div ref={mapRef} className="w-[73%] h-[400px]" />{" "}
+      <div ref={mapRef} className="w-[73%] h-[500px]" />{" "}
       {/* Căn giữa và set kích thước */}
     </div>
   );

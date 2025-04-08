@@ -56,7 +56,7 @@ const CheckinHotel = ({ bookings }) => {
                   {new Date(booking.endDate).toLocaleDateString()}
                 </span>
               </p>
-              <div className="mt-9">
+              <div className="mt-5">
                 <Button color="purple" variant="solid" className="mr-1.5">
                   View
                 </Button>
