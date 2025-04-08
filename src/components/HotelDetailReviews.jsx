@@ -54,10 +54,13 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
           <span>Reviews</span> ({reviews.length} reviews)
         </h2>
         <button
-          className="bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1"
-          onClick={openAddReviewModal}
+          className={`bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1 ${
+            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          onClick={isSubmitting ? () => {} : openAddReviewModal}
+          disabled={isSubmitting}
         >
-          Add Review
+          {isSubmitting ? "Adding Review..." : "Add Review"}
         </button>
       </div>
       <p className="text-gray-600 mb-4">About the reviews for this hotel</p>
@@ -65,7 +68,7 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
 
       {/* Add Review Modal */}
       {isAddingReviewModalOpen && (
-        <div className="fixed inset-0 flex justify-center items-center  bg-black/20 z-50">
+        <div className="fixed inset-0 flex justify-center items-center bg-black/20 z-50">
           <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full p-8 z-50">
             <h3 className="text-2xl font-semibold mb-4 text-gray-800">
               Add Your Review
@@ -127,13 +130,13 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
             {/* Action Buttons */}
             <div className="flex justify-end space-x-4">
               <button
-                className="bg-gray-300 cursor-pointer hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 cursor-pointer font-semibold py-2 px-4 rounded-xl shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                 onClick={closeAddReviewModal}
               >
                 Cancel
               </button>
               <button
-                className={`bg-purple-600 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2.5 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1 ${
+                className={`bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 cursor-pointer px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={handleAddReviewSubmit}
