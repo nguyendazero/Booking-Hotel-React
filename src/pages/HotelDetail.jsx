@@ -1,3 +1,4 @@
+// HotelDetailPage.js
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import HotelDetailImages from "../components/HotelDetailImages";
@@ -7,11 +8,14 @@ import HotelDetailAmenities from "../components/HotelDetailAmenities";
 import HotelDetailReviews from "../components/HotelDetailReviews";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import OpenLayersMap from "../components/OpenLayersMap";
+import usePost from "../hooks/usePost"; // Import usePost hook
+import { useSelector } from "react-redux"; // Import useSelector to get token
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
+  const token = useSelector((state) => state.auth.token); // Get token for authentication
 
-  // State để lưu trữ dữ liệu và trạng thái loading, error
+  // State for hotel details, discounts, amenities, and reviews
   const [hotel, setHotel] = useState(null);
   const [discounts, setDiscounts] = useState(null);
   const [amenities, setAmenities] = useState(null);
@@ -19,14 +23,18 @@ function HotelDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // State for adding a new review
+  const [isAddingReview, setIsAddingReview] = useState(false);
+  const { postData: postReview, loading: postReviewLoading, error: postReviewError } = usePost(
+    `http://localhost:8080/api/v1/user/hotel/rating`
+  );
+
   useEffect(() => {
-    // Gọi API để lấy thông tin chi tiết của khách sạn
     const fetchHotelData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch dữ liệu khách sạn
         const hotelRes = await fetch(
           `http://localhost:8080/api/v1/public/hotel/${hotelId}`
         );
@@ -34,7 +42,6 @@ function HotelDetailPage() {
         const hotelData = await hotelRes.json();
         setHotel(hotelData);
 
-        // Fetch giảm giá
         const discountRes = await fetch(
           `http://localhost:8080/api/v1/public/hotel/${hotelId}/discounts`
         );
@@ -42,7 +49,6 @@ function HotelDetailPage() {
         const discountData = await discountRes.json();
         setDiscounts(discountData);
 
-        // Fetch amenities
         const amenityRes = await fetch(
           `http://localhost:8080/api/v1/public/hotel/${hotelId}/amenities`
         );
@@ -50,7 +56,6 @@ function HotelDetailPage() {
         const amenityData = await amenityRes.json();
         setAmenities(amenityData);
 
-        // Fetch reviews
         const reviewRes = await fetch(
           `http://localhost:8080/api/v1/public/hotel/${hotelId}/ratings`
         );
@@ -65,7 +70,46 @@ function HotelDetailPage() {
     };
 
     fetchHotelData();
-  }, [hotelId]); // Chạy lại khi hotelId thay đổi
+  }, [hotelId]);
+
+  const handleAddReviewSubmit = async (newReview) => {
+    if (!token) {
+      alert("Please log in to add a review.");
+      return;
+    }
+
+    setIsAddingReview(true); // Set isAddingReview to true when starting submission
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const formData = new FormData();
+    formData.append("hotelId", hotelId);
+    formData.append("stars", newReview.stars);
+    formData.append("content", newReview.content);
+
+    // Append images if they exist in newReview
+    if (newReview.images && newReview.images.length > 0) {
+      newReview.images.forEach((image) => {
+        formData.append("images", image);
+      });
+    }
+
+    const responseData = await postReview(formData, config);
+
+    if (responseData) {
+      setReviews([...(reviews || []), responseData]);
+      alert("Review added successfully!");
+    } else if (postReviewError) {
+      console.error("Error adding review:", postReviewError);
+      alert(`Error adding review: ${postReviewError}`);
+    }
+
+    setIsAddingReview(false); // Set isAddingReview back to false after submission (success or error)
+  };
 
   if (loading) return <LoadingSpinner />;
   if (error) return <p>Error loading hotel details: {error}</p>;
@@ -91,7 +135,12 @@ function HotelDetailPage() {
       <HotelDetailAmenities
         amenities={Array.isArray(amenities) ? amenities : []}
       />
-      <HotelDetailReviews reviews={Array.isArray(reviews) ? reviews : []} />
+      <HotelDetailReviews
+        reviews={Array.isArray(reviews) ? reviews : []}
+        onAddReview={handleAddReviewSubmit}
+        hotelId={hotelId}
+        isSubmitting={isAddingReview} // Pass the loading state
+      />
       <OpenLayersMap hotel={hotel} />
     </div>
   );
