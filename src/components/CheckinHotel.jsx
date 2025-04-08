@@ -13,12 +13,6 @@ const CheckinHotel = ({ bookings, onBookingCancelled }) => {
   const handleCancelBooking = async (bookingId) => {
     setLoadingBookingId(bookingId);
     const url = `http://localhost:8080/api/v1/user/booking/${bookingId}/cancel`;
-    console.log(
-      "CheckinHotel: handleCancelBooking - Booking ID:",
-      bookingId,
-      "URL:",
-      url
-    );
 
     const config = {
       headers: {
@@ -29,10 +23,6 @@ const CheckinHotel = ({ bookings, onBookingCancelled }) => {
     const response = await putData(url, {}, config);
 
     if (response && response.status === 204) {
-      console.log(
-        "CheckinHotel: Booking cancelled successfully (Status 204) - ID:",
-        bookingId
-      );
       onBookingCancelled(bookingId);
     } else if (response) {
       console.error(
@@ -43,7 +33,6 @@ const CheckinHotel = ({ bookings, onBookingCancelled }) => {
         "Data:",
         response.data
       );
-      // Handle specific error messages from the backend if needed
     } else if (putError) {
       console.error(
         "CheckinHotel: Error during cancel booking request - ID:",
@@ -51,14 +40,12 @@ const CheckinHotel = ({ bookings, onBookingCancelled }) => {
         "Error:",
         putError
       );
-      // Handle network errors or other issues
     }
 
     setLoadingBookingId(null);
   };
 
   const handleButtonClick = (bookingId) => {
-    console.log("CheckinHotel: handleButtonClick - Booking ID:", bookingId);
     const confirmCancel = window.confirm(
       "Are you sure you want to cancel this booking?"
     );

@@ -11,7 +11,6 @@ const usePut = () => {
 
     try {
       const response = await axios.put(url, data, config);
-      console.log("usePut: PUT request successful - Status:", response.status);
       return response;
     } catch (err) {
       console.error("usePut: PUT error:", err);
