@@ -2,18 +2,25 @@ import React, { useState } from "react";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { formatDate } from "../util/dateUtils";
 
-const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
+const HotelDetailReviews = ({
+  reviews,
+  onAddReview,
+  isSubmitting,
+  reviewError,
+}) => {
   const [showAll, setShowAll] = useState(false);
   const [isAddingReviewModalOpen, setIsAddingReviewModalOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [images, setImages] = useState([]);
 
-  if (!Array.isArray(reviews) || reviews.length === 0) {
-    return <p className="text-center text-gray-500">No reviews available.</p>;
-  }
-
-  const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
+  const displayedReviews = showAll
+    ? Array.isArray(reviews)
+      ? reviews
+      : []
+    : Array.isArray(reviews)
+    ? reviews.slice(0, 3)
+    : [];
 
   const openAddReviewModal = () => {
     setIsAddingReviewModalOpen(true);
@@ -41,7 +48,6 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
   const handleAddReviewSubmit = () => {
     if (rating > 0 && comment.trim()) {
       onAddReview({ stars: rating, content: comment, images: images });
-      closeAddReviewModal();
     } else {
       alert("Please provide a rating and a comment.");
     }
@@ -51,7 +57,8 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
     <div className="border rounded-lg p-6 shadow-md mt-4 mb-4 mx-50">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">
-          <span>Reviews</span> ({reviews.length} reviews)
+          <span>Reviews</span> ({Array.isArray(reviews) ? reviews.length : 0}{" "}
+          reviews)
         </h2>
         <button
           className={`bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1 ${
@@ -70,6 +77,16 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
       {isAddingReviewModalOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-black/20 z-50">
           <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full p-8 z-50">
+            {/* Display error message */}
+            {reviewError && (
+              <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                role="alert"
+              >
+                <strong className="font-bold">Error!</strong>
+                <span className="block sm:inline">{reviewError}</span>
+              </div>
+            )}
             <h3 className="text-2xl font-semibold mb-4 text-gray-800">
               Add Your Review
             </h3>
@@ -149,52 +166,54 @@ const HotelDetailReviews = ({ reviews, onAddReview, isSubmitting }) => {
         </div>
       )}
 
-      <div className="mt-4 space-y-6">
-        {displayedReviews.map((review) => (
-          <div key={review.id} className="text-gray-800 mb-4 border-b pb-4">
-            <div className="flex items-center mb-2">
-              <img
-                src={review.account?.avatar}
-                alt={`${review.account?.fullName}'s avatar`}
-                className="w-10 h-10 object-cover rounded-full mr-3"
-              />
-              <div className="font-semibold text-lg">
-                {review.account?.fullName}
-              </div>
-              <div className="ml-auto text-sm text-gray-500">
-                {formatDate(review.createDt)}
-              </div>
-            </div>
-
-            <div className="text-gray-700 mb-2">{review.content}</div>
-
-            <div className="flex items-center mb-2">
-              {[...Array(review.stars)].map((_, index) => (
-                <StarFilled
-                  key={index}
-                  className="mr-1"
-                  style={{ color: "#FFD700" }}
+      {Array.isArray(reviews) && reviews.length > 0 && (
+        <div className="mt-4 space-y-6">
+          {displayedReviews.map((review) => (
+            <div key={review.id} className="text-gray-800 mb-4 border-b pb-4">
+              <div className="flex items-center mb-2">
+                <img
+                  src={review.account?.avatar}
+                  alt={`${review.account?.fullName}'s avatar`}
+                  className="w-10 h-10 object-cover rounded-full mr-3"
                 />
-              ))}
-            </div>
+                <div className="font-semibold text-lg">
+                  {review.account?.fullName}
+                </div>
+                <div className="ml-auto text-sm text-gray-500">
+                  {formatDate(review.createDt)}
+                </div>
+              </div>
 
-            {review.images && review.images.length > 0 && (
-              <div className="mt-4 flex space-x-2">
-                {review.images.map((image, index) => (
-                  <img
-                    key={image?.id || index}
-                    src={image?.imageUrl}
-                    alt={`Review Image ${index + 1}`}
-                    className="w-auto h-40 object-cover rounded-md"
+              <div className="text-gray-700 mb-2">{review.content}</div>
+
+              <div className="flex items-center mb-2">
+                {[...Array(review.stars)].map((_, index) => (
+                  <StarFilled
+                    key={index}
+                    className="mr-1"
+                    style={{ color: "#FFD700" }}
                   />
                 ))}
               </div>
-            )}
-          </div>
-        ))}
-      </div>
 
-      {reviews.length > 3 && (
+              {review.images && review.images.length > 0 && (
+                <div className="mt-4 flex space-x-2">
+                  {review.images.map((image, index) => (
+                    <img
+                      key={image?.id || index}
+                      src={image?.imageUrl}
+                      alt={`Review Image ${index + 1}`}
+                      className="w-auto h-40 object-cover rounded-md"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {Array.isArray(reviews) && reviews.length > 3 && (
         <div className="mt-4 text-center">
           <button
             className="text-purple-700 font-semibold cursor-pointer hover:underline"

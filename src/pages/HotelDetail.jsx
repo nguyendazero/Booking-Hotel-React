@@ -25,9 +25,11 @@ function HotelDetailPage() {
 
   // State for adding a new review
   const [isAddingReview, setIsAddingReview] = useState(false);
-  const { postData: postReview, loading: postReviewLoading, error: postReviewError } = usePost(
-    `http://localhost:8080/api/v1/user/hotel/rating`
-  );
+  const {
+    postData: postReview,
+    loading: postReviewLoading,
+    error: postReviewError,
+  } = usePost(`http://localhost:8080/api/v1/user/hotel/rating`);
 
   useEffect(() => {
     const fetchHotelData = async () => {
@@ -104,8 +106,7 @@ function HotelDetailPage() {
       setReviews([...(reviews || []), responseData]);
       alert("Review added successfully!");
     } else if (postReviewError) {
-      console.error("Error adding review:", postReviewError);
-      alert(`Error adding review: ${postReviewError}`);
+      console.error(postReviewError);
     }
 
     setIsAddingReview(false); // Set isAddingReview back to false after submission (success or error)
@@ -140,6 +141,7 @@ function HotelDetailPage() {
         onAddReview={handleAddReviewSubmit}
         hotelId={hotelId}
         isSubmitting={isAddingReview} // Pass the loading state
+        reviewError={postReviewError} // Truyền postReviewError từ usePost
       />
       <OpenLayersMap hotel={hotel} />
     </div>
