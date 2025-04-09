@@ -111,13 +111,27 @@ function MainNavigation() {
       {/* Actions */}
       <div className="relative flex items-center space-x-4">
         {token !== null && (
-          <button
-            className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
-            onClick={handleRegisterOwner}
-            disabled={registeringOwner}
-          >
-            {registeringOwner ? "Registering..." : "Register a hotel owner"}
-          </button>
+          <>
+            {user?.roles?.includes("ROLE_OWNER") ? (
+              <button
+                className="bg-gradient-to-r cursor-pointer from-purple-500 to-indigo-600 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+                onClick={() => {
+                  // Thêm logic chuyển hướng hoặc xử lý khi nhấn nút Manager Hotels
+                  console.log("Navigate to Manager Hotels");
+                }}
+              >
+                Manager Hotels
+              </button>
+            ) : (
+              <button
+                className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+                onClick={handleRegisterOwner}
+                disabled={registeringOwner}
+              >
+                {registeringOwner ? "Registering..." : "Register a hotel owner"}
+              </button>
+            )}
+          </>
         )}
 
         {/* Hiển thị avatar hoặc icon login */}
