@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import logoImage from "../assets/image/logo.png";
 import { NavLink } from "react-router-dom";
-import { logout } from "../store/authSlice"; // Giả sử bạn có action logout
+import { logout } from "../store/authSlice";
 import { UserOutlined } from "@ant-design/icons";
 import { User, History, Heart, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserProfileUpdate from "./UpdateInfo";
+import usePost from "../hooks/usePost";
 
 function MainNavigation() {
-  // Lấy user từ Redux state
+  // Lấy user và token từ Redux state
   const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
   // Trạng thái để quản lý dropdown menu
@@ -18,6 +20,13 @@ function MainNavigation() {
 
   //Trạng thái của modal update info
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  // Sử dụng hook usePost để gọi API đăng ký owner
+  const {
+    postData: registerOwner,
+    loading: registeringOwner,
+    error: registerOwnerError,
+  } = usePost("http://localhost:8080/api/v1/user/owner-registration");
 
   // Hàm để xử lý logout
   const handleLogout = () => {
@@ -28,6 +37,28 @@ function MainNavigation() {
   // Hàm để đóng dropdown
   const closeDropdown = () => {
     setDropdownOpen(false);
+  };
+
+  // Hàm xử lý đăng ký làm owner
+  const handleRegisterOwner = async () => {
+    if (!token) {
+      alert("Please log in to register as a hotel owner.");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await registerOwner(null, config); // Không có data cần gửi
+
+    if (response && response === "Success register.") {
+      alert("Your registration request has been sent to the system.");
+    } else if (registerOwnerError) {
+      alert(`Registration failed: ${registerOwnerError}`);
+    }
   };
 
   return (
@@ -79,8 +110,12 @@ function MainNavigation() {
 
       {/* Actions */}
       <div className="relative flex items-center space-x-4">
-        <button className="border border-gray-300 rounded-full px-4 py-2 hover:bg-gray-100">
-          List your property
+        <button
+          className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+          onClick={handleRegisterOwner}
+          disabled={registeringOwner}
+        >
+          {registeringOwner ? "Registering..." : "Register a hotel owner"}
         </button>
 
         {/* Hiển thị avatar hoặc icon login */}
@@ -89,10 +124,14 @@ function MainNavigation() {
             <img
               src={user.avatar}
               alt="User"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full cursor-pointer"
+              onClick={() => setDropdownOpen(!isDropdownOpen)}
             />
           ) : (
-            <UserOutlined style={{ fontSize: "2.0rem" }} />
+            <UserOutlined
+              style={{ fontSize: "2.0rem", cursor: "pointer" }}
+              onClick={() => setDropdownOpen(!isDropdownOpen)}
+            />
           )
         ) : (
           <Link
