@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TagOutlined } from "@ant-design/icons";
 import { formatDate } from "../util/dateUtils";
 import { useSelector } from "react-redux";
 import usePost from "../hooks/usePost";
+import useFetch from "../hooks/useFetch";
 import { message } from "antd";
 
 import {
@@ -34,7 +35,36 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
     loading: addingToWishlist,
     error: wishlistError,
   } = usePost(`http://localhost:8080/api/v1/user/wishlist/${hotelId}`);
-  const [isWishlisted, setIsWishlisted] = useState(false); // State to track if hotel is wishlisted
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Fetch user's wishlist
+  const {
+    data: userWishlist,
+    fetchData: fetchUserWishlist,
+    loading: fetchingWishlist,
+    error: fetchWishlistError,
+  } = useFetch("http://localhost:8080/api/v1/user/hotel/wishlist");
+
+  useEffect(() => {
+    // Fetch user's wishlist when component mounts
+    if (token) {
+      fetchUserWishlist({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+  }, [token, fetchUserWishlist]);
+
+  useEffect(() => {
+    // Check if the current hotel is in the user's wishlist
+    if (userWishlist && Array.isArray(userWishlist)) {
+      const isHotelInWishlist = userWishlist.some(
+        (wishlistItem) => wishlistItem.id === hotelId
+      );
+      setIsWishlisted(isHotelInWishlist);
+    }
+  }, [userWishlist, hotelId]);
 
   const formattedRating = rating ? rating.toFixed(1) : "N/A";
   const totalGuests = reviews || 0;
@@ -51,11 +81,17 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
       },
     };
 
-    const response = await addToWishlistApi(null, config); // No data to send for POST
+    const response = await addToWishlistApi(null, config);
 
     if (response) {
       setIsWishlisted(true);
       message.success(`${name} added to your wishlist!`);
+      // Re-fetch wishlist to update state
+      fetchUserWishlist({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } else if (wishlistError) {
       message.error(`Failed to add to wishlist: ${wishlistError}`);
     }
@@ -74,7 +110,11 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
           onClick={handleAddToWishlist}
           disabled={addingToWishlist}
         >
-          {isWishlisted ? (
+          {fetchingWishlist ? (
+            <span className="animate-spin">
+              <HeartOutlined style={{ fontSize: "20px" }} />
+            </span>
+          ) : isWishlisted ? (
             <HeartFilled style={{ fontSize: "20px", color: "red" }} />
           ) : (
             <HeartOutlined style={{ fontSize: "20px" }} />
