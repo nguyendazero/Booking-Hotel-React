@@ -20,8 +20,13 @@ function MainNavigation() {
 
   // Hàm để xử lý logout
   const handleLogout = () => {
-    dispatch(logout()); // Gọi action logout từ redux (hoặc sử dụng logic riêng của bạn)
+    dispatch(logout()); // Gọi action logout từ redux
     setDropdownOpen(false); // Đóng dropdown sau khi logout
+  };
+
+  // Hàm để đóng dropdown
+  const closeDropdown = () => {
+    setDropdownOpen(false);
   };
 
   return (
@@ -126,14 +131,22 @@ function MainNavigation() {
               Logout
             </button>
             <button
-              onClick={() => setIsUpdateModalOpen(true)}
+              onClick={() => {
+                setIsUpdateModalOpen(true);
+                closeDropdown();
+              }}
               className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
             >
               Update information
             </button>
-            <Link to="/booking-history">
+            <Link to="/booking-history" onClick={closeDropdown}>
               <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer">
                 History booking
+              </button>
+            </Link>
+            <Link to="/wish-list" onClick={closeDropdown}>
+              <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer">
+                Wish list
               </button>
             </Link>
           </div>
