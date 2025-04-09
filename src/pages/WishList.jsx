@@ -1,23 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Result } from "antd"; // Nhập Result và Button từ antd
+import { Button, Result } from "antd";
 import WishList from "../components/WishList";
 
-function BookingHistoryPage() {
-  //Get token from Redux
+function WishListPage() {
   const token = useSelector((state) => state.auth.token);
+  const [wishListItems, setWishListItems] = useState([]);
 
   const {
-    data: wishList,
+    data: fetchedWishList,
     loading: wishListLoading,
     error: wishListError,
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/user/hotel/wishlist");
 
-  // Fetch bookings when token changes
   useEffect(() => {
     if (token) {
       fetchData({
@@ -28,10 +27,22 @@ function BookingHistoryPage() {
     }
   }, [fetchData, token]);
 
+  useEffect(() => {
+    if (fetchedWishList) {
+      setWishListItems(fetchedWishList);
+    }
+  }, [fetchedWishList]);
+
+  const handleRemoveHotel = (hotelIdToRemove) => {
+    setWishListItems((prevList) =>
+      prevList.filter((hotel) => hotel.id !== hotelIdToRemove)
+    );
+  };
+
   if (wishListLoading) return <LoadingSpinner />;
   if (wishListError)
-    return <p>Error loading check-in details: {wishListError}</p>;
-  if (!wishList || wishList.length === 0)
+    return <p>Error loading favorites: {wishListError}</p>;
+  if (!wishListItems || wishListItems.length === 0)
     return (
       <div className="mt-5 mb-5">
         <Result
@@ -51,9 +62,9 @@ function BookingHistoryPage() {
 
   return (
     <>
-      <WishList wishList={wishList} />
+      <WishList wishList={wishListItems} onRemoveHotel={handleRemoveHotel} />
     </>
   );
 }
 
-export default BookingHistoryPage;
+export default WishListPage;
