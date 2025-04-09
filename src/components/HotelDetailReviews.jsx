@@ -1,25 +1,35 @@
 import React, { useState } from "react";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { formatDate } from "../util/dateUtils";
+import { Button, message } from "antd";
+import { useSelector } from "react-redux";
+import useDeleteCustom from "../hooks/useDelete";
 
 const HotelDetailReviews = ({
-  reviews,
+  reviews: initialReviews,
   onAddReview,
   isSubmitting,
   reviewError,
+  onReviewDeleted,
 }) => {
   const [showAll, setShowAll] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [reviewBeingDeleted, setReviewBeingDeleted] = useState(null);
   const [isAddingReviewModalOpen, setIsAddingReviewModalOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [images, setImages] = useState([]);
 
+  const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
+  const { deleteData: deleteReviewApi } = useDeleteCustom();
+
   const displayedReviews = showAll
-    ? Array.isArray(reviews)
-      ? reviews
+    ? Array.isArray(initialReviews)
+      ? initialReviews
       : []
-    : Array.isArray(reviews)
-    ? reviews.slice(0, 3)
+    : Array.isArray(initialReviews)
+    ? initialReviews.slice(0, 3)
     : [];
 
   const openAddReviewModal = () => {
@@ -49,7 +59,32 @@ const HotelDetailReviews = ({
     if (rating > 0 && comment.trim()) {
       onAddReview({ stars: rating, content: comment, images: images });
     } else {
-      alert("Please provide a rating and a comment.");
+      message.warning("Please provide a rating and a comment.");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (window.confirm("Are you sure you want to delete this review?")) {
+      setIsDeleting(true);
+      setReviewBeingDeleted(reviewId);
+
+      const url = `http://localhost:8080/api/v1/user/rating/${reviewId}`;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await deleteReviewApi(url, config);
+      console.log("response: ", response);
+      if (response && response.status === 204) {
+        if (onReviewDeleted) {
+          onReviewDeleted(reviewId); // Gọi prop onReviewDeleted
+        }
+      }
+
+      setIsDeleting(false);
+      setReviewBeingDeleted(null);
     }
   };
 
@@ -57,8 +92,8 @@ const HotelDetailReviews = ({
     <div className="border rounded-lg p-6 shadow-md mt-4 mb-4 mx-50">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">
-          <span>Reviews</span> ({Array.isArray(reviews) ? reviews.length : 0}{" "}
-          reviews)
+          <span>Reviews</span> (
+          {Array.isArray(initialReviews) ? initialReviews.length : 0} reviews)
         </h2>
         <button
           className={`bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1 ${
@@ -166,10 +201,13 @@ const HotelDetailReviews = ({
         </div>
       )}
 
-      {Array.isArray(reviews) && reviews.length > 0 && (
+      {Array.isArray(initialReviews) && initialReviews.length > 0 && (
         <div className="mt-4 space-y-6">
           {displayedReviews.map((review) => (
-            <div key={review.id} className="text-gray-800 mb-4 border-b pb-4">
+            <div
+              key={review.id}
+              className="text-gray-800 mb-4 border-b pb-4 relative"
+            >
               <div className="flex items-center mb-2">
                 <img
                   src={review.account?.avatar}
@@ -186,14 +224,28 @@ const HotelDetailReviews = ({
 
               <div className="text-gray-700 mb-2">{review.content}</div>
 
-              <div className="flex items-center mb-2">
-                {[...Array(review.stars)].map((_, index) => (
-                  <StarFilled
-                    key={index}
-                    className="mr-1"
-                    style={{ color: "#FFD700" }}
-                  />
-                ))}
+              <div className="flex items-center mb-2 justify-between">
+                <div className="flex items-center">
+                  {[...Array(review.stars)].map((_, index) => (
+                    <StarFilled
+                      key={index}
+                      className="mr-1"
+                      style={{ color: "#FFD700" }}
+                    />
+                  ))}
+                </div>
+                {user !== null && user.id === review.account.id && (
+                  <Button
+                    color="danger"
+                    variant="solid"
+                    size="small"
+                    loading={isDeleting && reviewBeingDeleted === review.id}
+                    disabled={isDeleting && reviewBeingDeleted !== review.id}
+                    onClick={() => handleDeleteReview(review.id)}
+                  >
+                    Delete
+                  </Button>
+                )}
               </div>
 
               {review.images && review.images.length > 0 && (
@@ -213,13 +265,15 @@ const HotelDetailReviews = ({
         </div>
       )}
 
-      {Array.isArray(reviews) && reviews.length > 3 && (
+      {Array.isArray(initialReviews) && initialReviews.length > 3 && (
         <div className="mt-4 text-center">
           <button
             className="text-purple-700 font-semibold cursor-pointer hover:underline"
             onClick={() => setShowAll(!showAll)}
           >
-            {showAll ? "Show less" : `Show more ${reviews.length} reviews`}
+            {showAll
+              ? "Show less"
+              : `Show more ${initialReviews.length} reviews`}
           </button>
         </div>
       )}

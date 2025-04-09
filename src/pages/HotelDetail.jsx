@@ -13,17 +13,14 @@ import { useSelector } from "react-redux"; // Import useSelector to get token
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
-  const token = useSelector((state) => state.auth.token); // Get token for authentication
+  const token = useSelector((state) => state.auth.token);
 
-  // State for hotel details, discounts, amenities, and reviews
   const [hotel, setHotel] = useState(null);
   const [discounts, setDiscounts] = useState(null);
   const [amenities, setAmenities] = useState(null);
   const [reviews, setReviews] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // State for adding a new review
   const [isAddingReview, setIsAddingReview] = useState(false);
   const {
     postData: postReview,
@@ -112,6 +109,13 @@ function HotelDetailPage() {
     setIsAddingReview(false); // Set isAddingReview back to false after submission (success or error)
   };
 
+  const handleReviewDeleted = (deletedReviewId) => {
+    // Cập nhật state reviews bằng cách lọc ra review đã xóa
+    setReviews((prevReviews) =>
+      prevReviews.filter((review) => review.id !== deletedReviewId)
+    );
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <p>Error loading hotel details: {error}</p>;
   if (!hotel) return <p>Hotel not found</p>;
@@ -142,6 +146,7 @@ function HotelDetailPage() {
         hotelId={hotelId}
         isSubmitting={isAddingReview} // Pass the loading state
         reviewError={postReviewError} // Truyền postReviewError từ usePost
+        onReviewDeleted={handleReviewDeleted}
       />
       <OpenLayersMap hotel={hotel} />
     </div>
