@@ -10,6 +10,8 @@ import BookingSuccessPage from "./pages/BookingSuccess"
 import CheckinPage from "./pages/Checkin";
 import WishList from "./pages/WishList";
 import BookingHistoryPage from "./pages/BookingHistory";
+import ManageHotelOwner from "./pages/ManageHotelOwner";
+
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,11 @@ const router = createBrowserRouter([
       {
         path: "booking-success",
         element: <BookingSuccessPage />,
+      },
+      //Owner
+      {
+        path: "manage-hotel-owner",
+        element: <ManageHotelOwner />,
       },
     ],
   },

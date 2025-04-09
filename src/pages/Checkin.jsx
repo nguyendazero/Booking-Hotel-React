@@ -79,7 +79,6 @@ function CheckinPage() {
     );
   }
 
-  console.log('CheckinPage: Rendering with bookings:', bookings);
   return (
     <>
       <CheckinHotel bookings={bookings} onBookingCancelled={handleBookingCancelled} />
