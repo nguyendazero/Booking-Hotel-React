@@ -8,6 +8,7 @@ import RootLayout from "./pages/Root";
 import LoginPage from "./pages/Login";
 import BookingSuccessPage from "./pages/BookingSuccess"
 import CheckinPage from "./pages/Checkin";
+import WishList from "./pages/WishList";
 import BookingHistoryPage from "./pages/BookingHistory";
 
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "booking-history",
         element: <BookingHistoryPage />,
+      },
+      {
+        path: "wish-list",
+        element: <WishList />,
       },
       {
         path: "booking-success",
