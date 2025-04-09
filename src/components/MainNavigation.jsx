@@ -54,7 +54,7 @@ function MainNavigation() {
 
     const response = await registerOwner(null, config); // Không có data cần gửi
 
-    if (response && response === "Success register.") {
+    if (response) {
       alert("Your registration request has been sent to the system.");
     } else if (registerOwnerError) {
       alert(`Registration failed: ${registerOwnerError}`);
@@ -110,13 +110,15 @@ function MainNavigation() {
 
       {/* Actions */}
       <div className="relative flex items-center space-x-4">
-        <button
-          className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
-          onClick={handleRegisterOwner}
-          disabled={registeringOwner}
-        >
-          {registeringOwner ? "Registering..." : "Register a hotel owner"}
-        </button>
+        {token !== null && (
+          <button
+            className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+            onClick={handleRegisterOwner}
+            disabled={registeringOwner}
+          >
+            {registeringOwner ? "Registering..." : "Register a hotel owner"}
+          </button>
+        )}
 
         {/* Hiển thị avatar hoặc icon login */}
         {user ? (
