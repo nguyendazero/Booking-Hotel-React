@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { TagOutlined } from "@ant-design/icons";
 import { formatDate } from "../util/dateUtils";
+import { useSelector } from "react-redux";
+import usePost from "../hooks/usePost";
+import { message } from "antd";
 
 import {
   ShareAltOutlined,
   HeartOutlined,
+  HeartFilled,
   EnvironmentOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
@@ -15,10 +19,47 @@ import {
 } from "@ant-design/icons";
 
 const HotelDetailInfo = ({ hotel, discounts }) => {
-  const { name, streetAddress, rating, reviews, owner, description } = hotel;
+  const {
+    id: hotelId,
+    name,
+    streetAddress,
+    rating,
+    reviews,
+    owner,
+    description,
+  } = hotel;
+  const token = useSelector((state) => state.auth.token);
+  const {
+    postData: addToWishlistApi,
+    loading: addingToWishlist,
+    error: wishlistError,
+  } = usePost(`http://localhost:8080/api/v1/user/wishlist/${hotelId}`);
+  const [isWishlisted, setIsWishlisted] = useState(false); // State to track if hotel is wishlisted
 
   const formattedRating = rating ? rating.toFixed(1) : "N/A";
   const totalGuests = reviews || 0;
+
+  const handleAddToWishlist = async () => {
+    if (!token) {
+      message.error("Please log in to add to your wishlist.");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await addToWishlistApi(null, config); // No data to send for POST
+
+    if (response) {
+      setIsWishlisted(true);
+      message.success(`${name} added to your wishlist!`);
+    } else if (wishlistError) {
+      message.error(`Failed to add to wishlist: ${wishlistError}`);
+    }
+  };
 
   return (
     <div className="relative p-6 border border-gray-300 rounded-lg bg-white shadow-md">
@@ -26,8 +67,18 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
         <button className="text-gray-600 hover:text-purple-600">
           <ShareAltOutlined style={{ fontSize: "20px" }} />
         </button>
-        <button className="text-gray-600 hover:text-red-600">
-          <HeartOutlined style={{ fontSize: "20px" }} />
+        <button
+          className={`text-gray-600 hover:text-red-600 ${
+            addingToWishlist ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
+          onClick={handleAddToWishlist}
+          disabled={addingToWishlist}
+        >
+          {isWishlisted ? (
+            <HeartFilled style={{ fontSize: "20px", color: "red" }} />
+          ) : (
+            <HeartOutlined style={{ fontSize: "20px" }} />
+          )}
         </button>
       </div>
       <h2 className="text-2xl font-bold">{name}</h2>
@@ -86,7 +137,6 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
           <ul className="list-none ml-6 space-y-4">
             {discounts.map((discountItem) => {
               const { startDate, endDate, discount } = discountItem;
-              // Sử dụng hàm formatDate để chuyển đổi thời gian từ định dạng ISO sang định dạng dd/mm/yyyy
               const start = formatDate(startDate);
               const end = formatDate(endDate);
 
