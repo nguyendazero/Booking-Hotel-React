@@ -4,6 +4,7 @@ import logoImage from "../assets/image/logo.png";
 import { NavLink } from "react-router-dom";
 import { logout } from "../store/authSlice"; // Giả sử bạn có action logout
 import { UserOutlined } from "@ant-design/icons";
+import { User, History, Heart, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserProfileUpdate from "./UpdateInfo";
 
@@ -123,32 +124,44 @@ function MainNavigation() {
 
         {/* Dropdown Menu */}
         {user && isDropdownOpen && (
-          <div className="absolute top-12 right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-            <button
-              onClick={handleLogout}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
-            >
-              Logout
-            </button>
+          <div className="absolute top-12 right-0 w-50 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
             <button
               onClick={() => {
                 setIsUpdateModalOpen(true);
                 closeDropdown();
               }}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer flex items-center"
             >
+              <User className="mr-2 text-blue-500" size={16} />{" "}
+              {/* Màu xanh dương */}
               Update information
             </button>
-            <Link to="/booking-history" onClick={closeDropdown}>
-              <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer">
-                History booking
-              </button>
+            <Link
+              to="/booking-history"
+              onClick={closeDropdown}
+              className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+            >
+              <History className="mr-2 text-yellow-500" size={16} />{" "}
+              {/* Màu vàng */}
+              History booking
             </Link>
-            <Link to="/wish-list" onClick={closeDropdown}>
-              <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer">
-                Wish list
-              </button>
+            <Link
+              to="/wish-list"
+              onClick={closeDropdown}
+              className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+            >
+              <Heart className="mr-2 text-red-500" size={16} /> {/* Màu đỏ */}
+              Wish list
             </Link>
+            <hr className="border-gray-200 my-1" /> {/* Thêm vạch ngăn cách */}
+            <button
+              onClick={handleLogout}
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer flex items-center"
+            >
+              <LogOut className="mr-2 text-gray-500" size={16} />{" "}
+              {/* Màu xám */}
+              Logout
+            </button>
           </div>
         )}
       </div>
