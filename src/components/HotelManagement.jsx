@@ -16,13 +16,14 @@ import usePost from "../hooks/usePost";
 import ImageModal from "../components/ImageModal";
 import AmenityModal from "../components/AmenityModal";
 import DiscountModal from "../components/DiscountModal";
+import ReviewModal from "../components/ReviewModal";
 import { useSelector } from "react-redux";
 
 const HotelManagement = ({ hotels }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
-
+  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false); // New state for review modal
   const [currentHotelId, setCurrentHotelId] = useState(null);
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -168,6 +169,16 @@ const HotelManagement = ({ hotels }) => {
     fetchDiscounts(); // Fetch lại discounts sau khi thêm hoặc xóa
   };
 
+  const handleShowReviews = (hotelId) => {
+    setCurrentHotelId(hotelId);
+    setIsReviewModalVisible(true);
+  };
+
+  const handleCloseReviews = () => {
+    setIsReviewModalVisible(false);
+    setCurrentHotelId(null);
+  };
+
   useEffect(() => {
     if (isModalVisible && currentHotelId) {
       fetchImages();
@@ -268,6 +279,7 @@ const HotelManagement = ({ hotels }) => {
                 variant="solid"
                 className="w-32"
                 icon={<Eye size={16} />}
+                onClick={() => handleShowReviews(hotel.id)}
               >
                 View Review
               </Button>
@@ -341,6 +353,12 @@ const HotelManagement = ({ hotels }) => {
         currentHotelId={currentHotelId}
         token={token}
         onImagesDeleted={handleImagesDeleted}
+      />
+      {/* Review Modal */}
+      <ReviewModal
+        open={isReviewModalVisible}
+        onClose={handleCloseReviews}
+        hotelId={currentHotelId}
       />
       <input
         type="file"
