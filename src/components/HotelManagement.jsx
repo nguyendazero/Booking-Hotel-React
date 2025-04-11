@@ -157,7 +157,6 @@ const HotelManagement = ({ hotels }) => {
   const handleShowDiscounts = (hotelId) => {
     setCurrentHotelId(hotelId);
     setIsDiscountModalVisible(true);
-    fetchDiscounts(); // Fetch discounts when the modal opens
   };
 
   const handleCloseDiscountModal = () => {
