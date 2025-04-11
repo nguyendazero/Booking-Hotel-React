@@ -40,7 +40,7 @@ const ReviewModal = ({ open, onClose, hotelId }) => {
 
   return (
     <Modal
-      title="Hotel Reviews"
+      title="Reviews"
       open={open}
       onCancel={onClose}
       footer={[
@@ -48,7 +48,7 @@ const ReviewModal = ({ open, onClose, hotelId }) => {
           Close
         </Button>,
       ]}
-      width={800}
+      width={600}
     >
       {loading && (
         <div style={{ textAlign: "center", padding: "20px" }}>

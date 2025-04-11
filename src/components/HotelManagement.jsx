@@ -16,6 +16,7 @@ import usePost from "../hooks/usePost";
 import ImageModal from "../components/ImageModal";
 import AmenityModal from "../components/AmenityModal";
 import DiscountModal from "../components/DiscountModal";
+import BookingModal from "../components/BookingModal";
 import ReviewModal from "../components/ReviewModal";
 import { useSelector } from "react-redux";
 
@@ -24,7 +25,8 @@ const HotelManagement = ({ hotels }) => {
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
   const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
-  
+  const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
+
   const [currentHotelId, setCurrentHotelId] = useState(null);
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -198,6 +200,17 @@ const HotelManagement = ({ hotels }) => {
     }
   }, [isDiscountModalVisible, currentHotelId, fetchDiscounts]);
 
+  const handleShowBookings = (hotelId) => {
+    setCurrentHotelId(hotelId);
+    console.log("Token khi mở BookingModal:", token); // Log token
+    setIsBookingModalVisible(true);
+  };
+
+  const handleCloseBookingModal = () => {
+    setIsBookingModalVisible(false);
+    setCurrentHotelId(null);
+  };
+
   return (
     <div className="container mx-auto mt-8 px-16 max-w-7xl">
       <div className="flex justify-end mb-4">
@@ -316,6 +329,7 @@ const HotelManagement = ({ hotels }) => {
                 variant="solid"
                 className="w-32"
                 icon={<CalendarDays size={16} />}
+                onClick={() => handleShowBookings(hotel.id)}
               >
                 View Booking
               </Button>
@@ -359,6 +373,12 @@ const HotelManagement = ({ hotels }) => {
       <ReviewModal
         open={isReviewModalVisible}
         onClose={handleCloseReviews}
+        hotelId={currentHotelId}
+      />
+      <BookingModal
+        open={isBookingModalVisible}
+        token={token}
+        onClose={handleCloseBookingModal}
         hotelId={currentHotelId}
       />
       <input

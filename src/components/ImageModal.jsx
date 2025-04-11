@@ -7,7 +7,7 @@ import useDelete from "../hooks/useDelete";
 const ImageModal = ({
   open,
   onClose,
-  images: allImages, // Đổi tên prop
+  images: allImages,
   loading,
   onAddImagesClick,
   addingImages,
