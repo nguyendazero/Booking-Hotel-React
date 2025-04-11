@@ -23,7 +23,8 @@ const HotelManagement = ({ hotels }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
-  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false); // New state for review modal
+  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+  
   const [currentHotelId, setCurrentHotelId] = useState(null);
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
