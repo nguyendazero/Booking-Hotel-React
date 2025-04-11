@@ -120,7 +120,7 @@ const ImageModal = ({
 
   return (
     <Modal
-      title="Hotel Images"
+      title="Images"
       open={open}
       onCancel={onClose}
       footer={footerButtons()}

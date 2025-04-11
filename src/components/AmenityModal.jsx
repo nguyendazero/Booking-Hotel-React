@@ -80,7 +80,7 @@ const AmenityModal = ({
 
   return (
     <Modal
-      title="Hotel Amenities"
+      title="Amenities"
       open={open}
       onCancel={onClose}
       footer={[
