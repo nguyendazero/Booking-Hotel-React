@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Edit,
   Trash,
@@ -15,18 +15,19 @@ import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
 import ImageModal from "../components/ImageModal";
 import AmenityModal from "../components/AmenityModal";
+import DiscountModal from "../components/DiscountModal";
 import { useSelector } from "react-redux";
 
 const HotelManagement = ({ hotels }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
-  
+  const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
+
   const [currentHotelId, setCurrentHotelId] = useState(null);
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [addingImages, setAddingImages] = useState(false);
   const token = useSelector((state) => state.auth.token);
-  
 
   const {
     data: imagesData,
@@ -51,6 +52,12 @@ const HotelManagement = ({ hotels }) => {
   const { data: amenitiesData, fetchData: fetchAmenities } = useFetch(
     currentHotelId
       ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/amenities`
+      : null
+  );
+
+  const { data: discountsData, fetchData: fetchDiscounts } = useFetch(
+    currentHotelId
+      ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/discounts`
       : null
   );
 
@@ -147,17 +154,38 @@ const HotelManagement = ({ hotels }) => {
     fetchAmenities(); // Fetch lại amenities sau khi thêm hoặc xóa
   };
 
-  React.useEffect(() => {
+  const handleShowDiscounts = (hotelId) => {
+    setCurrentHotelId(hotelId);
+    setIsDiscountModalVisible(true);
+    fetchDiscounts(); // Fetch discounts when the modal opens
+  };
+
+  const handleCloseDiscountModal = () => {
+    setIsDiscountModalVisible(false);
+    setCurrentHotelId(null);
+  };
+
+  const handleDiscountsUpdated = () => {
+    fetchDiscounts(); // Fetch lại discounts sau khi thêm hoặc xóa
+  };
+
+  useEffect(() => {
     if (isModalVisible && currentHotelId) {
       fetchImages();
     }
   }, [isModalVisible, currentHotelId, fetchImages]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAmenityModalVisible && currentHotelId) {
       fetchAmenities();
     }
   }, [isAmenityModalVisible, currentHotelId, fetchAmenities]);
+
+  useEffect(() => {
+    if (isDiscountModalVisible && currentHotelId) {
+      fetchDiscounts();
+    }
+  }, [isDiscountModalVisible, currentHotelId, fetchDiscounts]);
 
   return (
     <div className="container mx-auto mt-8 px-16 max-w-7xl">
@@ -168,7 +196,6 @@ const HotelManagement = ({ hotels }) => {
           Add New Hotel
         </button>
       </div>
-
       <div className="space-y-6">
         {hotels.map((hotel) => (
           <div
@@ -182,7 +209,6 @@ const HotelManagement = ({ hotels }) => {
                 className="w-100 h-60 object-cover rounded-l-lg"
               />
             </div>
-
             <div className="w-2/4 px-6 pb-6 flex flex-col justify-between">
               <div className="p-4 rounded-md">
                 <h1 className="text-2xl font-bold text-purple-700 mb-3">
@@ -200,8 +226,7 @@ const HotelManagement = ({ hotels }) => {
                     ${hotel.pricePerDay}
                     {hotel.discount && (
                       <span className="text-xs text-green-500 ml-1">
-                        {" "}
-                        ( -{hotel.discount?.rate}%)
+                        (-{hotel.discount?.rate}%)
                       </span>
                     )}
                   </span>
@@ -219,7 +244,6 @@ const HotelManagement = ({ hotels }) => {
                   {hotel.description}
                 </p>
               </div>
-
               {/* Edit and Delete Buttons */}
               <div className="flex justify-start items-center space-x-2 ml-4">
                 <Button
@@ -238,7 +262,6 @@ const HotelManagement = ({ hotels }) => {
                 </Button>
               </div>
             </div>
-
             {/* Action Buttons (Vertical) */}
             <div className="w-1/4 p-4 flex flex-col justify-center items-end space-y-2">
               <Button
@@ -254,6 +277,7 @@ const HotelManagement = ({ hotels }) => {
                 variant="solid"
                 className="w-32"
                 icon={<Percent size={16} />}
+                onClick={() => handleShowDiscounts(hotel.id)}
               >
                 View Discount
               </Button>
@@ -287,9 +311,7 @@ const HotelManagement = ({ hotels }) => {
           </div>
         ))}
       </div>
-
       {/* Amenities Modal */}
-
       <AmenityModal
         open={isAmenityModalVisible}
         onClose={handleCloseAmenityModal}
@@ -298,7 +320,15 @@ const HotelManagement = ({ hotels }) => {
         amenities={amenitiesData}
         onAmenitiesUpdated={handleAmenitiesUpdated}
       />
-
+      {/* Discount Modal */}
+      <DiscountModal
+        open={isDiscountModalVisible}
+        onClose={handleCloseDiscountModal}
+        hotelId={currentHotelId}
+        token={token}
+        discounts={discountsData}
+        onDiscountsUpdated={handleDiscountsUpdated}
+      />
       {/* Image Modal */}
       <ImageModal
         open={isModalVisible}
