@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Modal, Button, Input, List, message, DatePicker } from "antd";
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Input, List, message, DatePicker, Pagination } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePost from "../hooks/usePost";
@@ -14,12 +14,15 @@ const DiscountModal = ({
   onClose,
   hotelId,
   token,
-  discounts,
+  discounts: allDiscounts, // Đổi tên prop
   onDiscountsUpdated,
 }) => {
   const [newDiscountRate, setNewDiscountRate] = useState("");
   const [newDiscountRange, setNewDiscountRange] = useState(null);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Số lượng discount trên mỗi trang
+  const [paginatedDiscounts, setPaginatedDiscounts] = useState([]);
+
   const {
     postData: addDiscount,
     loading: addLoading,
@@ -31,6 +34,20 @@ const DiscountModal = ({
     loading: deleteLoading,
     error: deleteError,
   } = useDelete();
+
+  useEffect(() => {
+    if (open) {
+      setCurrentPage(1);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (allDiscounts) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      setPaginatedDiscounts(allDiscounts.slice(startIndex, endIndex));
+    }
+  }, [allDiscounts, currentPage, itemsPerPage]);
 
   const handleAddDiscount = async () => {
     if (
@@ -60,7 +77,6 @@ const DiscountModal = ({
       if (response) {
         setNewDiscountRate("");
         setNewDiscountRange(null);
-
         onDiscountsUpdated(); //Fetch lại discount =
       } else if (addError) {
         message.error(`Failed to add discount: ${addError}`);
@@ -86,6 +102,10 @@ const DiscountModal = ({
         message.error(`Failed to delete discount: ${deleteError}`);
       }
     }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -136,8 +156,8 @@ const DiscountModal = ({
           </div>
         </div>
         <List
-          loading={!discounts}
-          dataSource={discounts || []}
+          loading={!allDiscounts}
+          dataSource={paginatedDiscounts}
           renderItem={(item) => (
             <List.Item
               actions={[
@@ -157,6 +177,15 @@ const DiscountModal = ({
             </List.Item>
           )}
         />
+        {allDiscounts && allDiscounts.length > itemsPerPage && (
+          <Pagination
+            current={currentPage}
+            pageSize={itemsPerPage}
+            total={allDiscounts.length}
+            onChange={handlePageChange}
+            style={{ marginTop: 16, textAlign: "center" }}
+          />
+        )}
         {addError && <p className="text-red-600 font-bold mt-2">{addError}</p>}
         {deleteError && (
           <p className="text-red-600 font-bold mt-2">{deleteError}</p>
