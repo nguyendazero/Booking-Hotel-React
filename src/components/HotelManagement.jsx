@@ -19,12 +19,14 @@ import { useSelector } from "react-redux";
 
 const HotelManagement = ({ hotels }) => {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
+  
   const [currentHotelId, setCurrentHotelId] = useState(null);
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [addingImages, setAddingImages] = useState(false);
   const token = useSelector((state) => state.auth.token);
-  const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
+  
 
   const {
     data: imagesData,
