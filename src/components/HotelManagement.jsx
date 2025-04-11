@@ -16,6 +16,7 @@ import usePost from "../hooks/usePost";
 import ImageModal from "../components/ImageModal";
 import { useSelector } from "react-redux";
 
+
 const HotelManagement = ({ hotels }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentHotelId, setCurrentHotelId] = useState(null);
@@ -90,29 +91,27 @@ const HotelManagement = ({ hotels }) => {
   const handleConfirmAddImages = async () => {
     if (currentHotelId && selectedFiles.length > 0) {
       setAddingImages(true);
-  
-      // Tạo FormData để gửi file
+
       const formData = new FormData();
       selectedFiles.forEach((file) => {
-        formData.append("imageUrls", file); // Key 'imageUrls' phải khớp với tên trong DTO
+        formData.append("imageUrls", file);
       });
-  
-      // Gửi dữ liệu lên server
+
       const responseData = await addHotelImages(formData, {
         headers: {
-          "Content-Type": "multipart/form-data", // Định dạng dữ liệu
-          Authorization: `Bearer ${token}`, // Header xác thực
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (responseData) {
         message.success("Images added successfully");
         fetchImages();
-        setSelectedFiles([]); // Xóa danh sách file đã chọn sau khi upload thành công
+        setSelectedFiles([]);
       } else if (addImagesError) {
         message.error(`Failed to add images: ${addImagesError}`);
       }
-  
+
       setAddingImages(false);
       if (imageInputRef.current) {
         imageInputRef.current.value = "";
@@ -120,6 +119,10 @@ const HotelManagement = ({ hotels }) => {
     } else if (selectedFiles.length === 0) {
       message.warning("Please select images to add.");
     }
+  };
+
+  const handleImagesDeleted = () => {
+    fetchImages();
   };
 
   React.useEffect(() => {
@@ -266,6 +269,9 @@ const HotelManagement = ({ hotels }) => {
         addingImages={addImagesLoading || addingImages}
         selectedFileCount={selectedFiles.length}
         onConfirmAddImages={handleConfirmAddImages}
+        currentHotelId={currentHotelId}
+        token={token}
+        onImagesDeleted={handleImagesDeleted}
       />
       <input
         type="file"

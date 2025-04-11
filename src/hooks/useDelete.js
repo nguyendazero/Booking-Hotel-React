@@ -1,4 +1,3 @@
-// hooks/useDelete.js
 import { useState, useCallback } from "react";
 import axios from "axios";
 
