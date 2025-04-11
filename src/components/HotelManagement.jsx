@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import {
   Edit,
   Trash,
@@ -10,10 +10,40 @@ import {
   ListChecks,
   CalendarDays,
 } from "lucide-react";
-import { Button } from "antd";
+import { Button, message } from "antd";
+import useFetch from "../hooks/useFetch";
+import usePost from "../hooks/usePost";
+import ImageModal from "../components/ImageModal";
+import { useSelector } from "react-redux";
 
 const HotelManagement = ({ hotels }) => {
-  // Check if hotels is defined before mapping
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [currentHotelId, setCurrentHotelId] = useState(null);
+  const imageInputRef = useRef(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [addingImages, setAddingImages] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+
+  const {
+    data: imagesData,
+    loading: imagesLoading,
+    error: imagesError,
+    fetchData: fetchImages,
+  } = useFetch(
+    currentHotelId
+      ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/images`
+      : null
+  );
+
+  const {
+    postData: addHotelImages,
+    loading: addImagesLoading,
+    error: addImagesError,
+  } = usePost(
+    currentHotelId
+      ? `http://localhost:8080/api/v1/owner/hotel/${currentHotelId}/images`
+      : null
+  );
 
   const renderRatingStars = (rating) => {
     const stars = [];
@@ -29,24 +59,92 @@ const HotelManagement = ({ hotels }) => {
     return <div className="flex items-center">{stars}</div>;
   };
 
+  const handleShowImages = (hotelId) => {
+    setCurrentHotelId(hotelId);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setCurrentHotelId(null);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+    setSelectedFiles([]);
+    setAddingImages(false);
+  };
+
+  const handleAddImagesClick = () => {
+    imageInputRef.current.click();
+  };
+
+  const handleImageSelect = (event) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      setSelectedFiles(Array.from(files));
+    } else {
+      setSelectedFiles([]);
+    }
+  };
+
+  const handleConfirmAddImages = async () => {
+    if (currentHotelId && selectedFiles.length > 0) {
+      setAddingImages(true);
+  
+      // Tạo FormData để gửi file
+      const formData = new FormData();
+      selectedFiles.forEach((file) => {
+        formData.append("imageUrls", file); // Key 'imageUrls' phải khớp với tên trong DTO
+      });
+  
+      // Gửi dữ liệu lên server
+      const responseData = await addHotelImages(formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Định dạng dữ liệu
+          Authorization: `Bearer ${token}`, // Header xác thực
+        },
+      });
+  
+      if (responseData) {
+        message.success("Images added successfully");
+        fetchImages();
+        setSelectedFiles([]); // Xóa danh sách file đã chọn sau khi upload thành công
+      } else if (addImagesError) {
+        message.error(`Failed to add images: ${addImagesError}`);
+      }
+  
+      setAddingImages(false);
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
+    } else if (selectedFiles.length === 0) {
+      message.warning("Please select images to add.");
+    }
+  };
+
+  React.useEffect(() => {
+    if (isModalVisible && currentHotelId) {
+      fetchImages();
+    }
+  }, [isModalVisible, currentHotelId, fetchImages]);
+
   return (
     <div className="container mx-auto mt-8 px-16 max-w-7xl">
       <div className="flex justify-end mb-4">
         <button
-          className={`bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1
-          `}
+          className={`bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1`}
         >
           Add New Hotel
         </button>
       </div>
+
       <div className="space-y-6">
-        {hotels !== null && hotels.map((hotel) => (
+        {hotels.map((hotel) => (
           <div
             key={hotel.id}
             className="flex bg-white shadow-md rounded-lg overflow-hidden"
           >
-            {/* Image Section */}
-            <div className=" flex items-center justify-center">
+            <div className="flex items-center justify-center">
               <img
                 src={hotel.highLightImageUrl}
                 alt={hotel.name}
@@ -54,7 +152,6 @@ const HotelManagement = ({ hotels }) => {
               />
             </div>
 
-            {/* Content Section */}
             <div className="w-2/4 px-6 pb-6 flex flex-col justify-between">
               <div className="p-4 rounded-md">
                 <h1 className="text-2xl font-bold text-purple-700 mb-3">
@@ -67,13 +164,13 @@ const HotelManagement = ({ hotels }) => {
                   </span>
                 </div>
                 <div className="flex items-center text-gray-600 mb-2">
-                  <span className="font-bold mr-2 text-sm ">Price:</span>
+                  <span className="font-bold mr-2 text-sm">Price:</span>
                   <span className="text-sm">
                     ${hotel.pricePerDay}
                     {hotel.discount && (
                       <span className="text-xs text-green-500 ml-1">
                         {" "}
-                        (-{hotel.discount?.rate}%)
+                        ( -{hotel.discount?.rate}%)
                       </span>
                     )}
                   </span>
@@ -92,7 +189,7 @@ const HotelManagement = ({ hotels }) => {
                 </p>
               </div>
 
-              {/* Edit and Delete Buttons (moved here) */}
+              {/* Edit and Delete Buttons */}
               <div className="flex justify-start items-center space-x-2 ml-4">
                 <Button
                   color="primary"
@@ -134,6 +231,7 @@ const HotelManagement = ({ hotels }) => {
                 variant="solid"
                 className="w-32"
                 icon={<Image size={16} />}
+                onClick={() => handleShowImages(hotel.id)}
               >
                 View Images
               </Button>
@@ -157,6 +255,26 @@ const HotelManagement = ({ hotels }) => {
           </div>
         ))}
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        open={isModalVisible}
+        onClose={handleCloseModal}
+        images={imagesData || []}
+        loading={imagesLoading}
+        onAddImagesClick={handleAddImagesClick}
+        addingImages={addImagesLoading || addingImages}
+        selectedFileCount={selectedFiles.length}
+        onConfirmAddImages={handleConfirmAddImages}
+      />
+      <input
+        type="file"
+        multiple
+        accept="image/*"
+        className="hidden"
+        ref={imageInputRef}
+        onChange={handleImageSelect}
+      />
     </div>
   );
 };
