@@ -25,7 +25,6 @@ const HotelManagement = ({ hotels }) => {
   const [addingImages, setAddingImages] = useState(false);
   const token = useSelector((state) => state.auth.token);
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
-  const [hotelAmenities, setHotelAmenities] = useState(null);
 
   const {
     data: imagesData,
@@ -135,13 +134,11 @@ const HotelManagement = ({ hotels }) => {
   const handleShowAmenities = (hotelId) => {
     setCurrentHotelId(hotelId);
     setIsAmenityModalVisible(true);
-    fetchAmenities(); // Fetch amenities khi modal mở
   };
 
   const handleCloseAmenityModal = () => {
     setIsAmenityModalVisible(false);
     setCurrentHotelId(null);
-    setHotelAmenities(null);
   };
 
   const handleAmenitiesUpdated = () => {
