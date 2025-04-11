@@ -14,8 +14,8 @@ import { Button, message } from "antd";
 import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
 import ImageModal from "../components/ImageModal";
+import AmenityModal from "../components/AmenityModal";
 import { useSelector } from "react-redux";
-
 
 const HotelManagement = ({ hotels }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -24,11 +24,12 @@ const HotelManagement = ({ hotels }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [addingImages, setAddingImages] = useState(false);
   const token = useSelector((state) => state.auth.token);
+  const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
+  const [hotelAmenities, setHotelAmenities] = useState(null);
 
   const {
     data: imagesData,
     loading: imagesLoading,
-    error: imagesError,
     fetchData: fetchImages,
   } = useFetch(
     currentHotelId
@@ -43,6 +44,12 @@ const HotelManagement = ({ hotels }) => {
   } = usePost(
     currentHotelId
       ? `http://localhost:8080/api/v1/owner/hotel/${currentHotelId}/images`
+      : null
+  );
+
+  const { data: amenitiesData, fetchData: fetchAmenities } = useFetch(
+    currentHotelId
+      ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/amenities`
       : null
   );
 
@@ -125,11 +132,33 @@ const HotelManagement = ({ hotels }) => {
     fetchImages();
   };
 
+  const handleShowAmenities = (hotelId) => {
+    setCurrentHotelId(hotelId);
+    setIsAmenityModalVisible(true);
+    fetchAmenities(); // Fetch amenities khi modal mở
+  };
+
+  const handleCloseAmenityModal = () => {
+    setIsAmenityModalVisible(false);
+    setCurrentHotelId(null);
+    setHotelAmenities(null);
+  };
+
+  const handleAmenitiesUpdated = () => {
+    fetchAmenities(); // Fetch lại amenities sau khi thêm hoặc xóa
+  };
+
   React.useEffect(() => {
     if (isModalVisible && currentHotelId) {
       fetchImages();
     }
   }, [isModalVisible, currentHotelId, fetchImages]);
+
+  React.useEffect(() => {
+    if (isAmenityModalVisible && currentHotelId) {
+      fetchAmenities();
+    }
+  }, [isAmenityModalVisible, currentHotelId, fetchAmenities]);
 
   return (
     <div className="container mx-auto mt-8 px-16 max-w-7xl">
@@ -243,6 +272,7 @@ const HotelManagement = ({ hotels }) => {
                 variant="solid"
                 className="w-32"
                 icon={<ListChecks size={16} />}
+                onClick={() => handleShowAmenities(hotel.id)}
               >
                 View Amenities
               </Button>
@@ -258,6 +288,17 @@ const HotelManagement = ({ hotels }) => {
           </div>
         ))}
       </div>
+
+      {/* Amenities Modal */}
+
+      <AmenityModal
+        open={isAmenityModalVisible}
+        onClose={handleCloseAmenityModal}
+        hotelId={currentHotelId}
+        token={token}
+        amenities={amenitiesData}
+        onAmenitiesUpdated={handleAmenitiesUpdated}
+      />
 
       {/* Image Modal */}
       <ImageModal
