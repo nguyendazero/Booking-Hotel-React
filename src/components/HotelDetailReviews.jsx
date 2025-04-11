@@ -89,7 +89,7 @@ const HotelDetailReviews = ({
   };
 
   return (
-    <div className="border rounded-lg p-6 shadow-md mt-4 mb-4 mx-50">
+    <div className="border rounded-lg p-6 shadow-md mt-4 mb-4 mx-50"> {/* Giới hạn chiều rộng */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">
           <span>Reviews</span> (
@@ -249,15 +249,17 @@ const HotelDetailReviews = ({
               </div>
 
               {review.images && review.images.length > 0 && (
-                <div className="mt-4 flex space-x-2">
-                  {review.images.map((image, index) => (
-                    <img
-                      key={image?.id || index}
-                      src={image?.imageUrl}
-                      alt={`Review Image ${index + 1}`}
-                      className="w-auto h-40 object-cover rounded-md"
-                    />
-                  ))}
+                <div className="mt-4">
+                  <div className="flex flex-wrap gap-2"> {/* Sử dụng flex-wrap */}
+                    {review.images.map((image, index) => (
+                      <img
+                        key={image?.id || index}
+                        src={image?.imageUrl}
+                        alt={`Review Image ${index + 1}`}
+                        className="w-auto h-24 object-cover rounded-md"
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
