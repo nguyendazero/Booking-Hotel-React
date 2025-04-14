@@ -105,19 +105,28 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
   };
 
   const handleDeleteHotel = async (hotelId) => {
-    try {
-      await deleteHotel(`http://localhost:8080/api/v1/owner/hotel/${hotelId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      message.success("Hotel deleted successfully!");
-      onHotelAdded(); // Refresh the hotel list
-    } catch (error) {
-      console.error("Failed to delete hotel:", error);
-      message.error(
-        `Failed to delete hotel: ${error?.message || "Unknown error"}`
-      );
+    const confirmRemove = window.confirm(
+      "Are you sure you want to remove this hotel?"
+    );
+
+    if (confirmRemove) {
+      try {
+        await deleteHotel(
+          `http://localhost:8080/api/v1/owner/hotel/${hotelId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        message.success("Hotel deleted successfully!");
+        onHotelAdded();
+      } catch (error) {
+        console.error("Failed to delete hotel:", error);
+        message.error(
+          `Failed to delete hotel: ${error?.message || "Unknown error"}`
+        );
+      }
     }
   };
 
