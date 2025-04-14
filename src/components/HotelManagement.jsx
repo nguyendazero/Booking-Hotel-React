@@ -512,10 +512,15 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
       />
       {/* Add Hotel Modal */}
       <Modal
-        title="Add New Hotel"
+        title={
+          <div className="text-xl font-semibold text-gray-800">
+            Add New Hotel
+          </div>
+        }
         open={isAddHotelModalOpen}
         onCancel={handleAddHotelCancel}
         footer={null}
+        className="rounded-lg shadow-xl overflow-hidden"
       >
         <Form
           layout="vertical"
@@ -530,39 +535,63 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
             longitude: "",
             districtId: null,
           }}
+          className="p-6 space-y-4"
         >
           <Form.Item
             name="name"
-            label="Hotel Name"
+            label={
+              <span className="block text-gray-700 text-sm font-bold mb-2">
+                Hotel Name
+              </span>
+            }
             rules={[{ required: true, message: "Please enter the hotel name" }]}
           >
-            <Input placeholder="Enter hotel name" />
+            <Input
+              placeholder="Enter hotel name"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
           </Form.Item>
           <Form.Item
             name="description"
-            label="Description"
+            label={
+              <span className="block text-gray-700 text-sm font-bold mb-2">
+                Description
+              </span>
+            }
             rules={[
               { required: true, message: "Please enter the hotel description" },
             ]}
           >
-            <Input.TextArea rows={4} placeholder="Enter hotel description" />
+            <Input.TextArea
+              rows={4}
+              placeholder="Enter hotel description"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
           </Form.Item>
           <Form.Item
             name="pricePerDay"
-            label="Price Per Day"
+            label={
+              <span className="block text-gray-700 text-sm font-bold mb-2">
+                Price Per Day
+              </span>
+            }
             rules={[
               { required: true, message: "Please enter the price per day" },
             ]}
           >
             <InputNumber
-              className="w-full"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               min={0}
               placeholder="Enter price per day"
             />
           </Form.Item>
           <Form.Item
             name="highLightImageUrl"
-            label="Highlight Image"
+            label={
+              <span className="block text-gray-700 text-sm font-bold mb-2">
+                Highlight Image
+              </span>
+            }
             rules={[
               { required: true, message: "Please upload the hotel image" },
             ]}
@@ -571,6 +600,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
               type="file"
               accept="image/*"
               onChange={handleHighlightImageChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
             {highlightImage && (
               <div className="mt-2">
@@ -584,51 +614,82 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
           </Form.Item>
           <Form.Item
             name="streetAddress"
-            label="Street Address"
+            label={
+              <span className="block text-gray-700 text-sm font-bold mb-2">
+                Street Address
+              </span>
+            }
             rules={[
               { required: true, message: "Please enter the street address" },
             ]}
           >
-            <Input placeholder="Enter street address" />
+            <Input
+              placeholder="Enter street address"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
           </Form.Item>
-          <Form.Item
-            name="latitude"
-            label="Latitude"
-            rules={[
-              {
-                required: true,
-                message: "Please enter latitude",
-              },
-              {
-                pattern: /^-?([0-8]?\d(\.\d+)?|90(\.0+)?)$/,
-                message: "Please enter a valid latitude (-90 to 90)",
-              },
-            ]}
-          >
-            <Input placeholder="Enter latitude" />
-          </Form.Item>
-          <Form.Item
-            name="longitude"
-            label="Longitude"
-            rules={[
-              {
-                required: true,
-                message: "Please enter longitude",
-              },
-              {
-                pattern: /^-?(180(\.0+)?|((1[0-7]\d)|([0-9]?\d))(\.\d+)?)$/,
-                message: "Please enter a valid longitude (-180 to 180)",
-              },
-            ]}
-          >
-            <Input placeholder="Enter longitude" />
-          </Form.Item>
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              name="latitude"
+              label={
+                <span className="block text-gray-700 text-sm font-bold mb-2">
+                  Latitude
+                </span>
+              }
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter latitude",
+                },
+                {
+                  pattern: /^-?([0-8]?\d(\.\d+)?|90(\.0+)?)$/,
+                  message: "Please enter a valid latitude (-90 to 90)",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter latitude"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </Form.Item>
+            <Form.Item
+              name="longitude"
+              label={
+                <span className="block text-gray-700 text-sm font-bold mb-2">
+                  Longitude
+                </span>
+              }
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter longitude",
+                },
+                {
+                  pattern: /^-?(180(\.0+)?|((1[0-7]\d)|([0-9]?\d))(\.\d+)?)$/,
+                  message: "Please enter a valid longitude (-180 to 180)",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter longitude"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </Form.Item>
+          </div>
           <Form.Item
             name="districtId"
-            label="District"
+            label={
+              <span className="block text-gray-700 text-sm font-bold mb-2">
+                District
+              </span>
+            }
             rules={[{ required: true, message: "Please select a district" }]}
           >
-            <Select loading={districtsLoading} placeholder="Select a district">
+            <Select
+              loading={districtsLoading}
+              placeholder="Select a district"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
               {districtsData &&
                 districtsData.map((district) => (
                   <Select.Option key={district.id} value={district.id}>
@@ -636,24 +697,31 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
                   </Select.Option>
                 ))}
             </Select>
-
             {districtsError && (
               <div className="text-red-500 text-sm mt-1">{districtsError}</div>
             )}
           </Form.Item>
-          <Form.Item>
+          <Form.Item className="mt-6">
             <Button
               type="primary"
               htmlType="submit"
               loading={addingHotel}
-              block
+              className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
             >
               Add Hotel
             </Button>
             {addHotelError && (
-              <div className="text-red-500 text-sm mt-1">{addHotelError}</div>
+              <div className="text-red-500 text-sm mt-2">{addHotelError}</div>
             )}
           </Form.Item>
+          <div className="flex justify-end">
+            <Button
+              onClick={handleAddHotelCancel}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Cancel
+            </Button>
+          </div>
         </Form>
       </Modal>
     </div>
