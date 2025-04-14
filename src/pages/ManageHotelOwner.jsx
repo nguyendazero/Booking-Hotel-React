@@ -4,7 +4,7 @@ import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { useSelector } from "react-redux";
 import { Button, Result } from "antd";
-import { ListChecks } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function ManageHotelOwnerPage() {
   const user = useSelector((state) => state.auth.user);
@@ -16,12 +16,17 @@ function ManageHotelOwnerPage() {
   } = useFetch(
     `http://localhost:8080/api/v1/public/hotels?accountId=${user?.id}`
   );
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     if (user?.id) {
       fetchData();
     }
   }, [user?.id, fetchData]);
+
+  const handleAddHotelPage = () => {
+    navigate("/owner/add-hotel"); // Navigate to the add hotel page
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -39,7 +44,7 @@ function ManageHotelOwnerPage() {
           title="No Hotels Found"
           subTitle="It appears you haven't created any hotel listings. Once you add a hotel, you'll be able to manage it here."
           extra={
-            <Button color="purple" variant="solid">
+            <Button color="purple" variant="solid" onClick={handleAddHotelPage}>
               Add hotel
             </Button>
           }
@@ -50,7 +55,7 @@ function ManageHotelOwnerPage() {
 
   return (
     <>
-      <HotelManagement hotels={hotelsData} />
+      <HotelManagement hotels={hotelsData} onHotelAdded={fetchData} />
     </>
   );
 }

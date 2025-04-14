@@ -10,7 +10,7 @@ import {
   ListChecks,
   CalendarDays,
 } from "lucide-react";
-import { Button, message } from "antd";
+import { Button, message, Modal, Form, Input, InputNumber } from "antd";
 import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
 import ImageModal from "../components/ImageModal";
@@ -20,7 +20,7 @@ import BookingModal from "../components/BookingModal";
 import ReviewModal from "../components/ReviewModal";
 import { useSelector } from "react-redux";
 
-const HotelManagement = ({ hotels }) => {
+const HotelManagement = ({ hotels, onHotelAdded }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
@@ -31,7 +31,70 @@ const HotelManagement = ({ hotels }) => {
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [addingImages, setAddingImages] = useState(false);
+  const [highlightImage, setHighlightImage] = useState(null); // State for single highlight image
+
+  const [isAddHotelModalOpen, setIsAddHotelModalOpen] = useState(false);
+  const [form] = Form.useForm();
+
+  const {
+    postData,
+    loading: addingHotel,
+    error: addHotelError,
+  } = usePost("http://localhost:8080/api/v1/owner/hotel");
+
   const token = useSelector((state) => state.auth.token);
+
+  const handleAddHotelClick = () => {
+    setIsAddHotelModalOpen(true);
+  };
+
+  const handleAddHotelCancel = () => {
+    setIsAddHotelModalOpen(false);
+    form.resetFields();
+    setHighlightImage(null); // Reset highlight image on cancel
+  };
+
+  const handleHighlightImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setHighlightImage(file);
+    }
+  };
+
+  const handleAddHotelSubmit = async (values) => {
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("description", values.description);
+    formData.append("pricePerDay", values.pricePerDay);
+    formData.append("highLightImageUrl", highlightImage);
+    formData.append("streetAddress", values.streetAddress);
+    formData.append("latitude", values.latitude);
+    formData.append("longitude", values.longitude);
+    formData.append("districtId", values.districtId);
+
+    try {
+      const response = await postData(formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response) {
+        message.success("Hotel added successfully!");
+        setIsAddHotelModalOpen(false);
+        form.resetFields();
+        setHighlightImage(null);
+
+        onHotelAdded();
+      }
+    } catch (error) {
+      console.error("Failed to add hotel:", error);
+      message.error(
+        `Failed to add hotel: ${error?.message || "Unknown error"}`
+      );
+    }
+  };
 
   const {
     data: imagesData,
@@ -116,24 +179,29 @@ const HotelManagement = ({ hotels }) => {
         formData.append("imageUrls", file);
       });
 
-      const responseData = await addHotelImages(formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+        const responseData = await addHotelImages(formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (responseData) {
-        message.success("Images added successfully");
-        fetchImages();
-        setSelectedFiles([]);
-      } else if (addImagesError) {
-        message.error(`Failed to add images: ${addImagesError}`);
-      }
-
-      setAddingImages(false);
-      if (imageInputRef.current) {
-        imageInputRef.current.value = "";
+        if (responseData) {
+          message.success("Images added successfully");
+          fetchImages();
+          setSelectedFiles([]);
+        }
+      } catch (error) {
+        console.error("Failed to add images:", error);
+        message.error(
+          `Failed to add images: ${error?.message || "Unknown error"}`
+        );
+      } finally {
+        setAddingImages(false);
+        if (imageInputRef.current) {
+          imageInputRef.current.value = "";
+        }
       }
     } else if (selectedFiles.length === 0) {
       message.warning("Please select images to add.");
@@ -215,7 +283,8 @@ const HotelManagement = ({ hotels }) => {
     <div className="container mx-auto mt-8 px-16 max-w-7xl">
       <div className="flex justify-end mb-4">
         <button
-          className={`bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1`}
+          onClick={handleAddHotelClick}
+          className="bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1"
         >
           Add New Hotel
         </button>
@@ -389,6 +458,145 @@ const HotelManagement = ({ hotels }) => {
         ref={imageInputRef}
         onChange={handleImageSelect}
       />
+      {/* Add Hotel Modal */}
+      <Modal
+        title="Add New Hotel"
+        open={isAddHotelModalOpen}
+        onCancel={handleAddHotelCancel}
+        footer={null}
+      >
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={handleAddHotelSubmit}
+          initialValues={{
+            name: "",
+            description: "",
+            pricePerDay: null,
+            streetAddress: "",
+            latitude: "",
+            longitude: "",
+            districtId: null,
+          }}
+        >
+          <Form.Item
+            name="name"
+            label="Hotel Name"
+            rules={[{ required: true, message: "Please enter the hotel name" }]}
+          >
+            <Input placeholder="Enter hotel name" />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[
+              { required: true, message: "Please enter the hotel description" },
+            ]}
+          >
+            <Input.TextArea rows={4} placeholder="Enter hotel description" />
+          </Form.Item>
+          <Form.Item
+            name="pricePerDay"
+            label="Price Per Day"
+            rules={[
+              { required: true, message: "Please enter the price per day" },
+            ]}
+          >
+            <InputNumber
+              className="w-full"
+              min={0}
+              placeholder="Enter price per day"
+            />
+          </Form.Item>
+          <Form.Item
+            name="highLightImageUrl"
+            label="Highlight Image"
+            rules={[
+              { required: true, message: "Please upload the hotel image" },
+            ]}
+          >
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleHighlightImageChange}
+            />
+            {highlightImage && (
+              <div className="mt-2">
+                <img
+                  src={URL.createObjectURL(highlightImage)}
+                  alt="Highlight Preview"
+                  className="w-32 h-32 object-cover rounded"
+                />
+              </div>
+            )}
+          </Form.Item>
+          <Form.Item
+            name="streetAddress"
+            label="Street Address"
+            rules={[
+              { required: true, message: "Please enter the street address" },
+            ]}
+          >
+            <Input placeholder="Enter street address" />
+          </Form.Item>
+          <Form.Item
+            name="latitude"
+            label="Latitude"
+            rules={[
+              {
+                required: true,
+                message: "Please enter latitude",
+                pattern: /^-?([0-8]?\d(\.\d+)?|90(\.0+)?)$/,
+                message: "Please enter a valid latitude (-90 to 90)",
+              },
+            ]}
+          >
+            <Input placeholder="Enter latitude" />
+          </Form.Item>
+          <Form.Item
+            name="longitude"
+            label="Longitude"
+            rules={[
+              {
+                required: true,
+                message: "Please enter longitude",
+                pattern: /^-?(180(\.0+)?|((1[0-7]\d)|([0-9]?\d))(\.\d+)?)$/,
+                message: "Please enter a valid longitude (-180 to 180)",
+              },
+            ]}
+          >
+            <Input placeholder="Enter longitude" />
+          </Form.Item>
+          <Form.Item
+            name="districtId"
+            label="District ID"
+            rules={[
+              {
+                required: true,
+                message: "Please enter district ID",
+                type: "number",
+                transform: (value) => Number(value),
+              },
+            ]}
+          >
+            <InputNumber
+              className="w-full"
+              min={0}
+              placeholder="Enter district ID"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={addingHotel}
+              block
+            >
+              Add Hotel
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
