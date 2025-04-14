@@ -497,6 +497,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
         onClose={handleCloseReviews}
         hotelId={currentHotelId}
       />
+      {/* Booking Modal */}
       <BookingModal
         open={isBookingModalVisible}
         token={token}
