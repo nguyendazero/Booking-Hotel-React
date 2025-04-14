@@ -106,28 +106,32 @@ function MainNavigation() {
         >
           Hotels
         </NavLink>
+        {token !== null && user?.roles?.includes("ROLE_OWNER") && (
+          <NavLink
+            to="/manage-hotel-owner"
+            className={({ isActive }) =>
+              `px-4 py-2 border-l rounded-full ${
+                isActive
+                  ? "font-bold text-cyan-50 bg-purple-700"
+                  : "text-gray-700"
+              }`
+            }
+          >
+            Manage
+          </NavLink>
+        )}
       </div>
 
       {/* Actions */}
       <div className="relative flex items-center space-x-4">
-        {token !== null && (
-          <>
-            {user?.roles?.includes("ROLE_OWNER") ? (
-              <Link to="/manage-hotel-owner">
-                <button className="bg-gradient-to-r cursor-pointer from-purple-500 to-indigo-600 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                  Manager Hotels
-                </button>
-              </Link>
-            ) : (
-              <button
-                className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
-                onClick={handleRegisterOwner}
-                disabled={registeringOwner}
-              >
-                {registeringOwner ? "Registering..." : "Register a hotel owner"}
-              </button>
-            )}
-          </>
+        {token !== null && !user?.roles?.includes("ROLE_OWNER") && (
+          <button
+            className="bg-gradient-to-r cursor-pointer from-green-400 to-blue-500 text-white font-semibold rounded-full px-6 py-3 shadow-md hover:shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+            onClick={handleRegisterOwner}
+            disabled={registeringOwner}
+          >
+            {registeringOwner ? "Registering..." : "Register a hotel owner"}
+          </button>
         )}
 
         {/* Hiển thị avatar hoặc icon login */}
