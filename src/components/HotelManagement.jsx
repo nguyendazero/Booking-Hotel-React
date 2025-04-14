@@ -10,10 +10,10 @@ import {
   ListChecks,
   CalendarDays,
 } from "lucide-react";
-import { Button, message, Modal, Form, Input, InputNumber } from "antd";
+import { Button, message, Modal, Form, Input, InputNumber, Select } from "antd";
 import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
-import useDelete from "../hooks/useDelete"; // Import useDelete hook
+import useDelete from "../hooks/useDelete";
 import ImageModal from "../components/ImageModal";
 import AmenityModal from "../components/AmenityModal";
 import DiscountModal from "../components/DiscountModal";
@@ -129,6 +129,17 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
       }
     }
   };
+
+  const {
+    data: districtsData,
+    fetchData: fetchDistricts,
+    loading: districtsLoading,
+    error: districtsError,
+  } = useFetch("http://localhost:8080/api/v1/public/districts");
+
+  useEffect(() => {
+    fetchDistricts();
+  }, [fetchDistricts]);
 
   const {
     data: imagesData,
@@ -614,21 +625,21 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
           </Form.Item>
           <Form.Item
             name="districtId"
-            label="District ID"
-            rules={[
-              {
-                required: true,
-                message: "Please enter district ID",
-                type: "number",
-                transform: (value) => Number(value),
-              },
-            ]}
+            label="District"
+            rules={[{ required: true, message: "Please select a district" }]}
           >
-            <InputNumber
-              className="w-full"
-              min={0}
-              placeholder="Enter district ID"
-            />
+            <Select loading={districtsLoading} placeholder="Select a district">
+              {districtsData &&
+                districtsData.map((district) => (
+                  <Select.Option key={district.id} value={district.id}>
+                    {district.name}
+                  </Select.Option>
+                ))}
+            </Select>
+
+            {districtsError && (
+              <div className="text-red-500 text-sm mt-1">{districtsError}</div>
+            )}
           </Form.Item>
           <Form.Item>
             <Button
