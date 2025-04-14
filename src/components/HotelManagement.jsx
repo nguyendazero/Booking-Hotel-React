@@ -14,12 +14,14 @@ import { Button, message, Modal, Form, Input, InputNumber, Select } from "antd";
 import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
 import useDelete from "../hooks/useDelete";
+import usePut from "../hooks/usePut";
 import ImageModal from "../components/ImageModal";
 import AmenityModal from "../components/AmenityModal";
 import DiscountModal from "../components/DiscountModal";
 import BookingModal from "../components/BookingModal";
 import ReviewModal from "../components/ReviewModal";
 import AddHotelModal from "../components/AddHotelModal";
+import UpdateHotelModal from "../components/UpdateHotelModal";
 import { useSelector } from "react-redux";
 
 const HotelManagement = ({ hotels, onHotelAdded }) => {
@@ -33,25 +35,26 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
   const imageInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [addingImages, setAddingImages] = useState(false);
-  const [highlightImage, setHighlightImage] = useState(null); // State for single highlight image
+  const [editingHotel, setEditingHotel] = useState(null); // State để theo dõi khách sạn đang được chỉnh sửa
+  const [isUpdateHotelModalOpen, setIsUpdateHotelModalOpen] = useState(false);
+  const [updateForm] = Form.useForm();
+  const [updateHighlightImage, setUpdateHighlightImage] = useState(null); // State riêng cho highlight image khi update
 
   const [isAddHotelModalOpen, setIsAddHotelModalOpen] = useState(false);
-  const [form] = Form.useForm();
+  const [addForm] = Form.useForm();
+  const [addHighlightImage, setAddHighlightImage] = useState(null);
 
   const {
     postData,
     loading: addingHotel,
     error: addHotelError,
   } = usePost("http://localhost:8080/api/v1/owner/hotel");
-
+  const { putData, loading: updatingHotel, error: updateHotelError } = usePut();
   const {
     deleteData: deleteHotel,
     loading: deletingHotel,
     error: deleteHotelError,
   } = useDelete();
-
-  const token = useSelector((state) => state.auth.token);
-
   const {
     data: districtsData,
     fetchData: fetchDistricts,
@@ -59,26 +62,93 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
     error: districtsError,
   } = useFetch("http://localhost:8080/api/v1/public/districts");
 
+  const token = useSelector((state) => state.auth.token);
+
   useEffect(() => {
-    if (isAddHotelModalOpen) {
+    if (isAddHotelModalOpen || isUpdateHotelModalOpen) {
       fetchDistricts();
     }
-  }, [isAddHotelModalOpen, fetchDistricts]);
+  }, [isAddHotelModalOpen, isUpdateHotelModalOpen, fetchDistricts]);
+
+  // Handler cho nút Edit
+  const handleEditHotel = (hotel) => {
+    setEditingHotel(hotel);
+    setIsUpdateHotelModalOpen(true);
+    setUpdateHighlightImage(null); // Reset ảnh highlight khi mở modal
+  };
+
+  const handleUpdateHotelCancel = () => {
+    setIsUpdateHotelModalOpen(false);
+    setEditingHotel(null);
+    updateForm.resetFields();
+    setUpdateHighlightImage(null);
+  };
+
+  const handleUpdateHighlightImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setUpdateHighlightImage(file);
+    }
+  };
+
+  const handleUpdateHotelSubmit = async (values) => {
+    if (!editingHotel?.id) return;
+
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("description", values.description);
+    formData.append("pricePerDay", values.pricePerDay);
+    if (updateHighlightImage) {
+      formData.append("highLightImageUrl", updateHighlightImage);
+    }
+    formData.append("streetAddress", values.streetAddress);
+    formData.append("latitude", values.latitude);
+    formData.append("longitude", values.longitude);
+    formData.append("districtId", values.districtId);
+
+    try {
+      const response = await putData(
+        `http://localhost:8080/api/v1/owner/hotel/${editingHotel.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response?.status === 204) {
+        message.success("Hotel updated successfully!");
+        setIsUpdateHotelModalOpen(false);
+        setEditingHotel(null);
+        updateForm.resetFields();
+        setUpdateHighlightImage(null);
+        onHotelAdded();
+      } else {
+        message.error(updateHotelError || "Failed to update hotel.");
+      }
+    } catch (error) {
+      console.error("Failed to update hotel:", error);
+      message.error(updateHotelError || "Failed to update hotel.");
+    }
+  };
 
   const handleAddHotelClick = () => {
     setIsAddHotelModalOpen(true);
+    setAddHighlightImage(null);
   };
 
   const handleAddHotelCancel = () => {
     setIsAddHotelModalOpen(false);
-    form.resetFields();
-    setHighlightImage(null); // Reset highlight image on cancel
+    addForm.resetFields();
+    setAddHighlightImage(null);
   };
 
-  const handleHighlightImageChange = (event) => {
+  const handleAddHighlightImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setHighlightImage(file);
+      setAddHighlightImage(file);
     }
   };
 
@@ -87,7 +157,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
     formData.append("name", values.name);
     formData.append("description", values.description);
     formData.append("pricePerDay", values.pricePerDay);
-    formData.append("highLightImageUrl", highlightImage);
+    formData.append("highLightImageUrl", addHighlightImage);
     formData.append("streetAddress", values.streetAddress);
     formData.append("latitude", values.latitude);
     formData.append("longitude", values.longitude);
@@ -104,14 +174,15 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
       if (response) {
         message.success("Hotel added successfully!");
         setIsAddHotelModalOpen(false);
-        form.resetFields();
-        setHighlightImage(null);
+        addForm.resetFields();
+        setAddHighlightImage(null);
         onHotelAdded();
       }
     } catch (error) {
       console.error("Failed to add hotel:", error);
       message.error(
-        `Failed to add hotel: ${error?.message || "Unknown error"}`
+        addHotelError ||
+          `Failed to add hotel: ${error?.message || "Unknown error"}`
       );
     }
   };
@@ -389,6 +460,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
                   color="primary"
                   icon={<Edit size={16} />}
                   variant="solid"
+                  onClick={() => handleEditHotel(hotel)}
                 >
                   Edit
                 </Button>
@@ -517,14 +589,29 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
         open={isAddHotelModalOpen}
         onCancel={handleAddHotelCancel}
         onSubmit={handleAddHotelSubmit}
-        form={form}
+        form={addForm}
         loading={addingHotel}
         error={addHotelError}
-        highlightImage={highlightImage}
-        onHighlightImageChange={handleHighlightImageChange}
+        highlightImage={addHighlightImage}
+        onHighlightImageChange={handleAddHighlightImageChange}
         districtsData={districtsData}
         districtsLoading={districtsLoading}
         districtsError={districtsError}
+      />
+      {/* Update Hotel Modal */}
+      <UpdateHotelModal
+        open={isUpdateHotelModalOpen}
+        onCancel={handleUpdateHotelCancel}
+        onSubmit={handleUpdateHotelSubmit}
+        form={updateForm}
+        loading={updatingHotel}
+        error={updateHotelError}
+        highlightImage={updateHighlightImage}
+        onHighlightImageChange={handleUpdateHighlightImageChange}
+        districtsData={districtsData}
+        districtsLoading={districtsLoading}
+        districtsError={districtsError}
+        initialValues={editingHotel}
       />
     </div>
   );
