@@ -13,6 +13,7 @@ import {
 import { Button, message, Modal, Form, Input, InputNumber } from "antd";
 import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
+import useDelete from "../hooks/useDelete"; // Import useDelete hook
 import ImageModal from "../components/ImageModal";
 import AmenityModal from "../components/AmenityModal";
 import DiscountModal from "../components/DiscountModal";
@@ -41,6 +42,13 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
     loading: addingHotel,
     error: addHotelError,
   } = usePost("http://localhost:8080/api/v1/owner/hotel");
+
+  const {
+    // Initialize useDelete hook
+    deleteData: deleteHotel,
+    loading: deletingHotel,
+    error: deleteHotelError,
+  } = useDelete();
 
   const token = useSelector((state) => state.auth.token);
 
@@ -92,6 +100,23 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
       console.error("Failed to add hotel:", error);
       message.error(
         `Failed to add hotel: ${error?.message || "Unknown error"}`
+      );
+    }
+  };
+
+  const handleDeleteHotel = async (hotelId) => {
+    try {
+      await deleteHotel(`http://localhost:8080/api/v1/owner/hotel/${hotelId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Hotel deleted successfully!");
+      onHotelAdded(); // Refresh the hotel list
+    } catch (error) {
+      console.error("Failed to delete hotel:", error);
+      message.error(
+        `Failed to delete hotel: ${error?.message || "Unknown error"}`
       );
     }
   };
@@ -350,9 +375,16 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
                   color="danger"
                   variant="solid"
                   icon={<Trash size={16} />}
+                  onClick={() => handleDeleteHotel(hotel.id)}
+                  loading={deletingHotel}
                 >
                   Delete
                 </Button>
+                {deleteHotelError && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {deleteHotelError}
+                  </div>
+                )}
               </div>
             </div>
             {/* Action Buttons (Vertical) */}
@@ -598,6 +630,9 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
             >
               Add Hotel
             </Button>
+            {addHotelError && (
+              <div className="text-red-500 text-sm mt-1">{addHotelError}</div>
+            )}
           </Form.Item>
         </Form>
       </Modal>
