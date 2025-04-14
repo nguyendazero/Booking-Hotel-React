@@ -546,6 +546,8 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
               {
                 required: true,
                 message: "Please enter latitude",
+              },
+              {
                 pattern: /^-?([0-8]?\d(\.\d+)?|90(\.0+)?)$/,
                 message: "Please enter a valid latitude (-90 to 90)",
               },
@@ -560,6 +562,8 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
               {
                 required: true,
                 message: "Please enter longitude",
+              },
+              {
                 pattern: /^-?(180(\.0+)?|((1[0-7]\d)|([0-9]?\d))(\.\d+)?)$/,
                 message: "Please enter a valid longitude (-180 to 180)",
               },
