@@ -83,7 +83,7 @@ function MainNavigation() {
           Home
         </NavLink>
         <NavLink
-          to="/checkin"
+          to="/user/checkin"
           className={({ isActive }) =>
             `px-4 py-2 border-l rounded-full ${
               isActive
@@ -206,7 +206,7 @@ function MainNavigation() {
               Update information
             </button>
             <Link
-              to="/booking-history"
+              to="/user/booking-history"
               onClick={closeDropdown}
               className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
             >
@@ -215,7 +215,7 @@ function MainNavigation() {
               History booking
             </Link>
             <Link
-              to="/wish-list"
+              to="/user/wish-list"
               onClick={closeDropdown}
               className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition cursor-pointer"
             >

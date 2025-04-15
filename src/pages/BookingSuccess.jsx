@@ -10,7 +10,7 @@ const BookingSuccessPage = () => {
         title="Booking Successful!"
         subTitle="Your hotel room has been booked successfully. We look forward to welcoming you!"
         extra={[
-          <Link to="/checkin">
+          <Link to="/user/checkin">
             <Button color="purple" variant="solid">
               View Booking Details
             </Button>

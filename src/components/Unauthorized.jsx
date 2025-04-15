@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button, Result } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Button, Result } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const Unauthorized = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const Unauthorized = () => {
   };
 
   const goHome = () => {
-    navigate('/'); // Chuyển về trang chủ
+    navigate("/"); // Chuyển về trang chủ
   };
 
   return (
@@ -20,10 +20,10 @@ const Unauthorized = () => {
       subTitle="Sorry, you are not authorized to access this page."
       extra={[
         <Button key="back" onClick={goBack}>
-          Quay lại
+          Back
         </Button>,
         <Button key="home" type="primary" onClick={goHome}>
-          Về trang chủ
+          Back to home page
         </Button>,
       ]}
     />

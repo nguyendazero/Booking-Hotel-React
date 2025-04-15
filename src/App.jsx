@@ -16,6 +16,7 @@ import ManageHotelOwner from "./pages/ManageHotelOwner";
 import AdminLayout from "./pages/AdminLayout";
 import AdminProtectedRoute from "./components/ProtectRoute/AdminProtectedRoute";
 import OwnerProtectedRoute from "./components/ProtectRoute/OwnerProtectedRoute";
+import UserProtectedRoute from "./components/ProtectRoute/UserProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
 
 const router = createBrowserRouter([
@@ -28,37 +29,24 @@ const router = createBrowserRouter([
       {
         path: "hotels",
         children: [
-          {
-            index: true,
-            element: <HotelsPage />,
-          },
+          { index: true, element: <HotelsPage /> },
           {
             path: ":hotelId",
             id: "hotel-detail",
-            children: [
-              {
-                index: true,
-                element: <HotelDetailPage />,
-              },
-            ],
+            children: [{ index: true, element: <HotelDetailPage /> }],
           },
         ],
       },
+      // Các route cần bảo vệ cho người dùng đã đăng nhập
       {
-        path: "checkin",
-        element: <CheckinPage />,
-      },
-      {
-        path: "booking-history",
-        element: <BookingHistoryPage />,
-      },
-      {
-        path: "wish-list",
-        element: <WishList />,
-      },
-      {
-        path: "booking-success",
-        element: <BookingSuccessPage />,
+        path: "user",
+        element: <UserProtectedRoute />,
+        children: [
+          { path: "checkin", element: <CheckinPage /> },
+          { path: "booking-history", element: <BookingHistoryPage /> },
+          { path: "wish-list", element: <WishList /> },
+          { path: "booking-success", element: <BookingSuccessPage /> },
+        ],
       },
       //Owner
       {
