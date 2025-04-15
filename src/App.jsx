@@ -13,7 +13,6 @@ import WishList from "./pages/WishList";
 import AdminDashboardPage from "./pages/AdminDashboard";
 import BookingHistoryPage from "./pages/BookingHistory";
 import ManageHotelOwner from "./pages/ManageHotelOwner";
-import AdminLayout from "./pages/AdminLayout";
 import AdminProtectedRoute from "./components/ProtectRoute/AdminProtectedRoute";
 import OwnerProtectedRoute from "./components/ProtectRoute/OwnerProtectedRoute";
 import UserProtectedRoute from "./components/ProtectRoute/UserProtectedRoute";
@@ -74,13 +73,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <AdminDashboardPage />,
-      },
-      {
-        path: "dashboard", // Thêm path rõ ràng
-        element: <AdminLayout />,
-        children: [
-          // Các route con của dashboard nếu có
-        ],
       },
     ],
   },

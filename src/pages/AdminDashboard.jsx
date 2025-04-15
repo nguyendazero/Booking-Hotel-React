@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Breadcrumb, Button, Row, Col, Card } from "antd";
+import { Layout, Breadcrumb, Button, Row, Col } from "antd";
 import {
-  PieChartOutlined,
-  FileOutlined,
-  TeamOutlined,
-  UserOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
