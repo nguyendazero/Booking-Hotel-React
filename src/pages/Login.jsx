@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
 import usePost from "../hooks/usePost";
@@ -30,7 +30,12 @@ const LoginForm = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false); // Added state for forgot password
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const {
+    loading,
+    error,
+    user: loggedInUser,
+    token,
+  } = useSelector((state) => state.auth); // Lấy loggedInUser từ state
 
   // Call the custom hook for registration
   const {
@@ -141,13 +146,32 @@ const LoginForm = () => {
         console.error("Registration error", error);
       }
     } else {
-      dispatch(loginUser(formData)).then((result) => {
-        if (result.meta.requestStatus === "fulfilled") {
-          navigate("/");
-        }
-      });
+      dispatch(loginUser(formData));
     }
   };
+
+  // Theo dõi sự thay đổi của loggedInUser và token để chuyển hướng
+  useEffect(() => {
+    if (token) {
+      console.log("User sau khi đăng nhập:", loggedInUser);
+      if (loggedInUser?.roles?.includes("ROLE_ADMIN")) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    }
+  }, [navigate, loggedInUser, token]); // Chạy effect khi loggedInUser hoặc token thay đổi
+
+  // Chuyển hướng nếu đã đăng nhập trước đó khi component mount
+  useEffect(() => {
+    if (token) {
+      if (loggedInUser?.roles?.includes("ROLE_ADMIN")) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    }
+  }, [navigate, token, loggedInUser?.roles]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-300 via-fuchsia-300 to-fuchsia-300">
@@ -482,19 +506,17 @@ const LoginForm = () => {
 
             {/* Switch between login and register */}
             <div className="flex items-center justify-between mt-6">
-              {!isForgotPassword &&
-                !isVerifyForgot &&
-                !isVerify && (
-                  <button
-                    type="button"
-                    onClick={() => setIsRegister(!isRegister)}
-                    className="text-sm text-indigo-500 hover:underline cursor-pointer"
-                  >
-                    {isRegister
-                      ? "Already have an account? Log In"
-                      : "Don't have an account? Sign Up"}
-                  </button>
-                )}
+              {!isForgotPassword && !isVerifyForgot && !isVerify && (
+                <button
+                  type="button"
+                  onClick={() => setIsRegister(!isRegister)}
+                  className="text-sm text-indigo-500 hover:underline cursor-pointer"
+                >
+                  {isRegister
+                    ? "Already have an account? Log In"
+                    : "Don't have an account? Sign Up"}
+                </button>
+              )}
 
               {!isForgotPassword &&
                 !isVerifyForgot &&
