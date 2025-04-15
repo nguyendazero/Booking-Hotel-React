@@ -8,6 +8,7 @@ import { User, History, Heart, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserProfileUpdate from "./UpdateInfo";
 import usePost from "../hooks/usePost";
+import { Avatar } from "antd";
 
 function MainNavigation() {
   // Lấy user và token từ Redux state
@@ -158,9 +159,9 @@ function MainNavigation() {
               onClick={() => setDropdownOpen(!isDropdownOpen)}
             />
           ) : (
-            <UserOutlined
-              style={{ fontSize: "2.0rem", cursor: "pointer" }}
-              onClick={() => setDropdownOpen(!isDropdownOpen)}
+            <Avatar
+              style={{ backgroundColor: "#87d068", marginRight: "5px" }}
+              icon={<UserOutlined />}
             />
           )
         ) : (
