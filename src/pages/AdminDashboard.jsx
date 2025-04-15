@@ -15,9 +15,9 @@ import ChartCurrentMonth from "../components/ChartCurrentMonth";
 import ChartYearlyBookings from "../components/ChartYearlyBookings";
 import ChartYearlyRevenue from "../components/ChartYearlyRevenue";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import AdminSidebar from "../components/AdminSidebar"; // Import the new sidebar component
 
-const { Header, Content, Sider } = Layout;
-const { SubMenu } = Menu;
+const { Header, Content } = Layout;
 
 const dashboardCardStyle = {
   marginBottom: 24,
@@ -48,37 +48,8 @@ function AdminDashboardPage() {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-        <div
-          className="logo"
-          style={{
-            height: "64px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <h1 style={{ color: "white", margin: 0, fontSize: "20px" }}>
-            Admin Panel
-          </h1>
-        </div>
-        <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
-          <Menu.Item key="1" icon={<PieChartOutlined />}>
-            Dashboard
-          </Menu.Item>
-          <SubMenu key="sub1" icon={<UserOutlined />} title="Users">
-            <Menu.Item key="3">List Users</Menu.Item>
-            <Menu.Item key="4">Add User</Menu.Item>
-          </SubMenu>
-          <SubMenu key="sub2" icon={<TeamOutlined />} title="Hotels">
-            <Menu.Item key="6">List Hotels</Menu.Item>
-            <Menu.Item key="8">Add Hotel</Menu.Item>
-          </SubMenu>
-          <Menu.Item key="9" icon={<FileOutlined />}>
-            Bookings
-          </Menu.Item>
-        </Menu>
-      </Sider>
+      {/* Side bar */}
+      <AdminSidebar collapsed={collapsed} onCollapse={setCollapsed} />
 
       <Layout className="site-layout">
         <Header
