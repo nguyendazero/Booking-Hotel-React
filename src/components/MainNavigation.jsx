@@ -120,6 +120,20 @@ function MainNavigation() {
             Manage
           </NavLink>
         )}
+        {token !== null && user?.roles?.includes("ROLE_OWNER") && (
+          <NavLink
+            to="/statistics"
+            className={({ isActive }) =>
+              `px-4 py-2 border-l rounded-full ${
+                isActive
+                  ? "font-bold text-cyan-50 bg-purple-700"
+                  : "text-gray-700"
+              }`
+            }
+          >
+            Statistics
+          </NavLink>
+        )}
       </div>
 
       {/* Actions */}

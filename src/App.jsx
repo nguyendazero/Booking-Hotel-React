@@ -8,6 +8,7 @@ import RootLayout from "./pages/Root";
 import LoginPage from "./pages/Login";
 import BookingSuccessPage from "./pages/BookingSuccess"
 import CheckinPage from "./pages/Checkin";
+import Statistic from "./pages/Statistic";
 import WishList from "./pages/WishList";
 import BookingHistoryPage from "./pages/BookingHistory";
 import ManageHotelOwner from "./pages/ManageHotelOwner";
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "manage-hotel-owner",
         element: <ManageHotelOwner />,
+      },
+      {
+        path: "statistics",
+        element: <Statistic />,
       },
     ],
   },
