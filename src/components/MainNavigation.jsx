@@ -108,7 +108,7 @@ function MainNavigation() {
         </NavLink>
         {token !== null && user?.roles?.includes("ROLE_OWNER") && (
           <NavLink
-            to="/manage-hotel-owner"
+            to="/owner/manage-hotel-owner"
             className={({ isActive }) =>
               `px-4 py-2 border-l rounded-full ${
                 isActive
@@ -122,7 +122,7 @@ function MainNavigation() {
         )}
         {token !== null && user?.roles?.includes("ROLE_OWNER") && (
           <NavLink
-            to="/statistics"
+            to="/owner/statistics"
             className={({ isActive }) =>
               `px-4 py-2 border-l rounded-full ${
                 isActive
