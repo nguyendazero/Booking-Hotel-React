@@ -17,6 +17,9 @@ import AdminProtectedRoute from "./components/ProtectRoute/AdminProtectedRoute";
 import OwnerProtectedRoute from "./components/ProtectRoute/OwnerProtectedRoute";
 import UserProtectedRoute from "./components/ProtectRoute/UserProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
+import RegionListPage from "./pages/RegionListPage";
+import ConfigListPage from "./pages/ConfigListPage";
+import AdminLayout from "./pages/AdminLayout";
 
 const router = createBrowserRouter([
   {
@@ -71,8 +74,21 @@ const router = createBrowserRouter([
     element: <AdminProtectedRoute />,
     children: [
       {
-        index: true,
-        element: <AdminDashboardPage />,
+        element: <AdminLayout />, // Use AdminLayout as the parent element
+        children: [
+          {
+            index: true,
+            element: <AdminDashboardPage />, // Render AdminDashboardPage inside AdminLayout's Outlet
+          },
+          {
+            path: "regions/all",
+            element: <RegionListPage />, // Render RegionListPage inside AdminLayout's Outlet
+          },
+          {
+            path: "configs/all",
+            element: <ConfigListPage />, // Thêm route cho ConfigListPage
+          },
+        ],
       },
     ],
   },
