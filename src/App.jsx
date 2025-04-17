@@ -20,6 +20,12 @@ import Unauthorized from "./components/Unauthorized";
 import RegionListPage from "./pages/RegionListPage";
 import ConfigListPage from "./pages/ConfigListPage";
 import AdminLayout from "./pages/AdminLayout";
+import UpcomingBookingsPage from "./pages/UpcomingBookingsPage";
+import AllBookingsPage from "./pages/AllBookingPage";
+import PendingRegistrationsPage from "./pages/PendingRegistrationsPage";
+import AcceptedRegistrationsPage from "./pages/AcceptedRegistrationsPage";
+import RejectedRegistrationsPage from "./pages/RejectedRegistrationsPage";
+import HotelListPage from "./pages/HotelListPage";
 
 const router = createBrowserRouter([
   {
@@ -74,19 +80,43 @@ const router = createBrowserRouter([
     element: <AdminProtectedRoute />,
     children: [
       {
-        element: <AdminLayout />, // Use AdminLayout as the parent element
+        element: <AdminLayout />,
         children: [
           {
             index: true,
-            element: <AdminDashboardPage />, // Render AdminDashboardPage inside AdminLayout's Outlet
+            element: <AdminDashboardPage />,
           },
           {
             path: "regions/all",
-            element: <RegionListPage />, // Render RegionListPage inside AdminLayout's Outlet
+            element: <RegionListPage />,
           },
           {
             path: "configs/all",
-            element: <ConfigListPage />, // Thêm route cho ConfigListPage
+            element: <ConfigListPage />,
+          },
+          {
+            path: "bookings/upcoming",
+            element: <UpcomingBookingsPage />,
+          },
+          {
+            path: "bookings/all",
+            element: <AllBookingsPage />,
+          },
+          {
+            path: "registrations/pending",
+            element: <PendingRegistrationsPage />,
+          },
+          {
+            path: "registrations/accepted",
+            element: <AcceptedRegistrationsPage />,
+          },
+          {
+            path: "registrations/rejected",
+            element: <RejectedRegistrationsPage />,
+          },
+          {
+            path: "hotels",
+            element: <HotelListPage />, // Add HotelListPage route
           },
         ],
       },
