@@ -11,7 +11,7 @@ const BookingModal = ({ open, onClose, hotelId, token }) => {
 
   const fetchBookingsHook = useFetch(
     hotelId
-      ? `http://localhost:8080/api/v1/owner/reservations/hotel/${hotelId}`
+      ? `http://localhost:8080/api/v1/owner/bookings/hotel/${hotelId}`
       : null
   );
   const {

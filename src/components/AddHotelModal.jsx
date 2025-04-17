@@ -180,7 +180,7 @@ const AddHotelModal = ({
           name="districtId"
           label={
             <span className="block text-gray-700 text-sm font-bold mb-2">
-              District
+              Region
             </span>
           }
           rules={[{ required: true, message: "Please select a district" }]}
