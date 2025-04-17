@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, List, Card, Input } from "antd";
+import { Breadcrumb, List, Card, Input, Pagination } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
@@ -16,6 +16,9 @@ function AllBookingsPage() {
   const token = useSelector((state) => state.auth.token);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBookings, setFilteredBookings] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
+  const [paginatedBookings, setPaginatedBookings] = useState([]);
 
   useEffect(() => {
     fetchData({
@@ -46,20 +49,21 @@ function AllBookingsPage() {
           booking.status.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredBookings(results);
+      setCurrentPage(1); // Reset page when search term changes
     }
   }, [allBookings, searchTerm]);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  useEffect(() => {
+    if (filteredBookings) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      setPaginatedBookings(filteredBookings.slice(startIndex, endIndex));
+    }
+  }, [filteredBookings, currentPage, itemsPerPage]);
 
-  if (error) {
-    return (
-      <p className="text-red-500 font-semibold">
-        Error fetching bookings: {error}
-      </p>
-    );
-  }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="p-6 bg-gradient-to-br from-blue-100 to-green-100 rounded-md shadow-lg">
@@ -84,66 +88,83 @@ function AllBookingsPage() {
           className="w-64 rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         />
       </div>
-      {filteredBookings && filteredBookings.length > 0 ? (
-        <List
-          className="divide-y divide-gray-300"
-          grid={{ gutter: 16, column: 1 }}
-          dataSource={filteredBookings}
-          renderItem={(booking) => (
-            <List.Item className="py-4">
-              <Card
-                className="bg-white shadow-md rounded-md hover:shadow-lg transition duration-300"
-                title={
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-teal-600">
-                      Booking ID: {booking.id}
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <p className="text-red-500 font-semibold">
+          Error fetching bookings: {error}
+        </p>
+      ) : filteredBookings && filteredBookings.length > 0 ? (
+        <>
+          <List
+            className="divide-y divide-gray-300"
+            grid={{ gutter: 16, column: 1 }}
+            dataSource={paginatedBookings}
+            renderItem={(booking) => (
+              <List.Item className="py-4" key={booking.id}>
+                <Card
+                  className="bg-white shadow-md rounded-md hover:shadow-lg transition duration-300"
+                  title={
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-teal-600">
+                        Booking ID: {booking.id}
+                      </span>
+                      <span
+                        className={`text-sm font-semibold ${
+                          booking.status === "CONFIRMED"
+                            ? "text-green-500 bg-green-100"
+                            : booking.status === "CHECKOUT"
+                            ? "text-orange-500 bg-orange-100"
+                            : "text-gray-600 bg-gray-100"
+                        } px-2 py-1 rounded-full`}
+                      >
+                        {booking.status}
+                      </span>
+                    </div>
+                  }
+                >
+                  <p className="text-gray-700">
+                    <strong className="text-blue-500">Hotel:</strong>{" "}
+                    <span className="font-medium">{booking.hotel.name}</span>
+                  </p>
+                  <p className="text-gray-700">
+                    <strong className="text-blue-500">Start Date:</strong>{" "}
+                    <span className="font-medium">
+                      {moment(booking.startDate).format("YYYY-MM-DD HH:mm:ss")}
                     </span>
-                    <span
-                      className={`text-sm font-semibold ${
-                        booking.status === "CONFIRMED"
-                          ? "text-green-500 bg-green-100"
-                          : booking.status === "CHECKOUT"
-                          ? "text-orange-500 bg-orange-100"
-                          : "text-gray-600 bg-gray-100"
-                      } px-2 py-1 rounded-full`}
-                    >
-                      {booking.status}
+                  </p>
+                  <p className="text-gray-700">
+                    <strong className="text-blue-500">End Date:</strong>{" "}
+                    <span className="font-medium">
+                      {moment(booking.endDate).format("YYYY-MM-DD HH:mm:ss")}
                     </span>
-                  </div>
-                }
-              >
-                <p className="text-gray-700">
-                  <strong className="text-blue-500">Hotel:</strong>{" "}
-                  <span className="font-medium">{booking.hotel.name}</span>
-                </p>
-                <p className="text-gray-700">
-                  <strong className="text-blue-500">Start Date:</strong>{" "}
-                  <span className="font-medium">
-                    {moment(booking.startDate).format("YYYY-MM-DD HH:mm:ss")}
-                  </span>
-                </p>
-                <p className="text-gray-700">
-                  <strong className="text-blue-500">End Date:</strong>{" "}
-                  <span className="font-medium">
-                    {moment(booking.endDate).format("YYYY-MM-DD HH:mm:ss")}
-                  </span>
-                </p>
-                <p className="text-gray-700">
-                  <strong className="text-blue-500">Total Price:</strong>{" "}
-                  <span className="font-semibold text-green-600">
-                    ${booking.totalPrice.toFixed(2)}
-                  </span>
-                </p>
-                <p className="text-gray-700">
-                  <strong className="text-blue-500">Customer:</strong>{" "}
-                  <span className="font-medium">
-                    {booking.account.fullName} ({booking.account.email})
-                  </span>
-                </p>
-              </Card>
-            </List.Item>
+                  </p>
+                  <p className="text-gray-700">
+                    <strong className="text-blue-500">Total Price:</strong>{" "}
+                    <span className="font-semibold text-green-600">
+                      ${booking.totalPrice.toFixed(2)}
+                    </span>
+                  </p>
+                  <p className="text-gray-700">
+                    <strong className="text-blue-500">Customer:</strong>{" "}
+                    <span className="font-medium">
+                      {booking.account.fullName} ({booking.account.email})
+                    </span>
+                  </p>
+                </Card>
+              </List.Item>
+            )}
+          />
+          {filteredBookings.length > itemsPerPage && (
+            <Pagination
+              current={currentPage}
+              pageSize={itemsPerPage}
+              total={filteredBookings.length}
+              onChange={handlePageChange}
+              className="mt-6 flex justify-center"
+            />
           )}
-        />
+        </>
       ) : (
         <p className="text-gray-500 italic">
           {searchTerm
