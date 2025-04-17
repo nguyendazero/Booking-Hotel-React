@@ -58,7 +58,7 @@ function UserListPage() {
           <span className="text-gray-600 hover:text-purple-500">Users</span>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <span className="text-pink-700 font-semibold">User List</span>
+          <span className="text-pink-700 font-semibold">All</span>
         </Breadcrumb.Item>
       </Breadcrumb>
       <h1 className="text-2xl font-bold text-purple-700 mb-4">Manage Users</h1>
