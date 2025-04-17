@@ -29,7 +29,7 @@ function RegionListPage() {
       <Breadcrumb style={{ margin: "16px 0" }}>
         <Breadcrumb.Item>Admin</Breadcrumb.Item>
         <Breadcrumb.Item>Regions</Breadcrumb.Item>
-        <Breadcrumb.Item>Region List</Breadcrumb.Item>
+        <Breadcrumb.Item>All</Breadcrumb.Item>
       </Breadcrumb>
       <h1>Region List</h1>
       {regions && regions.length > 0 ? (

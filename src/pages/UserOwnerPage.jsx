@@ -34,7 +34,7 @@ function UserOwnerPage() {
       <Breadcrumb style={{ margin: "16px 0" }}>
         <Breadcrumb.Item>Admin</Breadcrumb.Item>
         <Breadcrumb.Item>Users</Breadcrumb.Item>
-        <Breadcrumb.Item>User List</Breadcrumb.Item>
+        <Breadcrumb.Item>Owners</Breadcrumb.Item>
       </Breadcrumb>
       <h1>User List</h1>
       {users && users.length > 0 ? (

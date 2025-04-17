@@ -47,7 +47,7 @@ function AllBookingsPage() {
       <Breadcrumb style={{ margin: "16px 0" }}>
         <Breadcrumb.Item>Admin</Breadcrumb.Item>
         <Breadcrumb.Item>Bookings</Breadcrumb.Item>
-        <Breadcrumb.Item>Upcoming</Breadcrumb.Item>
+        <Breadcrumb.Item>All</Breadcrumb.Item>
       </Breadcrumb>
       <h1>Upcoming Bookings</h1>
       {filteredUpcomingBookings && filteredUpcomingBookings.length > 0 ? (

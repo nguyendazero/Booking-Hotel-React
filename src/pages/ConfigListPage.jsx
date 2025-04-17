@@ -29,7 +29,7 @@ function ConfigListPage() {
       <Breadcrumb style={{ margin: "16px 0" }}>
         <Breadcrumb.Item>Admin</Breadcrumb.Item>
         <Breadcrumb.Item>Configs</Breadcrumb.Item>
-        <Breadcrumb.Item>Config List</Breadcrumb.Item>
+        <Breadcrumb.Item>All</Breadcrumb.Item>
       </Breadcrumb>
       <h1>Config List</h1>
       {configs && configs.length > 0 ? (

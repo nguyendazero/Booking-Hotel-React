@@ -36,7 +36,7 @@ function RejectedRegistrationsPage() {
       <Breadcrumb style={{ margin: "16px 0" }}>
         <Breadcrumb.Item>Admin</Breadcrumb.Item>
         <Breadcrumb.Item>Registrations</Breadcrumb.Item>
-        <Breadcrumb.Item>Pending</Breadcrumb.Item>
+        <Breadcrumb.Item>Rejected</Breadcrumb.Item>
       </Breadcrumb>
       <h1>Pending Hotel Owner Registrations</h1>
       {pendingRegistrations && pendingRegistrations.length > 0 ? (

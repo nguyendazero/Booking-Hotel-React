@@ -35,7 +35,7 @@ function HotelListPage() {
       <Breadcrumb style={{ margin: "16px 0" }}>
         <Breadcrumb.Item>Admin</Breadcrumb.Item>
         <Breadcrumb.Item>Hotels</Breadcrumb.Item>
-        <Breadcrumb.Item>Hotel List</Breadcrumb.Item>
+        <Breadcrumb.Item>All</Breadcrumb.Item>
       </Breadcrumb>
       <h1>Hotel List</h1>
       {hotels && hotels.length > 0 ? (
