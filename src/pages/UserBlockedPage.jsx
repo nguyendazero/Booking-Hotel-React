@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, List, Card, Avatar, Tag } from "antd";
+import {
+  Breadcrumb,
+  List,
+  Card,
+  Avatar,
+  Tag,
+  Button,
+  message,
+  Popconfirm,
+} from "antd";
+import { UnlockOutlined } from "@ant-design/icons";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
@@ -12,12 +22,51 @@ function UserBlockedPage() {
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/admin/accounts?isBlocked=true");
   const token = useSelector((state) => state.auth.token);
+  const [unblocking, setUnblocking] = useState(false);
+  const [userToUnblock, setUserToUnblock] = useState(null);
 
   useEffect(() => {
     fetchData({
       headers: { Authorization: `Bearer ${token}` },
     });
   }, [fetchData, token]);
+
+  const handleUnblock = async (userId) => {
+    setUserToUnblock(userId);
+    setUnblocking(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/admin/unblock-account/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 204) {
+        message.success("Account has been unblocked successfully.");
+        fetchData({
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }); // Refetch user data
+      } else {
+        const errorData = await response.json();
+        message.error(
+          `Failed to unblock account: ${
+            errorData?.message || response.statusText
+          }`
+        );
+      }
+    } catch (error) {
+      message.error(`Failed to unblock account: ${error.message}`);
+    } finally {
+      setUnblocking(false);
+      setUserToUnblock(null);
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -65,6 +114,23 @@ function UserBlockedPage() {
                     </span>
                   </div>
                 }
+                actions={[
+                  <Popconfirm
+                    title="Are you sure you want to unblock this account?"
+                    onConfirm={() => handleUnblock(user.id)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button
+                      key="unblock"
+                      icon={<UnlockOutlined />}
+                      className="text-green-500 hover:text-green-700"
+                      loading={unblocking && userToUnblock === user.id}
+                    >
+                      Unblock
+                    </Button>
+                  </Popconfirm>,
+                ]}
               >
                 <p className="text-gray-700 mb-2">
                   <strong className="text-blue-500">Username:</strong>{" "}
@@ -96,10 +162,15 @@ function UserBlockedPage() {
                     ))}
                   </p>
                 )}
+                {user.blockReason && (
+                  <p className="text-gray-700">
+                    <strong className="text-blue-500">Block Reason:</strong>{" "}
+                    <span className="font-medium">{user.blockReason}</span>
+                  </p>
+                )}
                 <Tag color="error" className="mt-2 font-semibold">
                   Blocked
                 </Tag>
-                {/* You can add more details or actions (like unblock) here */}
               </Card>
             </List.Item>
           )}

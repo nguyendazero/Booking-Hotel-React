@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, List, Card, Avatar, Tag, Input, Pagination } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  Breadcrumb,
+  List,
+  Card,
+  Avatar,
+  Tag,
+  Input,
+  Pagination,
+  Button,
+  Modal,
+  Form,
+  Input as AntInput,
+  message,
+  Popconfirm,
+} from "antd";
+import {
+  SearchOutlined,
+  LockOutlined,
+  UnlockOutlined,
+} from "@ant-design/icons";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
@@ -12,12 +30,19 @@ function UserListPage() {
     error,
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/admin/accounts");
+
   const token = useSelector((state) => state.auth.token);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [paginatedUsers, setPaginatedUsers] = useState([]);
+  const [blockModalVisible, setBlockModalVisible] = useState(false);
+  const [blockReason, setBlockReason] = useState("");
+  const [userToBlock, setUserToBlock] = useState(null);
+  const [blocking, setBlocking] = useState(false);
+  const [unblocking, setUnblocking] = useState(false);
+  const [userToUnblock, setUserToUnblock] = useState(null);
 
   useEffect(() => {
     fetchData({
@@ -50,6 +75,96 @@ function UserListPage() {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const showBlockModal = (userId) => {
+    setUserToBlock(userId);
+    setBlockModalVisible(true);
+    setBlockReason("");
+  };
+
+  const handleBlockModalOk = async () => {
+    if (!userToBlock) return;
+    setBlocking(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/admin/block-account/${userToBlock}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason: blockReason }),
+        }
+      );
+
+      if (response.status === 204) {
+        message.success("Account has been blocked successfully.");
+        setBlockModalVisible(false);
+        setUserToBlock(null);
+        setBlockReason("");
+        fetchData({
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else {
+        const errorData = await response.json();
+        message.error(
+          `Failed to block account: ${
+            errorData?.message || response.statusText
+          }`
+        );
+      }
+    } catch (error) {
+      message.error(`Failed to block account: ${error.message}`);
+    } finally {
+      setBlocking(false);
+    }
+  };
+
+  const handleBlockModalCancel = () => {
+    setBlockModalVisible(false);
+    setUserToBlock(null);
+    setBlockReason("");
+  };
+
+  const handleUnblock = async (userId) => {
+    setUserToUnblock(userId);
+    setUnblocking(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/admin/unblock-account/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 204) {
+        message.success("Account has been unblocked successfully.");
+        fetchData({
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }); // Refetch user data
+      } else {
+        const errorData = await response.json();
+        message.error(
+          `Failed to unblock account: ${
+            errorData?.message || response.statusText
+          }`
+        );
+      }
+    } catch (error) {
+      message.error(`Failed to unblock account: ${error.message}`);
+    } finally {
+      setUnblocking(false);
+      setUserToUnblock(null);
+    }
   };
 
   return (
@@ -96,53 +211,93 @@ function UserListPage() {
             dataSource={paginatedUsers}
             renderItem={(user) => (
               <List.Item key={user.id}>
-                <Card
-                  className="rounded-md shadow-md hover:shadow-lg transition duration-300 border-purple-200"
-                  title={
-                    <div className="flex items-center">
-                      <Avatar
-                        src={user.avatar}
-                        size="small"
-                        className="mr-3 bg-indigo-500 text-white"
-                      />
-                      <span className="text-lg font-semibold text-gray-800">
-                        {user.fullName}
-                      </span>
-                    </div>
-                  }
-                >
-                  <p className="text-gray-700 mb-2">
-                    <strong className="text-blue-500">Username:</strong>{" "}
-                    <span className="font-medium">{user.username}</span>
-                  </p>
-                  <p className="text-gray-700 mb-2">
-                    <strong className="text-blue-500">Email:</strong>{" "}
-                    <span className="font-medium">{user.email}</span>
-                  </p>
-                  <p className="text-gray-700 mb-2">
-                    <strong className="text-blue-500">Phone:</strong>{" "}
-                    <span className="font-medium">{user.phone}</span>
-                  </p>
-                  {user.roles && user.roles.length > 0 && (
-                    <p className="text-gray-700">
-                      <strong className="text-blue-500">Roles:</strong>{" "}
-                      {user.roles.map((role) => (
-                        <Tag
-                          key={role}
-                          className="mr-1 font-medium"
-                          style={{
-                            color: "#6d28d9",
-                            backgroundColor: "#ede9fe",
-                            borderColor: "#c4b5fd",
-                          }}
+                <div className="rounded-md shadow-md hover:shadow-lg hover:scale-105 transition duration-300 border-purple-200 cursor-pointer">
+                  <Card
+                    title={
+                      <div className="flex items-center">
+                        <Avatar
+                          src={user.avatar}
+                          size="small"
+                          className="mr-3 bg-indigo-500 text-white"
+                        />
+                        <span className="text-lg font-semibold text-gray-800">
+                          {user.fullName}
+                        </span>
+                      </div>
+                    }
+                    actions={[
+                      user.blockReason ? (
+                        <Popconfirm
+                          title="Are you sure you want to unblock this account?"
+                          onConfirm={() => handleUnblock(user.id)}
+                          okText="Yes"
+                          cancelText="No"
                         >
-                          {role}
-                        </Tag>
-                      ))}
+                          <Button
+                            key="unblock"
+                            icon={<UnlockOutlined />}
+                            className="text-green-500 hover:text-green-700"
+                            loading={unblocking && userToUnblock === user.id}
+                          >
+                            Unblock
+                          </Button>
+                        </Popconfirm>
+                      ) : (
+                        <Button
+                          key="block"
+                          icon={<LockOutlined />}
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => showBlockModal(user.id)}
+                        >
+                          Block
+                        </Button>
+                      ),
+                    ]}
+                  >
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-500">Username:</strong>{" "}
+                      <span className="font-medium">{user.username}</span>
                     </p>
-                  )}
-                  {/* You can add more user details or actions here */}
-                </Card>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-500">Email:</strong>{" "}
+                      <span className="font-medium">{user.email}</span>
+                    </p>
+                    <p className="text-gray-700 mb-2">
+                      <strong className="text-blue-500">Phone:</strong>{" "}
+                      <span className="font-medium">{user.phone}</span>
+                    </p>
+                    {user.roles && user.roles.length > 0 && (
+                      <p className="text-gray-700">
+                        <strong className="text-blue-500">Roles:</strong>{" "}
+                        {user.roles.map((role) => (
+                          <Tag
+                            key={role}
+                            className="mr-1 font-medium"
+                            style={{
+                              color: "#6d28d9",
+                              backgroundColor: "#ede9fe",
+                              borderColor: "#c4b5fd",
+                            }}
+                          >
+                            {role}
+                          </Tag>
+                        ))}
+                      </p>
+                    )}
+                    <p className="text-gray-700">
+                      <strong className="text-blue-500">Status:</strong>{" "}
+                      <span
+                        className={
+                          user.blockReason
+                            ? "font-semibold text-red-600"
+                            : "font-semibold text-green-600"
+                        }
+                      >
+                        {user.blockReason ? "Locked" : "Activate"}
+                      </span>
+                    </p>
+                  </Card>
+                </div>
               </List.Item>
             )}
           />
@@ -163,6 +318,23 @@ function UserListPage() {
             : "No users found."}
         </p>
       )}
+
+      <Modal
+        title="Reason for account lock"
+        open={blockModalVisible}
+        onOk={handleBlockModalOk}
+        onCancel={handleBlockModalCancel}
+        confirmLoading={blocking}
+      >
+        <Form>
+          <Form.Item label="Lý do:">
+            <AntInput.TextArea
+              value={blockReason}
+              onChange={(e) => setBlockReason(e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
