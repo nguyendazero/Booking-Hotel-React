@@ -22,12 +22,13 @@ import {
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import usePut from "../hooks/usePut";
 
 function UserListPage() {
   const {
     data: users,
-    loading,
-    error,
+    loading: fetchLoading,
+    error: fetchError,
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/admin/accounts");
 
@@ -40,8 +41,16 @@ function UserListPage() {
   const [blockModalVisible, setBlockModalVisible] = useState(false);
   const [blockReason, setBlockReason] = useState("");
   const [userToBlock, setUserToBlock] = useState(null);
-  const [blocking, setBlocking] = useState(false);
-  const [unblocking, setUnblocking] = useState(false);
+  const {
+    putData: blockAccount,
+    loading: blocking,
+    error: blockError,
+  } = usePut(); // Use custom hook for block
+  const {
+    putData: unblockAccount,
+    loading: unblocking,
+    error: unblockError,
+  } = usePut(); // Use custom hook for unblock
   const [userToUnblock, setUserToUnblock] = useState(null);
 
   useEffect(() => {
@@ -51,6 +60,18 @@ function UserListPage() {
       },
     });
   }, [fetchData, token]);
+
+  useEffect(() => {
+    if (blockError) {
+      message.error(blockError);
+    }
+  }, [blockError]);
+
+  useEffect(() => {
+    if (unblockError) {
+      message.error(unblockError);
+    }
+  }, [unblockError]);
 
   useEffect(() => {
     if (users) {
@@ -85,42 +106,25 @@ function UserListPage() {
 
   const handleBlockModalOk = async () => {
     if (!userToBlock) return;
-    setBlocking(true);
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/admin/block-account/${userToBlock}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ reason: blockReason }),
-        }
-      );
+    const url = `http://localhost:8080/api/v1/admin/block-account/${userToBlock}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await blockAccount(url, { reason: blockReason }, config);
 
-      if (response.status === 204) {
-        message.success("Account has been blocked successfully.");
-        setBlockModalVisible(false);
-        setUserToBlock(null);
-        setBlockReason("");
-        fetchData({
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else {
-        const errorData = await response.json();
-        message.error(
-          `Failed to block account: ${
-            errorData?.message || response.statusText
-          }`
-        );
-      }
-    } catch (error) {
-      message.error(`Failed to block account: ${error.message}`);
-    } finally {
-      setBlocking(false);
+    if (response?.status === 204) {
+      message.success("Account has been blocked successfully.");
+      setBlockModalVisible(false);
+      setUserToBlock(null);
+      setBlockReason("");
+      fetchData({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }); // Refetch user data
     }
   };
 
@@ -132,39 +136,24 @@ function UserListPage() {
 
   const handleUnblock = async (userId) => {
     setUserToUnblock(userId);
-    setUnblocking(true);
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/admin/unblock-account/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    const url = `http://localhost:8080/api/v1/admin/unblock-account/${userId}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-      if (response.status === 204) {
-        message.success("Account has been unblocked successfully.");
-        fetchData({
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }); // Refetch user data
-      } else {
-        const errorData = await response.json();
-        message.error(
-          `Failed to unblock account: ${
-            errorData?.message || response.statusText
-          }`
-        );
-      }
-    } catch (error) {
-      message.error(`Failed to unblock account: ${error.message}`);
-    } finally {
-      setUnblocking(false);
-      setUserToUnblock(null);
+    const response = await unblockAccount(url, {}, config);
+
+    if (response?.status === 204) {
+      message.success("Account has been unblocked successfully.");
+      fetchData({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }); // Refetch user data
     }
+    setUserToUnblock(null);
   };
 
   return (
@@ -190,11 +179,11 @@ function UserListPage() {
           className="w-48 rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         />
       </div>
-      {loading ? (
+      {fetchLoading ? (
         <LoadingSpinner />
-      ) : error ? (
+      ) : fetchError ? (
         <p className="text-red-500 font-semibold">
-          Error fetching users: {error}
+          Error fetching users: {fetchError}
         </p>
       ) : filteredUsers && filteredUsers.length > 0 ? (
         <>
@@ -248,6 +237,7 @@ function UserListPage() {
                           icon={<LockOutlined />}
                           className="text-red-500 hover:text-red-700"
                           onClick={() => showBlockModal(user.id)}
+                          loading={blocking && userToBlock === user.id}
                         >
                           Block
                         </Button>

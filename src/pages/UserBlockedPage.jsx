@@ -13,16 +13,17 @@ import { UnlockOutlined } from "@ant-design/icons";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import usePut from "../hooks/usePut";
 
 function UserBlockedPage() {
   const {
     data: users,
-    loading,
-    error,
+    loading: fetchLoading,
+    error: fetchError,
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/admin/accounts?isBlocked=true");
   const token = useSelector((state) => state.auth.token);
-  const [unblocking, setUnblocking] = useState(false);
+  const { putData, loading: unblocking, error: unblockError } = usePut();
   const [userToUnblock, setUserToUnblock] = useState(null);
 
   useEffect(() => {
@@ -31,51 +32,42 @@ function UserBlockedPage() {
     });
   }, [fetchData, token]);
 
+  useEffect(() => {
+    if (unblockError) {
+      message.error(unblockError);
+    }
+  }, [unblockError]);
+
   const handleUnblock = async (userId) => {
     setUserToUnblock(userId);
-    setUnblocking(true);
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/admin/unblock-account/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    const url = `http://localhost:8080/api/v1/admin/unblock-account/${userId}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-      if (response.status === 204) {
-        message.success("Account has been unblocked successfully.");
-        fetchData({
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }); // Refetch user data
-      } else {
-        const errorData = await response.json();
-        message.error(
-          `Failed to unblock account: ${
-            errorData?.message || response.statusText
-          }`
-        );
-      }
-    } catch (error) {
-      message.error(`Failed to unblock account: ${error.message}`);
-    } finally {
-      setUnblocking(false);
-      setUserToUnblock(null);
+    const response = await putData(url, {}, config);
+
+    if (response?.status === 204) {
+      message.success("Account has been unblocked successfully.");
+      fetchData({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }); // Refetch user data
     }
+    setUserToUnblock(null);
   };
 
-  if (loading) {
+  if (fetchLoading) {
     return <LoadingSpinner />;
   }
 
-  if (error) {
+  if (fetchError) {
     return (
       <p className="text-red-500 font-semibold">
-        Error fetching blocked users: {error}
+        Error fetching blocked users: {fetchError}
       </p>
     );
   }
