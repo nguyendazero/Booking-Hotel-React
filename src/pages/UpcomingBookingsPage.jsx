@@ -3,7 +3,7 @@ import { Breadcrumb, List, Card } from "antd";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
-import moment from "moment"; // For date formatting
+import moment from "moment";
 
 function UpcomingBookingsPage() {
   const {
@@ -11,7 +11,7 @@ function UpcomingBookingsPage() {
     loading,
     error,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/admin/bookings"); // Use the same endpoint for all bookings
+  } = useFetch("http://localhost:8080/api/v1/admin/bookings");
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
@@ -33,61 +33,84 @@ function UpcomingBookingsPage() {
 
   if (error) {
     return (
-      <p className="text-red-600 font-bold">
+      <p className="text-red-500 font-semibold">
         Error fetching upcoming bookings: {error}
       </p>
     );
   }
 
   return (
-    <div
-      className="site-layout-background"
-      style={{ padding: 24, minHeight: 360, background: "#fff" }}
-    >
-      <Breadcrumb style={{ margin: "16px 0" }}>
-        <Breadcrumb.Item>Admin</Breadcrumb.Item>
-        <Breadcrumb.Item>Bookings</Breadcrumb.Item>
-        <Breadcrumb.Item>Upcoming</Breadcrumb.Item>
+    <div className="p-6 bg-gradient-to-br from-purple-100 to-pink-100 rounded-md shadow-lg">
+      <Breadcrumb className="mb-4">
+        <Breadcrumb.Item>
+          <span className="text-gray-600 hover:text-purple-500">Admin</span>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <span className="text-gray-600 hover:text-purple-500">Bookings</span>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <span className="text-purple-700 font-semibold">Upcoming</span>
+        </Breadcrumb.Item>
       </Breadcrumb>
-      <h1>Upcoming Bookings</h1>
+      <h1 className="text-2xl font-bold text-purple-700 mb-6">
+        Upcoming Bookings
+      </h1>
       {filteredUpcomingBookings && filteredUpcomingBookings.length > 0 ? (
         <List
+          className="divide-y divide-gray-300"
           grid={{ gutter: 16, column: 1 }}
           dataSource={filteredUpcomingBookings}
           renderItem={(booking) => (
-            <List.Item>
+            <List.Item className="py-4">
               <Card
-                title={`Booking ID: ${booking.id}`}
-                style={{ width: "100%" }}
+                className="bg-white shadow-md rounded-md hover:shadow-lg transition duration-300"
+                title={
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold text-indigo-600">
+                      Booking ID: {booking.id}
+                    </span>
+                    <span
+                      className={`text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full`}
+                    >
+                      Upcoming
+                    </span>
+                  </div>
+                }
               >
-                <p>
-                  <strong>Hotel:</strong> {booking.hotel.name}
+                <p className="text-gray-700">
+                  <strong className="text-blue-500">Hotel:</strong>{" "}
+                  <span className="font-medium">{booking.hotel.name}</span>
                 </p>
-                <p>
-                  <strong>Start Date:</strong>{" "}
-                  {moment(booking.startDate).format("YYYY-MM-DD HH:mm:ss")}
+                <p className="text-gray-700">
+                  <strong className="text-blue-500">Start Date:</strong>{" "}
+                  <span className="font-medium">
+                    {moment(booking.startDate).format("YYYY-MM-DD HH:mm:ss")}
+                  </span>
                 </p>
-                <p>
-                  <strong>End Date:</strong>{" "}
-                  {moment(booking.endDate).format("YYYY-MM-DD HH:mm:ss")}
+                <p className="text-gray-700">
+                  <strong className="text-blue-500">End Date:</strong>{" "}
+                  <span className="font-medium">
+                    {moment(booking.endDate).format("YYYY-MM-DD HH:mm:ss")}
+                  </span>
                 </p>
-                <p>
-                  <strong>Total Price:</strong> {booking.totalPrice}
+                <p className="text-gray-700">
+                  <strong className="text-blue-500">Total Price:</strong>{" "}
+                  <span className="font-semibold text-green-600">
+                    ${booking.totalPrice.toFixed(2)}
+                  </span>
                 </p>
-                <p>
-                  <strong>Status:</strong> {booking.status}
+                <p className="text-gray-700">
+                  <strong className="text-blue-500">Customer:</strong>{" "}
+                  <span className="font-medium">
+                    {booking.account.fullName} ({booking.account.email})
+                  </span>
                 </p>
-                <p>
-                  <strong>Customer:</strong> {booking.account.fullName} (
-                  {booking.account.email})
-                </p>
-                {/* Display other booking details as needed */}
               </Card>
             </List.Item>
           )}
         />
       ) : (
-        <p>No upcoming bookings found.</p>
+        <p className="text-gray-500 italic">No upcoming bookings found.</p>
       )}
     </div>
   );
