@@ -26,6 +26,9 @@ import PendingRegistrationsPage from "./pages/PendingRegistrationsPage";
 import AcceptedRegistrationsPage from "./pages/AcceptedRegistrationsPage";
 import RejectedRegistrationsPage from "./pages/RejectedRegistrationsPage";
 import HotelListPage from "./pages/HotelListPage";
+import UserListPage from "./pages/UserListPage";
+import UserBlockedPage from "./pages/UserBlockedPage";
+import UserOwnerPage from "./pages/UserOwnerPage";
 
 const router = createBrowserRouter([
   {
@@ -116,7 +119,19 @@ const router = createBrowserRouter([
           },
           {
             path: "hotels",
-            element: <HotelListPage />, // Add HotelListPage route
+            element: <HotelListPage />,
+          },
+          {
+            path: "users",
+            element: <UserListPage />,
+          },
+          {
+            path: "users/blocked",
+            element: <UserBlockedPage />,
+          },
+          {
+            path: "users/owners",
+            element: <UserOwnerPage />,
           },
         ],
       },
