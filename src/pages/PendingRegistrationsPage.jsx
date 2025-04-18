@@ -1,18 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { Breadcrumb, List, Card, Tag, Button, Space } from "antd";
+import React, { useEffect } from "react";
+import { Breadcrumb, List, Card, Tag, Button, Space, message } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+import usePut from "../hooks/usePut";
 
 function PendingRegistrationsPage() {
   const {
     data: allRegistrations,
-    loading,
-    error,
+    loading: fetchLoading,
+    error: fetchError,
     fetchData,
   } = useFetch("http://localhost:8080/api/v1/admin/owner-registrations");
   const token = useSelector((state) => state.auth.token);
+  const {
+    putData: approveRegistration,
+    loading: approving,
+    error: approveError,
+  } = usePut(); // Use custom hook for approve
+  const {
+    putData: rejectRegistration,
+    loading: rejecting,
+    error: rejectError,
+  } = usePut(); // Use custom hook for reject
 
   useEffect(() => {
     fetchData({
@@ -20,19 +31,59 @@ function PendingRegistrationsPage() {
     });
   }, [fetchData, token]);
 
+  useEffect(() => {
+    if (approveError) {
+      message.error(approveError);
+    }
+  }, [approveError]);
+
+  useEffect(() => {
+    if (rejectError) {
+      message.error(rejectError);
+    }
+  }, [rejectError]);
+
   // Filter to show only pending registrations
   const filteredPendingRegistrations = allRegistrations
     ? allRegistrations.filter((reg) => reg.status === "PENDING")
     : [];
 
-  if (loading) {
+  const handleApprove = async (registrationId) => {
+    const url = `http://localhost:8080/api/v1/admin/owner-registration/accept-registration/${registrationId}`;
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await approveRegistration(url, {}, config);
+    if (response?.status === 204) {
+      message.success(
+        `Registration ID ${registrationId} approved successfully.`
+      );
+      fetchData({ headers: { Authorization: `Bearer ${token}` } });
+    }
+  };
+
+  const handleReject = async (registrationId) => {
+    const url = `http://localhost:8080/api/v1/admin/owner-registration/reject-registration/${registrationId}`;
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await rejectRegistration(url, {}, config);
+    if (response?.status === 204) {
+      message.success(
+        `Registration ID ${registrationId} rejected successfully.`
+      );
+      fetchData({ headers: { Authorization: `Bearer ${token}` } });
+    }
+  };
+
+  if (fetchLoading) {
     return <LoadingSpinner />;
   }
 
-  if (error) {
+  if (fetchError) {
     return (
       <p className="text-red-500 font-semibold">
-        Error fetching pending registrations: {error}
+        Error fetching pending registrations: {fetchError}
       </p>
     );
   }
@@ -108,6 +159,8 @@ function PendingRegistrationsPage() {
                       icon={<CheckCircleOutlined />}
                       type="primary"
                       className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md shadow-sm"
+                      onClick={() => handleApprove(registration.id)}
+                      loading={approving}
                     >
                       Approve
                     </Button>
@@ -115,6 +168,8 @@ function PendingRegistrationsPage() {
                       icon={<CloseCircleOutlined />}
                       type="default"
                       className="text-red-500 hover:text-red-700 font-bold py-2 px-4 rounded-md shadow-sm border border-red-500"
+                      onClick={() => handleReject(registration.id)}
+                      loading={rejecting}
                     >
                       Reject
                     </Button>
