@@ -76,8 +76,7 @@ const Statistic = ({ bookings }) => {
               title="Total Bookings"
               value={totalBookings}
               precision={0}
-              valueStyle={{ color: "#3f8600" }}
-              prefix={<ArrowUpOutlined />}
+              valueStyle={{ color: "#3f8600", textAlign: "center" }}
             />
           </Card>
         </Col>
@@ -87,8 +86,7 @@ const Statistic = ({ bookings }) => {
               title="Total Revenue"
               value={totalRevenue}
               precision={2}
-              valueStyle={{ color: "#cf1322" }}
-              prefix={<ArrowDownOutlined />}
+              valueStyle={{ color: "#cf1322", textAlign: "center" }}
               suffix=" USD"
             />
           </Card>

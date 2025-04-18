@@ -124,10 +124,10 @@ const UserProfileUpdate = ({ onClose }) => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 max-w-3xl">
+    <div className="relative flex flex-col items-center bg-white shadow-md rounded-lg p-6 max-w-3xl">
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 text-xl font-bold text-gray-500 hover:text-gray-800"
+        className="absolute top-2 right-2 text-xl font-bold text-gray-500 hover:text-gray-800 focus:outline-none" // Adjusted top and right
       >
         X
       </button>
@@ -205,7 +205,7 @@ const UserProfileUpdate = ({ onClose }) => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-violet-700 text-white p-2 rounded-md hover:bg-green-600"
+                className="w-full bg-violet-700 text-white p-2 rounded-md hover:bg-green-600 focus:outline-none" // Added focus-outline-none
                 disabled={loading}
               >
                 {loading ? "Updating..." : "Update Profile"}
@@ -216,7 +216,7 @@ const UserProfileUpdate = ({ onClose }) => {
           {/* Change Password Button */}
           <button
             onClick={handleChangePasswordClick}
-            className="mt-4 text-blue-500"
+            className="mt-4 text-blue-500 focus:outline-none"
           >
             Change Password
           </button>
@@ -238,7 +238,6 @@ const UserProfileUpdate = ({ onClose }) => {
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               />
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 New Password
@@ -252,7 +251,6 @@ const UserProfileUpdate = ({ onClose }) => {
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               />
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Confirm New Password
@@ -266,10 +264,9 @@ const UserProfileUpdate = ({ onClose }) => {
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               />
             </div>
-
             <button
               type="submit"
-              className="w-full bg-violet-700 text-white p-2 rounded-md hover:bg-green-600"
+              className="w-full bg-violet-700 text-white p-2 rounded-md hover:bg-green-600 focus:outline-none" // Added focus-outline-none
               disabled={changePasswordLoading}
             >
               {changePasswordLoading
@@ -281,7 +278,7 @@ const UserProfileUpdate = ({ onClose }) => {
           {/* Button to go back to Update Info */}
           <button
             onClick={handleBackToUpdateInfo}
-            className="mt-4 text-gray-500"
+            className="mt-4 text-gray-500 focus:outline-none" // Added focus-outline-none
           >
             Back to Update Info
           </button>

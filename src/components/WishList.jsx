@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useDelete from "../hooks/useDelete";
-import { message, Popconfirm, Button } from "antd";
-import { Trash2 } from "lucide-react";
+import { message, Popconfirm } from "antd";
+import { HeartOff } from "lucide-react"; // Import HeartOff icon
 
 const WishList = ({ wishList, onRemoveHotel }) => {
   const token = useSelector((state) => state.auth.token);
@@ -100,7 +100,8 @@ const WishList = ({ wishList, onRemoveHotel }) => {
                     }`}
                     disabled={deleting}
                   >
-                    <Trash2 className="h-6 w-6" />
+                    <HeartOff className="h-6 w-6" />{" "}
+                    {/* Use HeartOff icon here */}
                   </button>
                 </Popconfirm>
               </div>
