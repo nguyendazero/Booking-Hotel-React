@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useDelete from "../hooks/useDelete";
-import { message } from "antd";
+import { message, Popconfirm, Button } from "antd";
 import { Trash2 } from "lucide-react";
 
 const WishList = ({ wishList, onRemoveHotel }) => {
@@ -15,28 +15,22 @@ const WishList = ({ wishList, onRemoveHotel }) => {
       return;
     }
 
-    const confirmRemove = window.confirm(
-      "Are you sure you want to remove this hotel from your favorites?"
-    );
+    const deleteUrl = `http://localhost:8080/api/v1/user/wishlist/${hotelIdToRemove}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-    if (confirmRemove) {
-      const deleteUrl = `http://localhost:8080/api/v1/user/wishlist/${hotelIdToRemove}`;
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+    const response = await deleteData(deleteUrl, config);
 
-      const response = await deleteData(deleteUrl, config);
-
-      if (response && response.status === 204) {
-        message.success("Hotel removed from your favorites!");
-        if (onRemoveHotel) {
-          onRemoveHotel(hotelIdToRemove);
-        }
-      } else if (deleteError) {
-        message.error(`Failed to remove from favorites: ${deleteError}`);
+    if (response && response.status === 204) {
+      message.success("Hotel removed from your favorites!");
+      if (onRemoveHotel) {
+        onRemoveHotel(hotelIdToRemove);
       }
+    } else if (deleteError) {
+      message.error(`Failed to remove from favorites: ${deleteError}`);
     }
   };
 
@@ -92,17 +86,23 @@ const WishList = ({ wishList, onRemoveHotel }) => {
                     Learn More
                   </button>
                 </Link>
-                <button
-                  onClick={() => handleRemoveFromWishlist(hotel.id)}
-                  className={`text-red-500 hover:text-red-700 focus:outline-none transition-colors duration-200 ml-2 ${
-                    deleting
-                      ? "cursor-not-allowed opacity-50"
-                      : "cursor-pointer"
-                  }`}
-                  disabled={deleting}
+                <Popconfirm
+                  title="Are you sure you want to remove this hotel from your favorites?"
+                  onConfirm={() => handleRemoveFromWishlist(hotel.id)}
+                  okText="Yes"
+                  cancelText="No"
                 >
-                  <Trash2 className="h-6 w-6" />
-                </button>
+                  <button
+                    className={`text-red-500 hover:text-red-700 focus:outline-none transition-colors duration-200 ml-2 ${
+                      deleting
+                        ? "cursor-not-allowed opacity-50"
+                        : "cursor-pointer"
+                    }`}
+                    disabled={deleting}
+                  >
+                    <Trash2 className="h-6 w-6" />
+                  </button>
+                </Popconfirm>
               </div>
             </div>
           ))}

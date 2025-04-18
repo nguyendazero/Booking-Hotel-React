@@ -40,8 +40,7 @@ function WishListPage() {
   };
 
   if (wishListLoading) return <LoadingSpinner />;
-  if (wishListError)
-    return <p>Error loading favorites: {wishListError}</p>;
+  if (wishListError) return <p>Error loading favorites: {wishListError}</p>;
   if (!wishListItems || wishListItems.length === 0)
     return (
       <div className="mt-5 mb-5">

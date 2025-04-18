@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { formatDate } from "../util/dateUtils";
-import { Button, message } from "antd";
+import { Button, message, Popconfirm } from "antd";
 import { useSelector } from "react-redux";
 import useDeleteCustom from "../hooks/useDelete";
 
@@ -63,33 +63,36 @@ const HotelDetailReviews = ({
     }
   };
 
-  const handleDeleteReview = async (reviewId) => {
-    if (window.confirm("Are you sure you want to delete this review?")) {
-      setIsDeleting(true);
-      setReviewBeingDeleted(reviewId);
+  const confirmDeleteReview = (reviewId) => {
+    setIsDeleting(true);
+    setReviewBeingDeleted(reviewId);
+    deleteReview(reviewId);
+  };
 
-      const url = `http://localhost:8080/api/v1/user/rating/${reviewId}`;
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+  const deleteReview = async (reviewId) => {
+    const url = `http://localhost:8080/api/v1/user/rating/${reviewId}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-      const response = await deleteReviewApi(url, config);
-      console.log("response: ", response);
-      if (response && response.status === 204) {
-        if (onReviewDeleted) {
-          onReviewDeleted(reviewId); // Gọi prop onReviewDeleted
-        }
+    const response = await deleteReviewApi(url, config);
+    console.log("response: ", response);
+    if (response && response.status === 204) {
+      if (onReviewDeleted) {
+        onReviewDeleted(reviewId); // Gọi prop onReviewDeleted
       }
-
-      setIsDeleting(false);
-      setReviewBeingDeleted(null);
     }
+
+    setIsDeleting(false);
+    setReviewBeingDeleted(null);
   };
 
   return (
-    <div className="border rounded-lg p-6 shadow-md mt-4 mb-4 mx-50"> {/* Giới hạn chiều rộng */}
+    <div className="border rounded-lg p-6 shadow-md mt-4 mb-4 mx-50">
+      {" "}
+      {/* Giới hạn chiều rộng */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">
           <span>Reviews</span> (
@@ -107,7 +110,6 @@ const HotelDetailReviews = ({
       </div>
       <p className="text-gray-600 mb-4">About the reviews for this hotel</p>
       <hr className="border-t-2 border-gray-300 my-4" />
-
       {/* Add Review Modal */}
       {isAddingReviewModalOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-black/20 z-50">
@@ -200,7 +202,6 @@ const HotelDetailReviews = ({
           </div>
         </div>
       )}
-
       {Array.isArray(initialReviews) && initialReviews.length > 0 && (
         <div className="mt-4 space-y-6">
           {displayedReviews.map((review) => (
@@ -235,22 +236,30 @@ const HotelDetailReviews = ({
                   ))}
                 </div>
                 {user !== null && user.id === review.account.id && (
-                  <Button
-                    color="danger"
-                    variant="solid"
-                    size="small"
-                    loading={isDeleting && reviewBeingDeleted === review.id}
-                    disabled={isDeleting && reviewBeingDeleted !== review.id}
-                    onClick={() => handleDeleteReview(review.id)}
+                  <Popconfirm
+                    title="Are you sure you want to delete this review?"
+                    onConfirm={() => confirmDeleteReview(review.id)}
+                    okText="Yes"
+                    cancelText="No"
                   >
-                    Delete
-                  </Button>
+                    <Button
+                      color="danger"
+                      variant="solid"
+                      size="small"
+                      loading={isDeleting && reviewBeingDeleted === review.id}
+                      disabled={isDeleting && reviewBeingDeleted !== review.id}
+                    >
+                      Delete
+                    </Button>
+                  </Popconfirm>
                 )}
               </div>
 
               {review.images && review.images.length > 0 && (
                 <div className="mt-4">
-                  <div className="flex flex-wrap gap-2"> {/* Sử dụng flex-wrap */}
+                  <div className="flex flex-wrap gap-2">
+                    {" "}
+                    {/* Sử dụng flex-wrap */}
                     {review.images.map((image, index) => (
                       <img
                         key={image?.id || index}
@@ -266,7 +275,6 @@ const HotelDetailReviews = ({
           ))}
         </div>
       )}
-
       {Array.isArray(initialReviews) && initialReviews.length > 3 && (
         <div className="mt-4 text-center">
           <button
