@@ -317,7 +317,7 @@ function UserListPage() {
         confirmLoading={blocking}
       >
         <Form>
-          <Form.Item label="Lý do:">
+          <Form.Item label="Ban reason:">
             <AntInput.TextArea
               value={blockReason}
               onChange={(e) => setBlockReason(e.target.value)}
