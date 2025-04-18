@@ -10,7 +10,7 @@ import {
   ListChecks,
   CalendarDays,
 } from "lucide-react";
-import { Button, message, Modal, Form, Input, InputNumber, Select } from "antd";
+import { Button, message, Form, Popconfirm } from "antd";
 import useFetch from "../hooks/useFetch";
 import usePost from "../hooks/usePost";
 import useDelete from "../hooks/useDelete";
@@ -51,7 +51,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
   } = usePost("http://localhost:8080/api/v1/owner/hotel");
   const { putData, loading: updatingHotel, error: updateHotelError } = usePut();
   const {
-    deleteData: deleteHotel,
+    deleteData: deleteHotelApi,
     loading: deletingHotel,
     error: deleteHotelError,
   } = useDelete();
@@ -188,28 +188,22 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
   };
 
   const handleDeleteHotel = async (hotelId) => {
-    const confirmRemove = window.confirm(
-      "Are you sure you want to remove this hotel?"
-    );
-
-    if (confirmRemove) {
-      try {
-        await deleteHotel(
-          `http://localhost:8080/api/v1/owner/hotel/${hotelId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        message.success("Hotel deleted successfully!");
-        onHotelAdded();
-      } catch (error) {
-        console.error("Failed to delete hotel:", error);
-        message.error(
-          `Failed to delete hotel: ${error?.message || "Unknown error"}`
-        );
-      }
+    try {
+      await deleteHotelApi(
+        `http://localhost:8080/api/v1/owner/hotel/${hotelId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      message.success("Hotel deleted successfully!");
+      onHotelAdded();
+    } catch (error) {
+      console.error("Failed to delete hotel:", error);
+      message.error(
+        `Failed to delete hotel: ${error?.message || "Unknown error"}`
+      );
     }
   };
 
@@ -464,15 +458,21 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
                 >
                   Edit
                 </Button>
-                <Button
-                  color="danger"
-                  variant="solid"
-                  icon={<Trash size={16} />}
-                  onClick={() => handleDeleteHotel(hotel.id)}
-                  loading={deletingHotel}
+                <Popconfirm
+                  title="Are you sure you want to remove this hotel?"
+                  onConfirm={() => handleDeleteHotel(hotel.id)}
+                  okText="Yes"
+                  cancelText="No"
                 >
-                  Delete
-                </Button>
+                  <Button
+                    color="danger"
+                    variant="solid"
+                    icon={<Trash size={16} />}
+                    loading={deletingHotel}
+                  >
+                    Delete
+                  </Button>
+                </Popconfirm>
                 {deleteHotelError && (
                   <div className="text-red-500 text-sm mt-1">
                     {deleteHotelError}
