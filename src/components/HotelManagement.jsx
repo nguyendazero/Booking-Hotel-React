@@ -24,7 +24,13 @@ import AddHotelModal from "../components/AddHotelModal";
 import UpdateHotelModal from "../components/UpdateHotelModal";
 import { useSelector } from "react-redux";
 
-const HotelManagement = ({ hotels, onHotelAdded }) => {
+const HotelManagement = ({
+  hotels,
+  onHotelAdded,
+  isAddHotelModalOpen: propIsAddHotelModalOpen,
+  onCloseAddHotelModal: propOnCloseAddHotelModal,
+  onOpenAddHotelModal, // Nhận hàm mở modal từ cha
+}) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAmenityModalVisible, setIsAmenityModalVisible] = useState(false);
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
@@ -40,7 +46,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
   const [updateForm] = Form.useForm();
   const [updateHighlightImage, setUpdateHighlightImage] = useState(null); // State riêng cho highlight image khi update
 
-  const [isAddHotelModalOpen, setIsAddHotelModalOpen] = useState(false);
+  // Sử dụng prop để kiểm soát trạng thái modal thêm khách sạn
   const [addForm] = Form.useForm();
   const [addHighlightImage, setAddHighlightImage] = useState(null);
 
@@ -65,10 +71,10 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
-    if (isAddHotelModalOpen || isUpdateHotelModalOpen) {
+    if (propIsAddHotelModalOpen || isUpdateHotelModalOpen) {
       fetchDistricts();
     }
-  }, [isAddHotelModalOpen, isUpdateHotelModalOpen, fetchDistricts]);
+  }, [propIsAddHotelModalOpen, isUpdateHotelModalOpen, fetchDistricts]);
 
   // Handler cho nút Edit
   const handleEditHotel = (hotel) => {
@@ -134,15 +140,13 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
     }
   };
 
-  const handleAddHotelClick = () => {
-    setIsAddHotelModalOpen(true);
-    setAddHighlightImage(null);
-  };
-
   const handleAddHotelCancel = () => {
-    setIsAddHotelModalOpen(false);
     addForm.resetFields();
     setAddHighlightImage(null);
+    // Gọi callback từ cha để thông báo đóng modal
+    if (propOnCloseAddHotelModal) {
+      propOnCloseAddHotelModal();
+    }
   };
 
   const handleAddHighlightImageChange = (event) => {
@@ -173,10 +177,13 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
 
       if (response) {
         message.success("Hotel added successfully!");
-        setIsAddHotelModalOpen(false);
         addForm.resetFields();
         setAddHighlightImage(null);
         onHotelAdded();
+        // Gọi callback từ cha để thông báo đóng modal
+        if (propOnCloseAddHotelModal) {
+          propOnCloseAddHotelModal();
+        }
       }
     } catch (error) {
       console.error("Failed to add hotel:", error);
@@ -392,14 +399,21 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
 
   return (
     <div className="container mx-auto mt-8 px-16 max-w-7xl">
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={handleAddHotelClick}
-          className="bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1"
-        >
-          Add New Hotel
-        </button>
-      </div>
+      {hotels.length > 0 && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() =>
+              propIsAddHotelModalOpen === false &&
+              propIsAddHotelModalOpen !== undefined &&
+              typeof onOpenAddHotelModal === "function" &&
+              onOpenAddHotelModal()
+            }
+            className="bg-purple-500 hover:bg-purple-700 cursor-pointer text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1"
+          >
+            Add New Hotel
+          </button>
+        </div>
+      )}
       <div className="space-y-6">
         {hotels.map((hotel) => (
           <div
@@ -586,7 +600,7 @@ const HotelManagement = ({ hotels, onHotelAdded }) => {
       />
       {/* Add Hotel Modal */}
       <AddHotelModal
-        open={isAddHotelModalOpen}
+        open={propIsAddHotelModalOpen} // Sử dụng prop để điều khiển
         onCancel={handleAddHotelCancel}
         onSubmit={handleAddHotelSubmit}
         form={addForm}
