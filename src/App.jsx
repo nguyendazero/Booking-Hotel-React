@@ -30,114 +30,117 @@ import UserListPage from "./pages/UserListPage";
 import UserBlockedPage from "./pages/UserBlockedPage";
 import UserOwnerPage from "./pages/UserOwnerPage";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootLayout />,
-    errorElement: <ErrorPage />,
-    children: [
-      { index: true, element: <HomePage /> },
-      {
-        path: "hotels",
-        children: [
-          { index: true, element: <HotelsPage /> },
-          {
-            path: ":hotelId",
-            id: "hotel-detail",
-            children: [{ index: true, element: <HotelDetailPage /> }],
-          },
-        ],
-      },
-      // Các route cần bảo vệ cho người dùng đã đăng nhập
-      {
-        path: "user",
-        element: <UserProtectedRoute />,
-        children: [
-          { path: "checkin", element: <CheckinPage /> },
-          { path: "booking-history", element: <BookingHistoryPage /> },
-          { path: "wish-list", element: <WishList /> },
-          { path: "booking-success", element: <BookingSuccessPage /> },
-        ],
-      },
-      //Owner
-      {
-        path: "owner",
-        element: <OwnerProtectedRoute />,
-        children: [
-          { path: "manage-hotel-owner", element: <ManageHotelOwner /> },
-          { path: "statistics", element: <Statistic /> },
-        ],
-      },
-    ],
-  },
-  {
-    path: "/login",
-    element: <LoginPage />, // Trang login sẽ không có MainNavigation và Footer
-  },
-  {
-    path: "/unauthorized",
-    element: <Unauthorized />,
-  },
-  {
-    path: "/admin",
-    element: <AdminProtectedRoute />,
-    children: [
-      {
-        element: <AdminLayout />,
-        children: [
-          {
-            index: true,
-            element: <AdminDashboardPage />,
-          },
-          {
-            path: "regions/all",
-            element: <RegionListPage />,
-          },
-          {
-            path: "configs/all",
-            element: <ConfigListPage />,
-          },
-          {
-            path: "bookings/upcoming",
-            element: <UpcomingBookingsPage />,
-          },
-          {
-            path: "bookings/all",
-            element: <AllBookingsPage />,
-          },
-          {
-            path: "registrations/pending",
-            element: <PendingRegistrationsPage />,
-          },
-          {
-            path: "registrations/accepted",
-            element: <AcceptedRegistrationsPage />,
-          },
-          {
-            path: "registrations/rejected",
-            element: <RejectedRegistrationsPage />,
-          },
-          {
-            path: "hotels",
-            element: <HotelListPage />,
-          },
-          {
-            path: "users",
-            element: <UserListPage />,
-          },
-          {
-            path: "users/blocked",
-            element: <UserBlockedPage />,
-          },
-          {
-            path: "users/owners",
-            element: <UserOwnerPage />,
-          },
-        ],
-      },
-    ],
-  },
-]);
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <ErrorPage />,
+      children: [
+        { index: true, element: <HomePage /> },
+        {
+          path: "hotels",
+          children: [
+            { index: true, element: <HotelsPage /> },
+            {
+              path: ":hotelId",
+              id: "hotel-detail",
+              children: [{ index: true, element: <HotelDetailPage /> }],
+            },
+          ],
+        },
+        // Các route cần bảo vệ cho người dùng đã đăng nhập
+        {
+          path: "user",
+          element: <UserProtectedRoute />,
+          children: [
+            { path: "checkin", element: <CheckinPage /> },
+            { path: "booking-history", element: <BookingHistoryPage /> },
+            { path: "wish-list", element: <WishList /> },
+            { path: "booking-success", element: <BookingSuccessPage /> },
+          ],
+        },
+        //Owner
+        {
+          path: "owner",
+          element: <OwnerProtectedRoute />,
+          children: [
+            { path: "manage-hotel-owner", element: <ManageHotelOwner /> },
+            { path: "statistics", element: <Statistic /> },
+          ],
+        },
+      ],
+    },
+    {
+      path: "/login",
+      element: <LoginPage />, // Trang login sẽ không có MainNavigation và Footer
+    },
+    {
+      path: "/unauthorized",
+      element: <Unauthorized />,
+    },
+    {
+      path: "/admin",
+      element: <AdminProtectedRoute />,
+      children: [
+        {
+          element: <AdminLayout />,
+          children: [
+            {
+              index: true,
+              element: <AdminDashboardPage />,
+            },
+            {
+              path: "regions/all",
+              element: <RegionListPage />,
+            },
+            {
+              path: "configs/all",
+              element: <ConfigListPage />,
+            },
+            {
+              path: "bookings/upcoming",
+              element: <UpcomingBookingsPage />,
+            },
+            {
+              path: "bookings/all",
+              element: <AllBookingsPage />,
+            },
+            {
+              path: "registrations/pending",
+              element: <PendingRegistrationsPage />,
+            },
+            {
+              path: "registrations/accepted",
+              element: <AcceptedRegistrationsPage />,
+            },
+            {
+              path: "registrations/rejected",
+              element: <RejectedRegistrationsPage />,
+            },
+            {
+              path: "hotels",
+              element: <HotelListPage />,
+            },
+            {
+              path: "users",
+              element: <UserListPage />,
+            },
+            {
+              path: "users/blocked",
+              element: <UserBlockedPage />,
+            },
+            {
+              path: "users/owners",
+              element: <UserOwnerPage />,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  { basename: "/Booking-Hotel-React" }
+);
 
 function App() {
   return <RouterProvider router={router} />;
