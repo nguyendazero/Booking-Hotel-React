@@ -29,6 +29,10 @@ import HotelListPage from "./pages/HotelListPage";
 import UserListPage from "./pages/UserListPage";
 import UserBlockedPage from "./pages/UserBlockedPage";
 import UserOwnerPage from "./pages/UserOwnerPage";
+import { useDispatch } from "react-redux";
+import Cookies from "js-cookie";
+import { useEffect } from "react";
+import { login } from "./store/authSlice";
 
 const router = createBrowserRouter(
   [
@@ -143,6 +147,16 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    const refreshToken = Cookies.get("refreshToken");
+    if (token && refreshToken) {
+      dispatch(login({ token, refreshToken }));
+    }
+  }, [dispatch]);
+
   return <RouterProvider router={router} />;
 }
 

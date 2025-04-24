@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-// ✅ Thunk xử lý đăng nhập và lưu token vào Redux
+// ✅ Thunk xử lý đăng nhập và lưu token vào Redux và Cookies
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (formData, { rejectWithValue }) => {
@@ -13,20 +13,20 @@ export const loginUser = createAsyncThunk(
         formData,
         { withCredentials: true }
       );
-
       const data = response.data;
-
+      // Lưu token và refreshToken vào cookies khi đăng nhập thành công
+      Cookies.set("token", data.accessToken, { expires: 7, path: "/" });
+      Cookies.set("refreshToken", data.refreshToken, { expires: 7, path: "/" });
       return { token: data.accessToken, refreshToken: data.refreshToken };
     } catch (error) {
       const errorMessage =
         error.response?.data?.errors?.[0]?.errorMessage || "Login failed";
-
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-// ✅ Thunk xử lý refresh token
+// ✅ Thunk xử lý refresh token và cập nhật Cookies
 export const refreshTokenUser = createAsyncThunk(
   "auth/refreshTokenUser",
   async (refreshToken, { rejectWithValue }) => {
@@ -36,16 +36,15 @@ export const refreshTokenUser = createAsyncThunk(
         { refreshToken },
         { withCredentials: true }
       );
-
-      return {
-        token: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-      };
+      const data = response.data;
+      // Cập nhật token và refreshToken trong cookies khi refresh thành công
+      Cookies.set("token", data.accessToken, { expires: 7, path: "/" });
+      Cookies.set("refreshToken", data.refreshToken, { expires: 7, path: "/" });
+      return { token: data.accessToken, refreshToken: data.refreshToken };
     } catch (error) {
       const errorMessage =
         error.response?.data?.errors?.[0]?.errorMessage ||
         "Refresh Token failed";
-
       return rejectWithValue(errorMessage);
     }
   }
@@ -54,6 +53,10 @@ export const refreshTokenUser = createAsyncThunk(
 // Hàm lấy token từ cookie
 const getTokenFromCookie = () => {
   return Cookies.get("token") || null;
+};
+// Hàm lấy refreshToken từ cookie
+const getRefreshTokenFromCookie = () => {
+  return Cookies.get("refreshToken") || null;
 };
 
 // Hàm decode token để lấy thông tin user
@@ -66,13 +69,15 @@ const decodeToken = (token) => {
   }
 };
 
+// Khởi tạo state từ cookies
 const token = getTokenFromCookie();
+const refreshToken = getRefreshTokenFromCookie();
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: token ? decodeToken(token) : null,
-    refreshToken: Cookies.get("refreshToken") || null,
+    refreshToken: refreshToken,
     token: token,
     loading: false,
     error: null,
@@ -81,11 +86,13 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.refreshToken = null;
       Cookies.remove("token", { path: "/" });
       Cookies.remove("refreshToken", { path: "/" });
     },
     login: (state, action) => {
       state.token = action.payload.token;
+      state.refreshToken = action.payload.refreshToken;
       state.user = decodeToken(action.payload.token);
     },
     updateUser: (state, action) => {
@@ -103,6 +110,7 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.user = decodeToken(action.payload.token);
+        // Token và refreshToken đã được lưu vào cookie trong thunk
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -111,10 +119,7 @@ const authSlice = createSlice({
       .addCase(refreshTokenUser.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
-        Cookies.set("token", action.payload.token, { expires: 7 });
-        Cookies.set("refreshToken", action.payload.refreshToken, {
-          expires: 7,
-        });
+        // Token và refreshToken đã được cập nhật trong cookie trong thunk
       })
       .addCase(refreshTokenUser.rejected, (state, action) => {
         state.error = action.payload;
