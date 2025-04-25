@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Thunk để fetch danh sách districts
 export const fetchDistricts = createAsyncThunk(
   "search/fetchDistricts",
   async () => {
     const response = await fetch(
-      "http://localhost:8080/api/v1/public/districts"
+      `${API_BASE_URL}/api/v1/public/districts`
     );
     return await response.json();
   }
@@ -16,7 +17,7 @@ export const fetchAmenities = createAsyncThunk(
   "search/fetchAmenities",
   async () => {
     const response = await fetch(
-      "http://localhost:8080/api/v1/public/amenities"
+      `${API_BASE_URL}/api/v1/public/amenities`
     );
     return await response.json();
   }

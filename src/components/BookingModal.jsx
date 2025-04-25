@@ -3,6 +3,7 @@ import { Modal, Button, List, Pagination } from "antd";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import useFetch from "../hooks/useFetch";
 import { formatDate } from "../util/dateUtils"; // Giả sử bạn có hàm này để định dạng ngày
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const BookingModal = ({ open, onClose, hotelId, token }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,7 +12,7 @@ const BookingModal = ({ open, onClose, hotelId, token }) => {
 
   const fetchBookingsHook = useFetch(
     hotelId
-      ? `http://localhost:8080/api/v1/owner/bookings/hotel/${hotelId}`
+      ? `${API_BASE_URL}/api/v1/owner/bookings/hotel/${hotelId}`
       : null
   );
   const {

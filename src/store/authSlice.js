@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // ✅ Thunk xử lý đăng nhập và lưu token vào Redux và Cookies
 export const loginUser = createAsyncThunk(
@@ -9,7 +10,7 @@ export const loginUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/public/sign-in",
+        `${API_BASE_URL}/api/v1/public/sign-in`,
         formData,
         { withCredentials: true }
       );
@@ -32,7 +33,7 @@ export const refreshTokenUser = createAsyncThunk(
   async (refreshToken, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/public/refresh-token",
+        `${API_BASE_URL}/api/v1/public/refresh-token`,
         { refreshToken },
         { withCredentials: true }
       );

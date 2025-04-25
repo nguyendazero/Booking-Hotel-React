@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import usePut from "../hooks/usePut";
 import { updateUser, refreshTokenUser } from "../store/authSlice";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UserProfileUpdate = ({ onClose }) => {
   const user = useSelector((state) => state.auth.user);
@@ -48,7 +49,7 @@ const UserProfileUpdate = ({ onClose }) => {
 
     try {
       const response = await putData(
-        "http://localhost:8080/api/v1/user/update-info", // URL passed here
+        `${API_BASE_URL}/api/v1/user/update-info`, // URL passed here
         formData,
         {
           headers: {
@@ -100,7 +101,7 @@ const UserProfileUpdate = ({ onClose }) => {
 
     try {
       const response = await changePasswordData(
-        "http://localhost:8080/api/v1/user/change-password", // URL passed here
+        `${API_BASE_URL}/api/v1/user/change-password`, // URL passed here
         passwordData,
         {
           headers: {

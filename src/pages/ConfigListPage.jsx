@@ -18,6 +18,7 @@ import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePost from "../hooks/usePost";
 import useDelete from "../hooks/useDelete";
 import usePut from "../hooks/usePut";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ConfigListPage() {
   const {
@@ -25,7 +26,7 @@ function ConfigListPage() {
     loading: fetchLoading,
     error: fetchError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/public/configs");
+  } = useFetch(`${API_BASE_URL}/api/v1/public/configs`);
   const token = useSelector((state) => state.auth.token);
 
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -39,7 +40,7 @@ function ConfigListPage() {
     postData: addConfigApi,
     loading: addingConfig,
     error: addConfigError,
-  } = usePost("http://localhost:8080/api/v1/admin/config");
+  } = usePost(`${API_BASE_URL}/api/v1/admin/config`);
 
   const {
     deleteData: deleteConfigApi,
@@ -126,7 +127,7 @@ function ConfigListPage() {
 
     if (!editingConfig?.id) return;
 
-    const url = `http://localhost:8080/api/v1/admin/config/${editingConfig.id}`;
+    const url = `${API_BASE_URL}/api/v1/admin/config/${editingConfig.id}`;
     const configData = {
       key: editedConfig.key.trim(),
       value: editedConfig.value.trim(),
@@ -163,7 +164,7 @@ function ConfigListPage() {
   };
 
   const deleteConfigHandler = async (id) => {
-    const url = `http://localhost:8080/api/v1/admin/config/${id}`;
+    const url = `${API_BASE_URL}/api/v1/admin/config/${id}`;
     const configHeaders = {
       headers: {
         Authorization: `Bearer ${token}`,

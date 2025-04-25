@@ -3,6 +3,7 @@ import { Breadcrumb, List, Card, Tag } from "antd";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function AcceptedRegistrationsPage() {
   const {
@@ -10,7 +11,7 @@ function AcceptedRegistrationsPage() {
     loading,
     error,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/admin/owner-registrations");
+  } = useFetch(`${API_BASE_URL}/api/v1/admin/owner-registrations`);
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {

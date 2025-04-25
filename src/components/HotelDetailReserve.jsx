@@ -8,6 +8,7 @@ import isBetween from "dayjs/plugin/isBetween";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 dayjs.extend(isBetween);
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { RangePicker } = DatePicker;
 
@@ -24,14 +25,14 @@ const HotelDetailReserve = ({ hotel }) => {
   const [discountedNights, setDiscountedNights] = useState(0);
 
   const { data: discounts, loading, error, fetchData } = useFetch(
-    `http://localhost:8080/api/v1/public/hotel/${hotel.id}/discounts`
+    `${API_BASE_URL}/api/v1/public/hotel/${hotel.id}/discounts`
   );
 
   const {
     postData,
     loading: bookingLoading,
     error: bookingError,
-  } = usePost("http://localhost:8080/api/v1/user/booking");
+  } = usePost(`${API_BASE_URL}/api/v1/user/booking`);
 
   useEffect(() => {
     if (hotel.id) {

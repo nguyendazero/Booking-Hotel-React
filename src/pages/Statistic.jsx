@@ -3,6 +3,7 @@ import Statistic from "../components/Statistic";
 import { useSelector } from "react-redux";
 import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function StatisticPage() {
   const token = useSelector((state) => state.auth.token);
@@ -11,7 +12,7 @@ function StatisticPage() {
     loading,
     error,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/owner/statistic");
+  } = useFetch(`${API_BASE_URL}/api/v1/owner/statistic`);
 
   useEffect(() => {
     if (token) {

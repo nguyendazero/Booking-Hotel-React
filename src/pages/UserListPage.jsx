@@ -23,6 +23,7 @@ import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePut from "../hooks/usePut";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function UserListPage() {
   const {
@@ -30,7 +31,7 @@ function UserListPage() {
     loading: fetchLoading,
     error: fetchError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/admin/accounts");
+  } = useFetch(`${API_BASE_URL}/api/v1/admin/accounts`);
 
   const token = useSelector((state) => state.auth.token);
   const [searchTerm, setSearchTerm] = useState("");
@@ -106,7 +107,7 @@ function UserListPage() {
 
   const handleBlockModalOk = async () => {
     if (!userToBlock) return;
-    const url = `http://localhost:8080/api/v1/admin/block-account/${userToBlock}`;
+    const url = `${API_BASE_URL}/api/v1/admin/block-account/${userToBlock}`;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -136,7 +137,7 @@ function UserListPage() {
 
   const handleUnblock = async (userId) => {
     setUserToUnblock(userId);
-    const url = `http://localhost:8080/api/v1/admin/unblock-account/${userId}`;
+    const url = `${API_BASE_URL}/api/v1/admin/unblock-account/${userId}`;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -7,6 +7,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import AmenitiesModal from "./AmenitiesModal";
 import SortOptions from "./SortOptions";
 import LoadingSpinner from "./Common/LoadingSpinner";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Hotels = () => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const Hotels = () => {
   const query = useSelector((state) => state.search.query);
 
   const fetchHotelsData = () => {
-    const baseUrl = "http://localhost:8080/api/v1/public/hotels";
+    const baseUrl = `${API_BASE_URL}/api/v1/public/hotels`;
     const params = new URLSearchParams();
 
     // Thêm các thông tin về sắp xếp vào params

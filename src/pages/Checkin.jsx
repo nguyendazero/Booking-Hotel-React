@@ -6,6 +6,7 @@ import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Result } from "antd";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function CheckinPage() {
   const token = useSelector((state) => state.auth.token);
@@ -16,7 +17,7 @@ function CheckinPage() {
     loading: bookingLoading,
     error: bookingError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/user/bookings/reservations");
+  } = useFetch(`${API_BASE_URL}/api/v1/user/bookings/reservations`);
 
   useEffect(() => {
     console.log('CheckinPage: useEffect - Fetching bookings. Token:', token);

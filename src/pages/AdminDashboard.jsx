@@ -6,6 +6,7 @@ import ChartYearlyRevenue from "../components/ChartYearlyRevenue";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { Content } = Layout;
 
@@ -20,7 +21,7 @@ function AdminDashboardPage() {
     loading,
     error,
     fetchData: fetchBookings,
-  } = useFetch("http://localhost:8080/api/v1/admin/bookings");
+  } = useFetch(`${API_BASE_URL}/api/v1/admin/bookings`);
 
   useEffect(() => {
     fetchBookings({

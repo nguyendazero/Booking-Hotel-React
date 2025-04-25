@@ -6,6 +6,7 @@ import usePost from "../hooks/usePost";
 import useDelete from "../hooks/useDelete";
 import { formatDate } from "../util/dateUtils";
 import dayjs from "dayjs";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { RangePicker } = DatePicker;
 
@@ -27,7 +28,7 @@ const DiscountModal = ({
     postData: addDiscount,
     loading: addLoading,
     error: addError,
-  } = usePost("http://localhost:8080/api/v1/owner/hotel-discount");
+  } = usePost(`${API_BASE_URL}/api/v1/owner/hotel-discount`);
 
   const {
     deleteData: deleteDiscount,
@@ -87,7 +88,7 @@ const DiscountModal = ({
   const handleDeleteDiscount = async (hotelDiscountId) => {
     if (hotelId && hotelDiscountId) {
       const response = await deleteDiscount(
-        `http://localhost:8080/api/v1/owner/hotel-discount/${hotelDiscountId}`,
+        `${API_BASE_URL}/api/v1/owner/hotel-discount/${hotelDiscountId}`,
         {
           method: "DELETE",
           headers: {

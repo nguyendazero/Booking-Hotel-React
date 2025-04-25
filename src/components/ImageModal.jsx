@@ -3,6 +3,7 @@ import { Modal, Button, Checkbox, Pagination } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import useDelete from "../hooks/useDelete";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ImageModal = ({
   open,
@@ -57,7 +58,7 @@ const ImageModal = ({
 
   const handleConfirmDeleteImages = async () => {
     if (currentHotelId && selectedImageIdsToDelete.length > 0) {
-      const imageUrl = `http://localhost:8080/api/v1/owner/hotel/${currentHotelId}/images?${selectedImageIdsToDelete
+      const imageUrl = `${API_BASE_URL}/api/v1/owner/hotel/${currentHotelId}/images?${selectedImageIdsToDelete
         .map((id) => `imageIds=${id}`)
         .join("&")}`;
 

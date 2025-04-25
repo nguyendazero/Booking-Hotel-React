@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import UserProfileUpdate from "./UpdateInfo";
 import usePost from "../hooks/usePost";
 import { Avatar } from "antd";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function MainNavigation() {
   // Lấy user và token từ Redux state
@@ -27,7 +28,7 @@ function MainNavigation() {
     postData: registerOwner,
     loading: registeringOwner,
     error: registerOwnerError,
-  } = usePost("http://localhost:8080/api/v1/user/owner-registration");
+  } = usePost(`${API_BASE_URL}/api/v1/user/owner-registration`);
 
   // Hàm để xử lý logout
   const handleLogout = () => {

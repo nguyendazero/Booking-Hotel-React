@@ -14,6 +14,7 @@ import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePut from "../hooks/usePut";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function UserBlockedPage() {
   const {
@@ -21,7 +22,7 @@ function UserBlockedPage() {
     loading: fetchLoading,
     error: fetchError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/admin/accounts?isBlocked=true");
+  } = useFetch(`${API_BASE_URL}/api/v1/admin/accounts?isBlocked=true`);
   const token = useSelector((state) => state.auth.token);
   const { putData, loading: unblocking, error: unblockError } = usePut();
   const [userToUnblock, setUserToUnblock] = useState(null);
@@ -40,7 +41,7 @@ function UserBlockedPage() {
 
   const handleUnblock = async (userId) => {
     setUserToUnblock(userId);
-    const url = `http://localhost:8080/api/v1/admin/unblock-account/${userId}`;
+    const url = `${API_BASE_URL}/api/v1/admin/unblock-account/${userId}`;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

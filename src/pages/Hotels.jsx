@@ -6,6 +6,7 @@ import Hotels from "../components/Hotels";
 import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner"; 
 import ErrorPage from "./Error";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function HotelsPage() {
   const location = useLocation(); // Lấy URL params từ location
@@ -40,7 +41,7 @@ function HotelsPage() {
     if (sortBy) params.append("sortBy", sortBy);
     if (sortOrder) params.append("sortOrder", sortOrder);
 
-    return `http://localhost:8080/api/v1/public/hotels${
+    return `${API_BASE_URL}/api/v1/public/hotels${
       params.toString() ? "?" + params.toString() : ""
     }`;
   };

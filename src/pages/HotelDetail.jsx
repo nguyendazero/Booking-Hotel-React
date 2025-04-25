@@ -10,6 +10,7 @@ import LoadingSpinner from "../components/Common/LoadingSpinner";
 import OpenLayersMap from "../components/OpenLayersMap";
 import usePost from "../hooks/usePost"; // Import usePost hook
 import { useSelector } from "react-redux"; // Import useSelector to get token
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function HotelDetailPage() {
   const { hotelId } = useParams();
@@ -26,7 +27,7 @@ function HotelDetailPage() {
     postData: postReview,
     loading: postReviewLoading,
     error: postReviewError,
-  } = usePost(`http://localhost:8080/api/v1/user/hotel/rating`);
+  } = usePost(`${API_BASE_URL}/api/v1/user/hotel/rating`);
 
   useEffect(() => {
     const fetchHotelData = async () => {
@@ -35,28 +36,28 @@ function HotelDetailPage() {
         setError(null);
 
         const hotelRes = await fetch(
-          `http://localhost:8080/api/v1/public/hotel/${hotelId}`
+          `${API_BASE_URL}/api/v1/public/hotel/${hotelId}`
         );
         if (!hotelRes.ok) throw new Error("Failed to fetch hotel");
         const hotelData = await hotelRes.json();
         setHotel(hotelData);
 
         const discountRes = await fetch(
-          `http://localhost:8080/api/v1/public/hotel/${hotelId}/discounts`
+          `${API_BASE_URL}/api/v1/public/hotel/${hotelId}/discounts`
         );
         if (!discountRes.ok) throw new Error("Failed to fetch discounts");
         const discountData = await discountRes.json();
         setDiscounts(discountData);
 
         const amenityRes = await fetch(
-          `http://localhost:8080/api/v1/public/hotel/${hotelId}/amenities`
+          `${API_BASE_URL}/api/v1/public/hotel/${hotelId}/amenities`
         );
         if (!amenityRes.ok) throw new Error("Failed to fetch amenities");
         const amenityData = await amenityRes.json();
         setAmenities(amenityData);
 
         const reviewRes = await fetch(
-          `http://localhost:8080/api/v1/public/hotel/${hotelId}/ratings`
+          `${API_BASE_URL}/api/v1/public/hotel/${hotelId}/ratings`
         );
         if (!reviewRes.ok) throw new Error("Failed to fetch reviews");
         const reviewData = await reviewRes.json();

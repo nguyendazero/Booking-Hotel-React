@@ -5,6 +5,7 @@ import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePut from "../hooks/usePut";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function PendingRegistrationsPage() {
   const {
@@ -12,7 +13,7 @@ function PendingRegistrationsPage() {
     loading: fetchLoading,
     error: fetchError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/admin/owner-registrations");
+  } = useFetch(`${API_BASE_URL}/api/v1/admin/owner-registrations`);
   const token = useSelector((state) => state.auth.token);
   const {
     putData: approveRegistration,
@@ -49,7 +50,7 @@ function PendingRegistrationsPage() {
     : [];
 
   const handleApprove = async (registrationId) => {
-    const url = `http://localhost:8080/api/v1/admin/owner-registration/accept-registration/${registrationId}`;
+    const url = `${API_BASE_URL}/api/v1/admin/owner-registration/accept-registration/${registrationId}`;
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
@@ -63,7 +64,7 @@ function PendingRegistrationsPage() {
   };
 
   const handleReject = async (registrationId) => {
-    const url = `http://localhost:8080/api/v1/admin/owner-registration/reject-registration/${registrationId}`;
+    const url = `${API_BASE_URL}/api/v1/admin/owner-registration/reject-registration/${registrationId}`;
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };

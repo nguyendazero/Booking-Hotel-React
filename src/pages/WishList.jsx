@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Result } from "antd";
 import WishList from "../components/WishList";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function WishListPage() {
   const token = useSelector((state) => state.auth.token);
@@ -15,7 +16,7 @@ function WishListPage() {
     loading: wishListLoading,
     error: wishListError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/user/hotel/wishlist");
+  } = useFetch(`${API_BASE_URL}/api/v1/user/hotel/wishlist`);
 
   useEffect(() => {
     if (token) {

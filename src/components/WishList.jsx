@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useDelete from "../hooks/useDelete";
 import { message, Popconfirm } from "antd";
-import { HeartOff } from "lucide-react"; // Import HeartOff icon
+import { HeartOff } from "lucide-react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const WishList = ({ wishList, onRemoveHotel }) => {
   const token = useSelector((state) => state.auth.token);
@@ -15,7 +16,7 @@ const WishList = ({ wishList, onRemoveHotel }) => {
       return;
     }
 
-    const deleteUrl = `http://localhost:8080/api/v1/user/wishlist/${hotelIdToRemove}`;
+    const deleteUrl = `${API_BASE_URL}/api/v1/user/wishlist/${hotelIdToRemove}`;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

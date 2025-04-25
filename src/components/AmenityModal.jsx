@@ -4,6 +4,7 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePost from "../hooks/usePost";
 import useDelete from "../hooks/useDelete";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AmenityModal = ({
   open,
@@ -22,7 +23,7 @@ const AmenityModal = ({
     postData: addAmenity,
     loading: addLoading,
     error: addError,
-  } = usePost("http://localhost:8080/api/v1/owner/hotel-amenity");
+} = usePost(`${API_BASE_URL}/api/v1/owner/hotel-amenity`);
 
   const {
     deleteData: deleteAmenity,
@@ -77,7 +78,7 @@ const AmenityModal = ({
         amenityId: amenityId,
       };
       const response = await deleteAmenity(
-        "http://localhost:8080/api/v1/owner/hotel-amenity",
+        `${API_BASE_URL}/api/v1/owner/hotel-amenity`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

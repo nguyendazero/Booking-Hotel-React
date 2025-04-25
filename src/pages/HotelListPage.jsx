@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, List, Card, Avatar, Rate, Input, Pagination } from "antd";
-import { StarOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, List, Card, Rate, Input, Pagination } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import useFetch from "../hooks/useFetch";
-import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function HotelListPage() {
   const {
@@ -11,7 +11,7 @@ function HotelListPage() {
     loading,
     error,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/public/hotels");
+  } = useFetch(`${API_BASE_URL}/api/v1/public/hotels`);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);

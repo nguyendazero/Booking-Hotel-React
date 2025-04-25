@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import BookingHistory from "../components/BookingHistory";
 import { Link } from "react-router-dom";
 import { Button, Result } from "antd"; // Nhập Result và Button từ antd
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function BookingHistoryPage() {
   // Get token from Redux
@@ -15,7 +16,7 @@ function BookingHistoryPage() {
     loading: bookingsHistoryLoading,
     error: bookingsHistoryError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/user/bookings");
+  } = useFetch(`${API_BASE_URL}/api/v1/user/bookings`);
 
   // Fetch bookings when token changes
   useEffect(() => {

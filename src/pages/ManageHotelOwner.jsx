@@ -4,6 +4,7 @@ import useFetch from "../hooks/useFetch";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import { useSelector } from "react-redux";
 import { Button, Result, message } from "antd";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ManageHotelOwnerPage() {
   const user = useSelector((state) => state.auth.user);
@@ -13,7 +14,7 @@ function ManageHotelOwnerPage() {
     error,
     fetchData,
   } = useFetch(
-    `http://localhost:8080/api/v1/public/hotels?accountId=${user?.id}`
+    `${API_BASE_URL}/api/v1/public/hotels?accountId=${user?.id}`
   );
 
   // State to control the Add Hotel modal

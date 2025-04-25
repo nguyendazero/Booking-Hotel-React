@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import usePost from "../hooks/usePost";
 import useFetch from "../hooks/useFetch";
 import { message } from "antd";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 import {
   ShareAltOutlined,
@@ -34,7 +35,7 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
     postData: addToWishlistApi,
     loading: addingToWishlist,
     error: wishlistError,
-  } = usePost(`http://localhost:8080/api/v1/user/wishlist/${hotelId}`);
+  } = usePost(`${API_BASE_URL}/api/v1/user/wishlist/${hotelId}`);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   // Fetch user's wishlist
@@ -43,7 +44,7 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
     fetchData: fetchUserWishlist,
     loading: fetchingWishlist,
     error: fetchWishlistError,
-  } = useFetch("http://localhost:8080/api/v1/user/hotel/wishlist");
+  } = useFetch(`${API_BASE_URL}/api/v1/user/hotel/wishlist`);
 
   useEffect(() => {
     // Fetch user's wishlist when component mounts

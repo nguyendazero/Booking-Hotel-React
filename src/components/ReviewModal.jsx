@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { Button, Modal, Avatar, List, Pagination } from "antd";
 import useFetch from "../hooks/useFetch";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ReviewModal = ({ open, onClose, hotelId }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,7 +16,7 @@ const ReviewModal = ({ open, onClose, hotelId }) => {
     fetchData: fetchReviews,
   } = useFetch(
     hotelId
-      ? `http://localhost:8080/api/v1/public/hotel/${hotelId}/ratings`
+      ? `${API_BASE_URL}/api/v1/public/hotel/${hotelId}/ratings`
       : null
   );
 

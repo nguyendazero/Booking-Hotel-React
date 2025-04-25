@@ -4,6 +4,7 @@ import useFetch from "../hooks/useFetch";
 import { useSelector } from "react-redux";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 import moment from "moment";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function UpcomingBookingsPage() {
   const {
@@ -11,7 +12,7 @@ function UpcomingBookingsPage() {
     loading,
     error,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/admin/bookings");
+  } = useFetch(`${API_BASE_URL}/api/v1/admin/bookings`);
   const token = useSelector((state) => state.auth.token);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;

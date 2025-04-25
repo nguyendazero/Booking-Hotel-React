@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { formatDate } from "../util/dateUtils";
 import usePut from "../hooks/usePut";
 import { useSelector } from "react-redux";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CheckinHotel = ({ bookings, onBookingCancelled }) => {
   const [loadingBookingId, setLoadingBookingId] = useState(null);
@@ -17,7 +18,7 @@ const CheckinHotel = ({ bookings, onBookingCancelled }) => {
 
   const handleCancelBooking = async (bookingId) => {
     setLoadingBookingId(bookingId);
-    const url = `http://localhost:8080/api/v1/user/booking/${bookingId}/cancel`;
+    const url = `${API_BASE_URL}/api/v1/user/booking/${bookingId}/cancel`;
 
     const config = {
       headers: {

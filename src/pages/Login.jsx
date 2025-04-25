@@ -9,6 +9,7 @@ import {
   GithubOutlined,
 } from "@ant-design/icons";
 import loginImage from "../assets/image/login.jpg";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const LoginForm = () => {
   const location = useLocation(); // Lấy đối tượng location
@@ -42,28 +43,28 @@ const LoginForm = () => {
     postData,
     loading: postLoading,
     error: postError,
-  } = usePost("http://localhost:8080/api/v1/public/sign-up");
+  } = usePost(`${API_BASE_URL}/api/v1/public/sign-up`);
 
   // Call the custom hook for email verification
   const {
     postData: verifyEmail,
     loading: verifyLoading,
     error: verifyError,
-  } = usePost("http://localhost:8080/api/v1/public/verify-email");
+  } = usePost(`${API_BASE_URL}/api/v1/public/verify-email`);
 
   // Call the custom hook for forgot password
   const {
     postData: forgotPassword,
     loading: forgotLoading,
     error: forgotError,
-  } = usePost("http://localhost:8080/api/v1/public/forgot-password");
+  } = usePost(`${API_BASE_URL}/api/v1/public/forgot-password`);
 
   // Call the custom hook for password reset
   const {
     postData: resetPassword,
     loading: resetLoading,
     error: resetError,
-  } = usePost("http://localhost:8080/api/v1/public/reset-password");
+  } = usePost(`${API_BASE_URL}/api/v1/public/reset-password`);
 
   // Handle form data changes
   const handleChange = (e) => {

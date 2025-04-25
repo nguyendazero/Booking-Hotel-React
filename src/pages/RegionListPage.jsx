@@ -17,6 +17,7 @@ import LoadingSpinner from "../components/Common/LoadingSpinner";
 import usePost from "../hooks/usePost"; // Import usePost hook
 import useDelete from "../hooks/useDelete"; // Import useDelete hook
 import usePut from "../hooks/usePut"; // Import usePut hook
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function RegionListPage() {
   const {
@@ -24,7 +25,7 @@ function RegionListPage() {
     loading: fetchLoading,
     error: fetchError,
     fetchData,
-  } = useFetch("http://localhost:8080/api/v1/public/districts");
+  } = useFetch(`${API_BASE_URL}/api/v1/public/districts`);
   const token = useSelector((state) => state.auth.token);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [newRegionName, setNewRegionName] = useState("");
@@ -35,7 +36,7 @@ function RegionListPage() {
     postData: addRegion,
     loading: addingRegion,
     error: addRegionError,
-  } = usePost("http://localhost:8080/api/v1/admin/district");
+  } = usePost(`${API_BASE_URL}/api/v1/admin/district`);
   const {
     deleteData: deleteRegion,
     loading: deletingRegion,
@@ -120,7 +121,7 @@ function RegionListPage() {
 
     if (!editingRegion?.id) return;
 
-    const url = `http://localhost:8080/api/v1/admin/district/${editingRegion.id}`;
+    const url = `${API_BASE_URL}/api/v1/admin/district/${editingRegion.id}`;
     const data = { name: editedRegionName.trim() };
     const config = {
       headers: {
@@ -154,7 +155,7 @@ function RegionListPage() {
   };
 
   const deleteRegionHandler = async (id) => {
-    const url = `http://localhost:8080/api/v1/admin/district/${id}`;
+    const url = `${API_BASE_URL}/api/v1/admin/district/${id}`;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

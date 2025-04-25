@@ -4,6 +4,7 @@ import { formatDate } from "../util/dateUtils";
 import { Button, message, Popconfirm } from "antd";
 import { useSelector } from "react-redux";
 import useDeleteCustom from "../hooks/useDelete";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const HotelDetailReviews = ({
   reviews: initialReviews,
@@ -70,7 +71,7 @@ const HotelDetailReviews = ({
   };
 
   const deleteReview = async (reviewId) => {
-    const url = `http://localhost:8080/api/v1/user/rating/${reviewId}`;
+    const url = `${API_BASE_URL}/api/v1/user/rating/${reviewId}`;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

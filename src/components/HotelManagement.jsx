@@ -23,6 +23,7 @@ import ReviewModal from "../components/ReviewModal";
 import AddHotelModal from "../components/AddHotelModal";
 import UpdateHotelModal from "../components/UpdateHotelModal";
 import { useSelector } from "react-redux";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const HotelManagement = ({
   hotels,
@@ -54,7 +55,7 @@ const HotelManagement = ({
     postData,
     loading: addingHotel,
     error: addHotelError,
-  } = usePost("http://localhost:8080/api/v1/owner/hotel");
+  } = usePost(`${API_BASE_URL}/api/v1/owner/hotel`);
   const { putData, loading: updatingHotel, error: updateHotelError } = usePut();
   const {
     deleteData: deleteHotelApi,
@@ -66,7 +67,7 @@ const HotelManagement = ({
     fetchData: fetchDistricts,
     loading: districtsLoading,
     error: districtsError,
-  } = useFetch("http://localhost:8080/api/v1/public/districts");
+  } = useFetch(`${API_BASE_URL}/api/v1/public/districts`);
 
   const token = useSelector((state) => state.auth.token);
 
@@ -114,7 +115,7 @@ const HotelManagement = ({
 
     try {
       const response = await putData(
-        `http://localhost:8080/api/v1/owner/hotel/${editingHotel.id}`,
+        `${API_BASE_URL}/api/v1/owner/hotel/${editingHotel.id}`,
         formData,
         {
           headers: {
@@ -197,7 +198,7 @@ const HotelManagement = ({
   const handleDeleteHotel = async (hotelId) => {
     try {
       await deleteHotelApi(
-        `http://localhost:8080/api/v1/owner/hotel/${hotelId}`,
+        `${API_BASE_URL}/api/v1/owner/hotel/${hotelId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -220,7 +221,7 @@ const HotelManagement = ({
     fetchData: fetchImages,
   } = useFetch(
     currentHotelId
-      ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/images`
+      ? `${API_BASE_URL}/api/v1/public/hotel/${currentHotelId}/images`
       : null
   );
 
@@ -230,19 +231,19 @@ const HotelManagement = ({
     error: addImagesError,
   } = usePost(
     currentHotelId
-      ? `http://localhost:8080/api/v1/owner/hotel/${currentHotelId}/images`
+      ? `${API_BASE_URL}/api/v1/owner/hotel/${currentHotelId}/images`
       : null
   );
 
   const { data: amenitiesData, fetchData: fetchAmenities } = useFetch(
     currentHotelId
-      ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/amenities`
+      ? `${API_BASE_URL}/api/v1/public/hotel/${currentHotelId}/amenities`
       : null
   );
 
   const { data: discountsData, fetchData: fetchDiscounts } = useFetch(
     currentHotelId
-      ? `http://localhost:8080/api/v1/public/hotel/${currentHotelId}/discounts`
+      ? `${API_BASE_URL}/api/v1/public/hotel/${currentHotelId}/discounts`
       : null
   );
 
