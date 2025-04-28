@@ -73,6 +73,7 @@ const HotelDetailInfo = ({ hotel, discounts }) => {
   const handleAddToWishlist = async () => {
     if (!token) {
       message.error("Please log in to add to your wishlist.");
+      alert("Please log in to add items to your wishlist."); 
       return;
     }
 

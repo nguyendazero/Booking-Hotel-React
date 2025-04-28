@@ -24,9 +24,12 @@ const HotelDetailReserve = ({ hotel }) => {
   const [applicableDiscount, setApplicableDiscount] = useState(null);
   const [discountedNights, setDiscountedNights] = useState(0);
 
-  const { data: discounts, loading, error, fetchData } = useFetch(
-    `${API_BASE_URL}/api/v1/public/hotel/${hotel.id}/discounts`
-  );
+  const {
+    data: discounts,
+    loading,
+    error,
+    fetchData,
+  } = useFetch(`${API_BASE_URL}/api/v1/public/hotel/${hotel.id}/discounts`);
 
   const {
     postData,
@@ -123,6 +126,11 @@ const HotelDetailReserve = ({ hotel }) => {
   const total = totalPrice + serviceCharge;
 
   const handleReserve = async () => {
+    if (!token) {
+      alert("Please log in to booking this hotel.");
+      return;
+    }
+
     const bookingData = {
       hotelId: hotel.id,
       startDate: dates[0].toISOString(),
@@ -163,11 +171,15 @@ const HotelDetailReserve = ({ hotel }) => {
         />
       </div>
       <p className="font-semibold mt-2">
-        {nights > 0 ? `Stay for ${nights} nights` : "Select check-in and check-out dates"}
+        {nights > 0
+          ? `Stay for ${nights} nights`
+          : "Select check-in and check-out dates"}
       </p>
       <hr className="my-4 border-gray-300" />
       <div className="flex justify-between">
-        <p className="font-semibold">${pricePerDay} x {nights} night</p>
+        <p className="font-semibold">
+          ${pricePerDay} x {nights} night
+        </p>
         <p className="font-semibold">${pricePerDay * nights}</p>
       </div>
       {discountApplied && applicableDiscount ? (
