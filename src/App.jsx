@@ -33,6 +33,7 @@ import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { login } from "./store/authSlice";
+import GithubRedirect from "./components/GithubRedirect";
 
 const router = createBrowserRouter(
   [
@@ -78,6 +79,10 @@ const router = createBrowserRouter(
     {
       path: "/login",
       element: <LoginPage />, // Trang login sẽ không có MainNavigation và Footer
+    },
+    {
+      path: "/github-redirect",
+      element: <GithubRedirect />,
     },
     {
       path: "/unauthorized",

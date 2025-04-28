@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
 import usePost from "../hooks/usePost";
-import { useNavigate, NavLink, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   GoogleOutlined,
   FacebookOutlined,
@@ -10,6 +10,9 @@ import {
 } from "@ant-design/icons";
 import loginImage from "../assets/image/login.jpg";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// login with Github
+const githubLoginUrl = `${API_BASE_URL}/api/v1/public/login/github`;
 
 const LoginForm = () => {
   const location = useLocation(); // Lấy đối tượng location
@@ -549,13 +552,16 @@ const LoginForm = () => {
               />{" "}
               Facebook
             </button>
-            <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
+            <a
+              href={githubLoginUrl}
+              className="flex items-center text-gray-600 hover:text-gray-900 transition cursor-pointer"
+            >
               <GithubOutlined
                 className="mr-2 text-3xl"
                 style={{ backgroundColor: "white", color: "black" }}
-              />{" "}
+              />
               Github
-            </button>
+            </a>
           </div>
         </div>
       </div>

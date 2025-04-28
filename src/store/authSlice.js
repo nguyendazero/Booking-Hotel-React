@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // ✅ Thunk xử lý đăng nhập và lưu token vào Redux và Cookies
@@ -22,6 +23,32 @@ export const loginUser = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error.response?.data?.errors?.[0]?.errorMessage || "Login failed";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// ✅ Thunk xử lý hoàn tất đăng nhập GitHub
+export const completeGithubLogin = createAsyncThunk(
+  "auth/completeGithubLogin",
+  async (code, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/v1/public/login/oauth2/code/github?code=${code}`, // Gửi mã code như tham số
+        {}, // Body có thể để trống
+        { withCredentials: true }
+      );
+      const data = response.data;
+
+      // Lưu token và refreshToken vào cookies
+      Cookies.set("token", data.accessToken, { expires: 7, path: "/" });
+      Cookies.set("refreshToken", data.refreshToken, { expires: 7, path: "/" });
+
+      return { token: data.accessToken, refreshToken: data.refreshToken };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.errors?.[0]?.errorMessage ||
+        "GitHub login failed";
       return rejectWithValue(errorMessage);
     }
   }
@@ -50,6 +77,7 @@ export const refreshTokenUser = createAsyncThunk(
     }
   }
 );
+
 
 // Hàm lấy token từ cookie
 const getTokenFromCookie = () => {
@@ -123,6 +151,20 @@ const authSlice = createSlice({
         // Token và refreshToken đã được cập nhật trong cookie trong thunk
       })
       .addCase(refreshTokenUser.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(completeGithubLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(completeGithubLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.refreshToken = action.payload.refreshToken;
+        state.user = decodeToken(action.payload.token);
+      })
+      .addCase(completeGithubLogin.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },
