@@ -34,6 +34,7 @@ import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { login } from "./store/authSlice";
 import GithubRedirect from "./components/GithubRedirect";
+import GoogleRedirect from "./components/GoogleRedirect";
 
 const router = createBrowserRouter(
   [
@@ -83,6 +84,10 @@ const router = createBrowserRouter(
     {
       path: "/github-redirect",
       element: <GithubRedirect />,
+    },
+    {
+      path: "/google-redirect", // Thêm route cho Google redirect
+      element: <GoogleRedirect />,
     },
     {
       path: "/unauthorized",

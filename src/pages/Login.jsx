@@ -14,6 +14,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // login with Github
 const githubLoginUrl = `${API_BASE_URL}/api/v1/public/login/github`;
 
+// login with Google
+const googleLoginUrl = `${API_BASE_URL}/api/v1/public/login/google`;
+
 const LoginForm = () => {
   const location = useLocation(); // Lấy đối tượng location
   const message = location.state?.message; // Lấy message từ location.state
@@ -538,13 +541,16 @@ const LoginForm = () => {
           </form>
           {/* Social login buttons */}
           <div className="flex justify-around mt-6">
-            <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
+            <a
+              href={googleLoginUrl}
+              className="flex items-center text-gray-600 hover:text-gray-900 transition cursor-pointer"
+            >
               <GoogleOutlined
                 className="mr-2 text-3xl"
                 style={{ backgroundColor: "white", color: "red" }}
-              />{" "}
+              />
               Google
-            </button>
+            </a>
             <button className="flex items-center text-gray-600 hover:text-gray-900 transition">
               <FacebookOutlined
                 className="mr-2 text-3xl"
