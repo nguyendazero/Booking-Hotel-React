@@ -20,7 +20,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      - name: Build project (initial)
+        run: npm run build
+
+      - name: Copy index.html to public/404.html
+        run: cp dist/index.html public/404.html
+
+      - name: Build project (second time for 404)
         run: npm run build
 
       - name: Deploy to GitHub Pages
